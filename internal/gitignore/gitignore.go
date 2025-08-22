@@ -133,6 +133,16 @@ func (m *Matcher) matchesPattern(relPath, pattern string) bool {
 		if relPath == dirPattern || strings.HasPrefix(relPath, dirPattern+"/") {
 			return true
 		}
+		// Also check if the directory pattern matches any component in the path
+		parts := strings.Split(relPath, "/")
+		for i, part := range parts {
+			if part == dirPattern {
+				// Found the directory, now check if we're inside it or it's the exact match
+				if i == len(parts)-1 || len(parts) > i+1 {
+					return true
+				}
+			}
+		}
 	}
 
 	// Handle patterns starting with /
