@@ -1,0 +1,21 @@
+# Binaries
+symbolista
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Go
+*.test
+*.prof
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test
+test_dir/

@@ -1,0 +1,145 @@
+package counter
+
+import (
+	"encoding/csv"
+	"encoding/json"
+	"fmt"
+	"os"
+	"sort"
+	"strings"
+	"unicode"
+
+	"github.com/ogdakke/symbolista/internal/gitignore"
+	"github.com/ogdakke/symbolista/internal/traversal"
+)
+
+type CharCount struct {
+	Char       rune    `json:"char"`
+	Count      int     `json:"count"`
+	Percentage float64 `json:"percentage"`
+}
+
+type CharCounts []CharCount
+
+func (c CharCounts) Len() int           { return len(c) }
+func (c CharCounts) Less(i, j int) bool { return c[i].Count > c[j].Count }
+func (c CharCounts) Swap(i, j int)      { c[i], c[j] = c[j], c[i] }
+
+func CountSymbols(directory, format string, showPercentages bool) {
+	matcher, err := gitignore.NewMatcher(directory)
+	if err != nil {
+		fmt.Printf("Warning: Could not load gitignore: %v\n", err)
+	}
+
+	charMap := make(map[rune]int)
+	totalChars := 0
+
+	err = traversal.WalkDirectory(directory, matcher, func(path string, content []byte) error {
+		for _, r := range string(content) {
+			if unicode.IsGraphic(r) || unicode.IsSpace(r) {
+				charMap[r]++
+				totalChars++
+			}
+		}
+		return nil
+	})
+
+	if err != nil {
+		fmt.Printf("Error processing files: %v\n", err)
+		return
+	}
+
+	var counts CharCounts
+	for char, count := range charMap {
+		percentage := float64(count) / float64(totalChars) * 100
+		counts = append(counts, CharCount{
+			Char:       char,
+			Count:      count,
+			Percentage: percentage,
+		})
+	}
+
+	sort.Sort(counts)
+
+	switch format {
+	case "json":
+		outputJSON(counts, showPercentages)
+	case "csv":
+		outputCSV(counts, showPercentages)
+	default:
+		outputTable(counts, showPercentages)
+	}
+}
+
+func outputTable(counts CharCounts, showPercentages bool) {
+	fmt.Printf("%-10s %-10s", "Character", "Count")
+	if showPercentages {
+		fmt.Printf(" %-12s", "Percentage")
+	}
+	fmt.Println()
+	fmt.Println(strings.Repeat("-", 35))
+
+	for _, c := range counts {
+		char := string(c.Char)
+		if c.Char == ' ' {
+			char = "<space>"
+		} else if c.Char == '\t' {
+			char = "<tab>"
+		} else if c.Char == '\n' {
+			char = "<newline>"
+		} else if c.Char == '\r' {
+			char = "<return>"
+		}
+
+		fmt.Printf("%-10s %-10d", char, c.Count)
+		if showPercentages {
+			fmt.Printf(" %-12.2f%%", c.Percentage)
+		}
+		fmt.Println()
+	}
+}
+
+func outputJSON(counts CharCounts, showPercentages bool) {
+	if !showPercentages {
+		for i := range counts {
+			counts[i].Percentage = 0
+		}
+	}
+
+	data, err := json.MarshalIndent(counts, "", "  ")
+	if err != nil {
+		fmt.Printf("Error marshaling JSON: %v\n", err)
+		return
+	}
+	fmt.Println(string(data))
+}
+
+func outputCSV(counts CharCounts, showPercentages bool) {
+	writer := csv.NewWriter(os.Stdout)
+	defer writer.Flush()
+
+	headers := []string{"Character", "Count"}
+	if showPercentages {
+		headers = append(headers, "Percentage")
+	}
+	writer.Write(headers)
+
+	for _, c := range counts {
+		char := string(c.Char)
+		if c.Char == ' ' {
+			char = "<space>"
+		} else if c.Char == '\t' {
+			char = "<tab>"
+		} else if c.Char == '\n' {
+			char = "<newline>"
+		} else if c.Char == '\r' {
+			char = "<return>"
+		}
+
+		row := []string{char, fmt.Sprintf("%d", c.Count)}
+		if showPercentages {
+			row = append(row, fmt.Sprintf("%.2f%%", c.Percentage))
+		}
+		writer.Write(row)
+	}
+}
