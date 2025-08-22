@@ -20,16 +20,13 @@ func WalkDirectory(rootPath string, matcher *gitignore.Matcher, processor FilePr
 			return err
 		}
 
-		// Check if this directory should be ignored
 		if info.IsDir() {
-			// Load gitignore file if it exists in this directory
 			if matcher != nil {
 				if err := matcher.LoadGitignoreForDirectory(path); err != nil {
 					logger.Debug("Error loading gitignore", "path", path, "error", err)
 				}
 			}
 
-			// Don't traverse into the root directory
 			if path != rootPath && matcher != nil && matcher.ShouldIgnore(path) {
 				logger.Debug("Skipping directory (gitignore)", "path", path)
 				return filepath.SkipDir
@@ -38,7 +35,6 @@ func WalkDirectory(rootPath string, matcher *gitignore.Matcher, processor FilePr
 			return nil
 		}
 
-		// Skip symlinks and special files
 		if info.Mode()&os.ModeType != 0 {
 			logger.Debug("Skipping special file", "path", path, "mode", info.Mode().String())
 			return nil
@@ -62,7 +58,6 @@ func WalkDirectory(rootPath string, matcher *gitignore.Matcher, processor FilePr
 			return nil
 		}
 
-		// Skip files that are not valid UTF-8 text
 		if !utf8.Valid(content) {
 			logger.Debug("Skipping non-UTF8 file", "path", path)
 			return nil
@@ -74,7 +69,6 @@ func WalkDirectory(rootPath string, matcher *gitignore.Matcher, processor FilePr
 	})
 }
 
-// ConcurrentResult contains the results of concurrent file processing
 type ConcurrentResult struct {
 	CharMap     map[rune]int
 	FileCount   int

@@ -10,14 +10,12 @@ import (
 )
 
 func TestWalkDirectoryBasic(t *testing.T) {
-	// Create a temporary directory for testing
 	tempDir, err := os.MkdirTemp("", "traversal_test")
 	if err != nil {
 		t.Fatalf("Failed to create temp dir: %v", err)
 	}
 	defer os.RemoveAll(tempDir)
 
-	// Create test files
 	testFile1 := filepath.Join(tempDir, "test1.txt")
 	err = os.WriteFile(testFile1, []byte("hello world"), 0644)
 	if err != nil {
@@ -30,7 +28,6 @@ func TestWalkDirectoryBasic(t *testing.T) {
 		t.Fatalf("Failed to create test file: %v", err)
 	}
 
-	// Track processed files
 	var processedFiles []string
 	var processedContent []string
 
@@ -45,12 +42,10 @@ func TestWalkDirectoryBasic(t *testing.T) {
 		t.Fatalf("WalkDirectory failed: %v", err)
 	}
 
-	// Should have processed 2 files
 	if len(processedFiles) != 2 {
 		t.Errorf("Expected 2 processed files, got %d", len(processedFiles))
 	}
 
-	// Check that both files were processed
 	foundTest1 := false
 	foundTest2 := false
 	for i, path := range processedFiles {
@@ -74,14 +69,12 @@ func TestWalkDirectoryBasic(t *testing.T) {
 }
 
 func TestWalkDirectoryWithGitignore(t *testing.T) {
-	// Create a temporary directory for testing
 	tempDir, err := os.MkdirTemp("", "traversal_gitignore_test")
 	if err != nil {
 		t.Fatalf("Failed to create temp dir: %v", err)
 	}
 	defer os.RemoveAll(tempDir)
 
-	// Create test files
 	testFile1 := filepath.Join(tempDir, "include.txt")
 	err = os.WriteFile(testFile1, []byte("include me"), 0644)
 	if err != nil {
@@ -94,20 +87,17 @@ func TestWalkDirectoryWithGitignore(t *testing.T) {
 		t.Fatalf("Failed to create test file: %v", err)
 	}
 
-	// Create .gitignore
 	gitignoreFile := filepath.Join(tempDir, ".gitignore")
 	err = os.WriteFile(gitignoreFile, []byte("*.log\n"), 0644)
 	if err != nil {
 		t.Fatalf("Failed to create .gitignore: %v", err)
 	}
 
-	// Create gitignore matcher - include dotfiles so we can test processing .gitignore
 	matcher, err := gitignore.NewMatcher(tempDir, true)
 	if err != nil {
 		t.Fatalf("Failed to create gitignore matcher: %v", err)
 	}
 
-	// Track processed files
 	var processedFiles []string
 
 	processor := func(path string, content []byte) error {
@@ -120,12 +110,10 @@ func TestWalkDirectoryWithGitignore(t *testing.T) {
 		t.Fatalf("WalkDirectory failed: %v", err)
 	}
 
-	// Should have processed include.txt and .gitignore file (ignore.log should be ignored)
 	if len(processedFiles) != 2 {
 		t.Errorf("Expected 2 processed files (.gitignore and include.txt), got %d", len(processedFiles))
 	}
 
-	// Check that include.txt was processed
 	foundInclude := false
 	for _, path := range processedFiles {
 		if strings.HasSuffix(path, "include.txt") {
@@ -139,14 +127,12 @@ func TestWalkDirectoryWithGitignore(t *testing.T) {
 }
 
 func TestWalkDirectoryWithNestedStructure(t *testing.T) {
-	// Create a temporary directory for testing
 	tempDir, err := os.MkdirTemp("", "traversal_nested_test")
 	if err != nil {
 		t.Fatalf("Failed to create temp dir: %v", err)
 	}
 	defer os.RemoveAll(tempDir)
 
-	// Create nested directory structure
 	subDir := filepath.Join(tempDir, "subdir")
 	err = os.Mkdir(subDir, 0755)
 	if err != nil {
@@ -159,7 +145,6 @@ func TestWalkDirectoryWithNestedStructure(t *testing.T) {
 		t.Fatalf("Failed to create deep dir: %v", err)
 	}
 
-	// Create files at different levels
 	rootFile := filepath.Join(tempDir, "root.txt")
 	err = os.WriteFile(rootFile, []byte("root"), 0644)
 	if err != nil {
@@ -178,7 +163,6 @@ func TestWalkDirectoryWithNestedStructure(t *testing.T) {
 		t.Fatalf("Failed to create deep file: %v", err)
 	}
 
-	// Track processed files
 	var processedFiles []string
 
 	processor := func(path string, content []byte) error {
@@ -191,12 +175,10 @@ func TestWalkDirectoryWithNestedStructure(t *testing.T) {
 		t.Fatalf("WalkDirectory failed: %v", err)
 	}
 
-	// Should have processed 3 files
 	if len(processedFiles) != 3 {
 		t.Errorf("Expected 3 processed files, got %d", len(processedFiles))
 	}
 
-	// Check that all files were processed
 	foundRoot := false
 	foundSub := false
 	foundDeep := false

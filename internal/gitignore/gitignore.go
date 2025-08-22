@@ -79,7 +79,6 @@ func (m *Matcher) ShouldIgnore(path string) bool {
 		return false
 	}
 
-	// Check if dotfiles should be ignored (unless includeDotfiles is true)
 	if !m.includeDotfiles {
 		filename := filepath.Base(path)
 		if strings.HasPrefix(filename, ".") && filename != "." && filename != ".." {
@@ -90,16 +89,14 @@ func (m *Matcher) ShouldIgnore(path string) bool {
 
 	start := time.Now()
 
-	// Check all gitignore files from root to the directory containing this path
 	currentDir := filepath.Dir(path)
 	for {
-		// Check if currentDir is within our base path
+
 		relDir, err := filepath.Rel(m.basePath, currentDir)
 		if err != nil || strings.HasPrefix(relDir, "..") {
 			break
 		}
 
-		// Check patterns from this directory's gitignore
 		if patterns, exists := m.matchers[currentDir]; exists {
 			// Get relative path from this directory's perspective
 			relPath, err := filepath.Rel(currentDir, path)
@@ -117,7 +114,6 @@ func (m *Matcher) ShouldIgnore(path string) bool {
 			}
 		}
 
-		// Move up one directory
 		parentDir := filepath.Dir(currentDir)
 		if parentDir == currentDir || parentDir == "." {
 			break
@@ -134,21 +130,20 @@ func (m *Matcher) ShouldIgnore(path string) bool {
 }
 
 func (m *Matcher) matchesPattern(relPath, pattern string) bool {
-	// Clean the pattern to use forward slashes
+
 	pattern = filepath.ToSlash(pattern)
 
-	// Handle directory patterns (ending with /)
 	if strings.HasSuffix(pattern, "/") {
-		// Directory patterns match the directory and everything inside it
+
 		dirPattern := strings.TrimSuffix(pattern, "/")
 		if relPath == dirPattern || strings.HasPrefix(relPath, dirPattern+"/") {
 			return true
 		}
-		// Also check if the directory pattern matches any component in the path
+
 		parts := strings.Split(relPath, "/")
 		for i, part := range parts {
 			if part == dirPattern {
-				// Found the directory, now check if we're inside it or it's the exact match
+
 				if i == len(parts)-1 || len(parts) > i+1 {
 					return true
 				}
@@ -157,8 +152,8 @@ func (m *Matcher) matchesPattern(relPath, pattern string) bool {
 	}
 
 	// Handle patterns starting with /
-	if strings.HasPrefix(pattern, "/") {
-		pattern = strings.TrimPrefix(pattern, "/")
+	if after, ok := strings.CutPrefix(pattern, "/"); ok {
+		pattern = after
 		// Root-anchored pattern - match from root only
 		if matched, _ := filepath.Match(pattern, relPath); matched {
 			return true
@@ -172,23 +167,21 @@ func (m *Matcher) matchesPattern(relPath, pattern string) bool {
 			}
 		}
 	} else {
-		// Non-anchored pattern - can match at any level
-		// Check exact match
 		if matched, _ := filepath.Match(pattern, relPath); matched {
 			return true
 		}
-		// Check basename match
+
 		if matched, _ := filepath.Match(pattern, filepath.Base(relPath)); matched {
 			return true
 		}
-		// Check if any directory component matches
+
 		parts := strings.Split(relPath, "/")
 		for _, part := range parts {
 			if matched, _ := filepath.Match(pattern, part); matched {
 				return true
 			}
 		}
-		// Check if the pattern matches any sub-path
+
 		for i := range parts {
 			partialPath := strings.Join(parts[i:], "/")
 			if matched, _ := filepath.Match(pattern, partialPath); matched {

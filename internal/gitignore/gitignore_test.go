@@ -7,14 +7,12 @@ import (
 )
 
 func TestNewMatcher(t *testing.T) {
-	// Create a temporary directory for testing
 	tempDir, err := os.MkdirTemp("", "gitignore_test")
 	if err != nil {
 		t.Fatalf("Failed to create temp dir: %v", err)
 	}
 	defer os.RemoveAll(tempDir)
 
-	// Test with no .gitignore file
 	matcher, err := NewMatcher(tempDir, false)
 	if err != nil {
 		t.Errorf("Expected no error, got %v", err)
@@ -26,7 +24,6 @@ func TestNewMatcher(t *testing.T) {
 		t.Errorf("Expected no patterns, got %d", len(matcher.patterns))
 	}
 
-	// Create a .gitignore file
 	gitignorePath := filepath.Join(tempDir, ".gitignore")
 	gitignoreContent := `# This is a comment
 *.log
@@ -41,7 +38,6 @@ build/
 		t.Fatalf("Failed to create .gitignore: %v", err)
 	}
 
-	// Test with .gitignore file
 	matcher, err = NewMatcher(tempDir, false)
 	if err != nil {
 		t.Errorf("Expected no error, got %v", err)
@@ -63,7 +59,6 @@ build/
 }
 
 func TestLoadGitignoreForDirectory(t *testing.T) {
-	// Create a temporary directory structure
 	tempDir, err := os.MkdirTemp("", "gitignore_test")
 	if err != nil {
 		t.Fatalf("Failed to create temp dir: %v", err)
@@ -76,14 +71,12 @@ func TestLoadGitignoreForDirectory(t *testing.T) {
 		t.Fatalf("Failed to create subdir: %v", err)
 	}
 
-	// Create root .gitignore
 	rootGitignore := filepath.Join(tempDir, ".gitignore")
 	err = os.WriteFile(rootGitignore, []byte("*.log\n"), 0644)
 	if err != nil {
 		t.Fatalf("Failed to create root .gitignore: %v", err)
 	}
 
-	// Create sub .gitignore
 	subGitignore := filepath.Join(subDir, ".gitignore")
 	err = os.WriteFile(subGitignore, []byte("*.tmp\nnode_modules/\n"), 0644)
 	if err != nil {
@@ -101,12 +94,10 @@ func TestLoadGitignoreForDirectory(t *testing.T) {
 		t.Errorf("Expected no error loading subdirectory gitignore, got %v", err)
 	}
 
-	// Check that both gitignore files are loaded
 	if len(matcher.matchers) != 2 {
 		t.Errorf("Expected 2 matcher entries, got %d", len(matcher.matchers))
 	}
 
-	// Check root patterns
 	rootPatterns, exists := matcher.matchers[tempDir]
 	if !exists {
 		t.Error("Expected root gitignore patterns to be loaded")
@@ -114,7 +105,6 @@ func TestLoadGitignoreForDirectory(t *testing.T) {
 		t.Errorf("Expected root pattern [*.log], got %v", rootPatterns)
 	}
 
-	// Check sub patterns
 	subPatterns, exists := matcher.matchers[subDir]
 	if !exists {
 		t.Error("Expected sub gitignore patterns to be loaded")
@@ -124,7 +114,6 @@ func TestLoadGitignoreForDirectory(t *testing.T) {
 }
 
 func TestShouldIgnore(t *testing.T) {
-	// Create a temporary directory structure
 	tempDir, err := os.MkdirTemp("", "gitignore_test")
 	if err != nil {
 		t.Fatalf("Failed to create temp dir: %v", err)
@@ -137,14 +126,12 @@ func TestShouldIgnore(t *testing.T) {
 		t.Fatalf("Failed to create subdir: %v", err)
 	}
 
-	// Create root .gitignore
 	rootGitignore := filepath.Join(tempDir, ".gitignore")
 	err = os.WriteFile(rootGitignore, []byte("*.log\n"), 0644)
 	if err != nil {
 		t.Fatalf("Failed to create root .gitignore: %v", err)
 	}
 
-	// Create sub .gitignore
 	subGitignore := filepath.Join(subDir, ".gitignore")
 	err = os.WriteFile(subGitignore, []byte("*.tmp\nnode_modules/\n"), 0644)
 	if err != nil {
@@ -224,14 +211,12 @@ func TestShouldIgnoreWithNilMatcher(t *testing.T) {
 }
 
 func TestHierarchicalGitignore(t *testing.T) {
-	// Create a complex directory structure
 	tempDir, err := os.MkdirTemp("", "gitignore_hierarchy_test")
 	if err != nil {
 		t.Fatalf("Failed to create temp dir: %v", err)
 	}
 	defer os.RemoveAll(tempDir)
 
-	// Create directory structure: root/project/src/
 	projectDir := filepath.Join(tempDir, "project")
 	srcDir := filepath.Join(projectDir, "src")
 	err = os.MkdirAll(srcDir, 0755)
@@ -239,21 +224,18 @@ func TestHierarchicalGitignore(t *testing.T) {
 		t.Fatalf("Failed to create directory structure: %v", err)
 	}
 
-	// Create root .gitignore (ignores *.log)
 	rootGitignore := filepath.Join(tempDir, ".gitignore")
 	err = os.WriteFile(rootGitignore, []byte("*.log\n"), 0644)
 	if err != nil {
 		t.Fatalf("Failed to create root .gitignore: %v", err)
 	}
 
-	// Create project .gitignore (ignores *.tmp and build/)
 	projectGitignore := filepath.Join(projectDir, ".gitignore")
 	err = os.WriteFile(projectGitignore, []byte("*.tmp\nbuild/\n"), 0644)
 	if err != nil {
 		t.Fatalf("Failed to create project .gitignore: %v", err)
 	}
 
-	// Create src .gitignore (ignores *.bak)
 	srcGitignore := filepath.Join(srcDir, ".gitignore")
 	err = os.WriteFile(srcGitignore, []byte("*.bak\n"), 0644)
 	if err != nil {
@@ -281,20 +263,13 @@ func TestHierarchicalGitignore(t *testing.T) {
 		expected bool
 		desc     string
 	}{
-		// Files that should be ignored by root .gitignore
 		{filepath.Join(tempDir, "debug.log"), true, "root level .log file"},
 		{filepath.Join(projectDir, "app.log"), true, "project level .log file (inherited from root)"},
 		{filepath.Join(srcDir, "error.log"), true, "src level .log file (inherited from root)"},
-
-		// Files that should be ignored by project .gitignore
 		{filepath.Join(projectDir, "temp.tmp"), true, "project level .tmp file"},
 		{filepath.Join(srcDir, "cache.tmp"), true, "src level .tmp file (inherited from project)"},
 		{filepath.Join(projectDir, "build", "output.txt"), true, "files in build directory"},
-
-		// Files that should be ignored by src .gitignore
 		{filepath.Join(srcDir, "backup.bak"), true, "src level .bak file"},
-
-		// Files that should NOT be ignored
 		{filepath.Join(tempDir, "readme.txt"), false, "root level regular file"},
 		{filepath.Join(projectDir, "main.go"), false, "project level regular file"},
 		{filepath.Join(srcDir, "utils.go"), false, "src level regular file"},

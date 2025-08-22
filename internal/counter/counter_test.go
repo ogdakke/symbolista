@@ -17,26 +17,21 @@ func TestCharCountSorting(t *testing.T) {
 		{Char: "c", Count: 2, Percentage: 20.0},
 	}
 
-	// They should already be sorted by count (descending)
 	if counts[0].Count != 5 || counts[1].Count != 3 || counts[2].Count != 2 {
 		t.Error("CharCounts should be sorted by count in descending order")
 	}
 
-	// Test the Less method
-	// Less(i, j) returns true if c[i].Count > c[j].Count (descending order)
-	if counts.Less(0, 1) != true { // 5 > 3, so true
+	if counts.Less(0, 1) != true {
 		t.Error("Less method should return true when first count is greater")
 	}
-	if counts.Less(1, 0) != false { // 3 < 5, so false
+	if counts.Less(1, 0) != false {
 		t.Error("Less method should return false when first count is smaller")
 	}
 
-	// Test the Len method
 	if counts.Len() != 3 {
 		t.Errorf("Expected length 3, got %d", counts.Len())
 	}
 
-	// Test the Swap method
 	counts.Swap(0, 2)
 	if counts[0].Char != "c" || counts[2].Char != "a" {
 		t.Error("Swap method did not work correctly")
@@ -49,7 +44,6 @@ func TestOutputJSON(t *testing.T) {
 		{Char: "b", Count: 3, Percentage: 30.0},
 	}
 
-	// Capture stdout
 	old := os.Stdout
 	r, w, _ := os.Pipe()
 	os.Stdout = w
@@ -63,7 +57,6 @@ func TestOutputJSON(t *testing.T) {
 	io.Copy(&buf, r)
 	output := buf.String()
 
-	// Verify it's valid JSON
 	var result []CharCount
 	err := json.Unmarshal([]byte(output), &result)
 	if err != nil {
@@ -98,7 +91,6 @@ func TestOutputJSONWithoutPercentages(t *testing.T) {
 	io.Copy(&buf, r)
 	output := buf.String()
 
-	// Verify JSON and that percentages are 0
 	var result []CharCount
 	err := json.Unmarshal([]byte(output), &result)
 	if err != nil {
@@ -132,16 +124,14 @@ func TestOutputCSV(t *testing.T) {
 	output := buf.String()
 
 	lines := strings.Split(strings.TrimSpace(output), "\n")
-	if len(lines) != 4 { // header + 3 data rows
+	if len(lines) != 4 {
 		t.Errorf("Expected 4 lines in CSV output, got %d", len(lines))
 	}
 
-	// Check header
 	if !strings.Contains(lines[0], "Character") || !strings.Contains(lines[0], "Count") || !strings.Contains(lines[0], "Percentage") {
 		t.Errorf("CSV header incorrect: %s", lines[0])
 	}
 
-	// Check special character formatting
 	if !strings.Contains(lines[2], "<space>") {
 		t.Error("Space character should be formatted as <space>")
 	}
@@ -171,7 +161,6 @@ func TestOutputTable(t *testing.T) {
 	io.Copy(&buf, r)
 	output := buf.String()
 
-	// Check that special characters are formatted correctly
 	if !strings.Contains(output, "<tab>") {
 		t.Error("Tab character should be formatted as <tab>")
 	}
@@ -214,14 +203,12 @@ func TestOutputTableWithoutPercentages(t *testing.T) {
 }
 
 func TestCountSymbolsIntegration(t *testing.T) {
-	// Create a temporary directory for testing
 	tempDir, err := os.MkdirTemp("", "counter_test")
 	if err != nil {
 		t.Fatalf("Failed to create temp dir: %v", err)
 	}
 	defer os.RemoveAll(tempDir)
 
-	// Create test files
 	testFile1 := filepath.Join(tempDir, "test1.txt")
 	err = os.WriteFile(testFile1, []byte("aaa"), 0644)
 	if err != nil {
@@ -234,19 +221,16 @@ func TestCountSymbolsIntegration(t *testing.T) {
 		t.Fatalf("Failed to create test file: %v", err)
 	}
 
-	// Create .gitignore to ignore one file
 	gitignoreFile := filepath.Join(tempDir, ".gitignore")
 	err = os.WriteFile(gitignoreFile, []byte("test2.txt\n"), 0644)
 	if err != nil {
 		t.Fatalf("Failed to create .gitignore: %v", err)
 	}
 
-	// Capture stdout
 	old := os.Stdout
 	r, w, _ := os.Pipe()
 	os.Stdout = w
 
-	// Run CountSymbols with JSON output
 	CountSymbols(tempDir, "json", true)
 
 	w.Close()
@@ -256,16 +240,12 @@ func TestCountSymbolsIntegration(t *testing.T) {
 	io.Copy(&buf, r)
 	output := buf.String()
 
-	// Parse JSON output
 	var result []CharCount
 	err = json.Unmarshal([]byte(output), &result)
 	if err != nil {
 		t.Fatalf("CountSymbols output is not valid JSON: %v", err)
 	}
 
-	// Should count characters from test1.txt (aaa) and .gitignore file (test2.txt\n)
-	// The .gitignore file contains "test2.txt\n" which adds more characters
-	// Let's check that "a" is present with count 3
 	found_a := false
 	for _, char := range result {
 		if char.Char == "a" && char.Count == 3 {
@@ -280,14 +260,12 @@ func TestCountSymbolsIntegration(t *testing.T) {
 }
 
 func TestCountSymbolsWithMultipleFormats(t *testing.T) {
-	// Create a temporary directory for testing
 	tempDir, err := os.MkdirTemp("", "counter_format_test")
 	if err != nil {
 		t.Fatalf("Failed to create temp dir: %v", err)
 	}
 	defer os.RemoveAll(tempDir)
 
-	// Create a simple test file
 	testFile := filepath.Join(tempDir, "test.txt")
 	err = os.WriteFile(testFile, []byte("ab"), 0644)
 	if err != nil {
@@ -298,7 +276,6 @@ func TestCountSymbolsWithMultipleFormats(t *testing.T) {
 
 	for _, format := range formats {
 		t.Run("format_"+format, func(t *testing.T) {
-			// Capture stdout
 			old := os.Stdout
 			r, w, _ := os.Pipe()
 			os.Stdout = w
@@ -316,7 +293,6 @@ func TestCountSymbolsWithMultipleFormats(t *testing.T) {
 				t.Errorf("No output generated for format %s", format)
 			}
 
-			// Basic validation based on format
 			switch format {
 			case "json":
 				var result []CharCount
@@ -338,7 +314,6 @@ func TestCountSymbolsWithMultipleFormats(t *testing.T) {
 }
 
 func TestCountSymbolsNonExistentDirectory(t *testing.T) {
-	// Capture stdout and stderr
 	oldStdout := os.Stdout
 	oldStderr := os.Stderr
 	r, w, _ := os.Pipe()
@@ -355,7 +330,6 @@ func TestCountSymbolsNonExistentDirectory(t *testing.T) {
 	io.Copy(&buf, r)
 	output := buf.String()
 
-	// Should contain some error message or warning
 	if !strings.Contains(output, "Error") && !strings.Contains(output, "error") {
 		t.Error("Expected error message for nonexistent directory")
 	}

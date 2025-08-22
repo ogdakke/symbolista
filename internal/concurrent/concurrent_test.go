@@ -35,14 +35,12 @@ func TestNewWorkerPool(t *testing.T) {
 func TestResultCollector(t *testing.T) {
 	collector := NewResultCollector()
 
-	// Test empty collector
 	charMap, fileCount, totalChars := collector.GetResults()
 	if len(charMap) != 0 || fileCount != 0 || totalChars != 0 {
 		t.Errorf("Expected empty results, got charMap=%d, fileCount=%d, totalChars=%d",
 			len(charMap), fileCount, totalChars)
 	}
 
-	// Add some results
 	result1 := CharCountResult{
 		CharMap:   map[rune]int{'a': 5, 'b': 3},
 		FileCount: 1,
@@ -79,7 +77,6 @@ func TestResultCollector(t *testing.T) {
 func TestConcurrentResultCollector(t *testing.T) {
 	collector := NewResultCollector()
 
-	// Test thread safety with concurrent access
 	var wg sync.WaitGroup
 	numGoroutines := 10
 	resultsPerGoroutine := 100
@@ -116,7 +113,6 @@ func TestConcurrentResultCollector(t *testing.T) {
 }
 
 func TestWorkerPool(t *testing.T) {
-	// Create a temporary test file
 	tmpDir, err := os.MkdirTemp("", "concurrent_test")
 	if err != nil {
 		t.Fatal(err)
@@ -133,7 +129,6 @@ func TestWorkerPool(t *testing.T) {
 	pool := NewWorkerPool(2, 5)
 	pool.Start()
 
-	// Send a job
 	job := FileJob{
 		Path:    testFile,
 		Content: []byte(testContent),
@@ -141,7 +136,6 @@ func TestWorkerPool(t *testing.T) {
 	pool.AddJob(job)
 	pool.CloseJobs()
 
-	// Collect results
 	var results []CharCountResult
 	for result := range pool.Results() {
 		results = append(results, result)
@@ -163,14 +157,12 @@ func TestWorkerPool(t *testing.T) {
 }
 
 func TestDiscoverFiles(t *testing.T) {
-	// Create a temporary directory structure
 	tmpDir, err := os.MkdirTemp("", "discover_test")
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer os.RemoveAll(tmpDir)
 
-	// Create test files
 	testFile1 := filepath.Join(tmpDir, "test1.txt")
 	testFile2 := filepath.Join(tmpDir, "test2.txt")
 
@@ -183,7 +175,6 @@ func TestDiscoverFiles(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// Create gitignore matcher
 	matcher, err := gitignore.NewMatcher(tmpDir, false)
 	if err != nil {
 		t.Fatal(err)
@@ -196,7 +187,6 @@ func TestDiscoverFiles(t *testing.T) {
 		discoveryError = err
 	})
 
-	// Collect discovered jobs
 	var jobs []FileJob
 	for job := range jobChan {
 		jobs = append(jobs, job)
@@ -210,7 +200,6 @@ func TestDiscoverFiles(t *testing.T) {
 		t.Errorf("Expected 2 jobs, got %d", len(jobs))
 	}
 
-	// Verify job contents
 	contentMap := make(map[string]string)
 	for _, job := range jobs {
 		contentMap[job.Path] = string(job.Content)

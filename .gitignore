@@ -4,6 +4,7 @@ symbolista
 *.dll
 *.so
 *.dylib
+tmp/*
 
 # Go
 *.test
