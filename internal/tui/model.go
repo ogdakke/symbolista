@@ -281,8 +281,9 @@ func (m *Model) updateChart() {
 		return
 	}
 
-	chartWidth := m.width - 2
-	chartHeight := m.height - 8
+	// Account for border (2 chars) and padding (4 chars: 2 left + 2 right) and some margin
+	chartWidth := m.width - 7
+	chartHeight := m.height - 10
 
 	if chartWidth < 30 {
 		chartWidth = 30
@@ -336,7 +337,9 @@ func (m *Model) updateChart() {
 		var valueStr string
 		switch m.labelMode {
 		case LabelCount:
-			if char.Count >= 1000 {
+			if char.Count >= 1000000 {
+				valueStr = fmt.Sprintf("%.1fM", float64(char.Count)/1000000)
+			} else if char.Count >= 1000 {
 				valueStr = fmt.Sprintf("%.1fk", float64(char.Count)/1000)
 			} else {
 				valueStr = strconv.Itoa(char.Count)
@@ -398,9 +401,16 @@ func (m Model) View() string {
 
 	chart := m.chart.View()
 
+	// bordered window around the chart
+	chartWindow := lipgloss.NewStyle().
+		Border(lipgloss.RoundedBorder()).
+		BorderForeground(lipgloss.Color("8")).
+		Padding(1, 2).
+		Render(chart)
+
 	controls := lipgloss.NewStyle().
 		Foreground(lipgloss.Color("8")).
 		Render("Controls: 'a' all | 'l' letters/numbers | 's' symbols | 'w' toggle whitespace | 't' toggle labels | ←→ scroll | home/end | 'r' refresh | 'q' quit")
 
-	return fmt.Sprintf("%s\n%s\n\n%s\n\n%s", title, info, chart, controls)
+	return fmt.Sprintf("%s\n%s\n\n%s\n\n%s", title, info, chartWindow, controls)
 }
