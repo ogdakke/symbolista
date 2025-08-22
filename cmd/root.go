@@ -16,6 +16,7 @@ var (
 	showPercentages bool
 	verboseCount    int
 	workerCount     int
+	includeDotfiles bool
 )
 
 var rootCmd = &cobra.Command{
@@ -36,8 +37,8 @@ respecting gitignore rules and outputting the most used characters with counts a
 			dir = directory
 		}
 
-		logger.Info("Starting symbol analysis", "directory", dir, "format", outputFormat, "verbosity", verboseCount, "workers", workerCount)
-		counter.CountSymbolsConcurrent(dir, outputFormat, showPercentages, workerCount)
+		logger.Info("Starting symbol analysis", "directory", dir, "format", outputFormat, "verbosity", verboseCount, "workers", workerCount, "includeDotfiles", includeDotfiles)
+		counter.CountSymbolsConcurrent(dir, outputFormat, showPercentages, workerCount, includeDotfiles)
 
 		totalExecutionTime := time.Since(startTime)
 		if verboseCount > 0 {
@@ -59,4 +60,5 @@ func init() {
 	rootCmd.Flags().BoolVarP(&showPercentages, "percentages", "p", true, "Show percentages in output")
 	rootCmd.Flags().CountVarP(&verboseCount, "verbose", "V", "Increase verbosity (-V info, -VV debug, -VVV trace)")
 	rootCmd.Flags().IntVarP(&workerCount, "workers", "w", 0, "Number of worker goroutines (0 = auto-detect based on CPU cores)")
+	rootCmd.Flags().BoolVar(&includeDotfiles, "include-dotfiles", false, "Include dotfiles in analysis (by default dotfiles are ignored)")
 }

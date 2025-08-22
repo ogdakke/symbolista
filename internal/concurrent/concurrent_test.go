@@ -184,7 +184,7 @@ func TestDiscoverFiles(t *testing.T) {
 	}
 
 	// Create gitignore matcher
-	matcher, err := gitignore.NewMatcher(tmpDir)
+	matcher, err := gitignore.NewMatcher(tmpDir, false)
 	if err != nil {
 		t.Fatal(err)
 	}

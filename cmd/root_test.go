@@ -77,11 +77,11 @@ func TestExecuteWithDefaultArgs(t *testing.T) {
 	// Verify each character has count 1
 	for _, char := range result {
 		if char.Count != 1 {
-			t.Errorf("Expected count 1 for character %c, got %d", char.Char, char.Count)
+			t.Errorf("Expected count 1 for character %s, got %d", char.Char, char.Count)
 		}
 		// Allow for floating point precision differences
 		if char.Percentage < 33.0 || char.Percentage > 34.0 {
-			t.Errorf("Expected percentage around 33.33 for character %c, got %f", char.Char, char.Percentage)
+			t.Errorf("Expected percentage around 33.33 for character %s, got %f", char.Char, char.Percentage)
 		}
 	}
 }
@@ -347,7 +347,9 @@ func TestExecuteWithGitignore(t *testing.T) {
 	foundChars := make(map[rune]bool)
 
 	for _, char := range result {
-		foundChars[char.Char] = true
+		if len(char.Char) > 0 {
+			foundChars[rune(char.Char[0])] = true
+		}
 	}
 
 	// Check that we have some expected characters from "include"

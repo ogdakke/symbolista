@@ -11,16 +11,18 @@ import (
 )
 
 type Matcher struct {
-	patterns []string
-	basePath string
+	patterns        []string
+	basePath        string
+	includeDotfiles bool
 	// Stack of gitignore matchers for nested directories
 	matchers map[string][]string
 }
 
-func NewMatcher(basePath string) (*Matcher, error) {
+func NewMatcher(basePath string, includeDotfiles bool) (*Matcher, error) {
 	matcher := &Matcher{
-		basePath: basePath,
-		matchers: make(map[string][]string),
+		basePath:        basePath,
+		includeDotfiles: includeDotfiles,
+		matchers:        make(map[string][]string),
 	}
 
 	// Load root gitignore if it exists
@@ -75,6 +77,15 @@ func (m *Matcher) LoadGitignoreForDirectory(dirPath string) error {
 func (m *Matcher) ShouldIgnore(path string) bool {
 	if m == nil {
 		return false
+	}
+
+	// Check if dotfiles should be ignored (unless includeDotfiles is true)
+	if !m.includeDotfiles {
+		filename := filepath.Base(path)
+		if strings.HasPrefix(filename, ".") && filename != "." && filename != ".." {
+			logger.Trace("Ignoring dotfile", "path", path)
+			return true
+		}
 	}
 
 	start := time.Now()

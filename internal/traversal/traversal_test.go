@@ -101,8 +101,8 @@ func TestWalkDirectoryWithGitignore(t *testing.T) {
 		t.Fatalf("Failed to create .gitignore: %v", err)
 	}
 
-	// Create gitignore matcher
-	matcher, err := gitignore.NewMatcher(tempDir)
+	// Create gitignore matcher - include dotfiles so we can test processing .gitignore
+	matcher, err := gitignore.NewMatcher(tempDir, true)
 	if err != nil {
 		t.Fatalf("Failed to create gitignore matcher: %v", err)
 	}
@@ -296,8 +296,8 @@ func TestWalkDirectoryWithHierarchicalGitignore(t *testing.T) {
 		t.Fatalf("Failed to create src tmp: %v", err)
 	}
 
-	// Create gitignore matcher
-	matcher, err := gitignore.NewMatcher(tempDir)
+	// Create gitignore matcher - include dotfiles so we can test processing .gitignore
+	matcher, err := gitignore.NewMatcher(tempDir, true)
 	if err != nil {
 		t.Fatalf("Failed to create gitignore matcher: %v", err)
 	}
@@ -378,8 +378,8 @@ func TestWalkDirectoryIgnoresDirectories(t *testing.T) {
 		t.Fatalf("Failed to create .gitignore: %v", err)
 	}
 
-	// Create gitignore matcher
-	matcher, err := gitignore.NewMatcher(tempDir)
+	// Create gitignore matcher - include dotfiles so we can test processing .gitignore
+	matcher, err := gitignore.NewMatcher(tempDir, true)
 	if err != nil {
 		t.Fatalf("Failed to create gitignore matcher: %v", err)
 	}

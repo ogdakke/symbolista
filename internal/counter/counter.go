@@ -15,7 +15,7 @@ import (
 )
 
 type CharCount struct {
-	Char       rune    `json:"char"`
+	Char       string  `json:"char"`
 	Count      int     `json:"count"`
 	Percentage float64 `json:"percentage"`
 }
@@ -27,15 +27,15 @@ func (c CharCounts) Less(i, j int) bool { return c[i].Count > c[j].Count }
 func (c CharCounts) Swap(i, j int)      { c[i], c[j] = c[j], c[i] }
 
 func CountSymbols(directory, format string, showPercentages bool) {
-	CountSymbolsConcurrent(directory, format, showPercentages, 0)
+	CountSymbolsConcurrent(directory, format, showPercentages, 0, false)
 }
 
-func CountSymbolsConcurrent(directory, format string, showPercentages bool, workerCount int) {
+func CountSymbolsConcurrent(directory, format string, showPercentages bool, workerCount int, includeDotfiles bool) {
 	startTime := time.Now()
 
-	logger.Info("Initializing gitignore matcher", "directory", directory)
+	logger.Info("Initializing gitignore matcher", "directory", directory, "includeDotfiles", includeDotfiles)
 	gitignoreStart := time.Now()
-	matcher, err := gitignore.NewMatcher(directory)
+	matcher, err := gitignore.NewMatcher(directory, includeDotfiles)
 	gitignoreDuration := time.Since(gitignoreStart)
 
 	if err != nil {
@@ -72,7 +72,7 @@ func CountSymbolsConcurrent(directory, format string, showPercentages bool, work
 	for char, count := range charMap {
 		percentage := float64(count) / float64(totalChars) * 100
 		counts = append(counts, CharCount{
-			Char:       char,
+			Char:       string(char),
 			Count:      count,
 			Percentage: percentage,
 		})
@@ -114,15 +114,15 @@ func outputTable(counts CharCounts, showPercentages bool) {
 	fmt.Println(strings.Repeat("-", 35))
 
 	for _, c := range counts {
-		char := string(c.Char)
+		char := c.Char
 		switch c.Char {
-		case ' ':
+		case " ":
 			char = "<space>"
-		case '\t':
+		case "\t":
 			char = "<tab>"
-		case '\n':
+		case "\n":
 			char = "<newline>"
-		case '\r':
+		case "\r":
 			char = "<return>"
 		}
 
@@ -160,14 +160,14 @@ func outputCSV(counts CharCounts, showPercentages bool) {
 	writer.Write(headers)
 
 	for _, c := range counts {
-		char := string(c.Char)
-		if c.Char == ' ' {
+		char := c.Char
+		if c.Char == " " {
 			char = "<space>"
-		} else if c.Char == '\t' {
+		} else if c.Char == "\t" {
 			char = "<tab>"
-		} else if c.Char == '\n' {
+		} else if c.Char == "\n" {
 			char = "<newline>"
-		} else if c.Char == '\r' {
+		} else if c.Char == "\r" {
 			char = "<return>"
 		}
 

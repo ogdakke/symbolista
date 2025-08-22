@@ -12,9 +12,9 @@ import (
 
 func TestCharCountSorting(t *testing.T) {
 	counts := CharCounts{
-		{Char: 'a', Count: 5, Percentage: 50.0},
-		{Char: 'b', Count: 3, Percentage: 30.0},
-		{Char: 'c', Count: 2, Percentage: 20.0},
+		{Char: "a", Count: 5, Percentage: 50.0},
+		{Char: "b", Count: 3, Percentage: 30.0},
+		{Char: "c", Count: 2, Percentage: 20.0},
 	}
 
 	// They should already be sorted by count (descending)
@@ -38,15 +38,15 @@ func TestCharCountSorting(t *testing.T) {
 
 	// Test the Swap method
 	counts.Swap(0, 2)
-	if counts[0].Char != 'c' || counts[2].Char != 'a' {
+	if counts[0].Char != "c" || counts[2].Char != "a" {
 		t.Error("Swap method did not work correctly")
 	}
 }
 
 func TestOutputJSON(t *testing.T) {
 	counts := CharCounts{
-		{Char: 'a', Count: 5, Percentage: 50.0},
-		{Char: 'b', Count: 3, Percentage: 30.0},
+		{Char: "a", Count: 5, Percentage: 50.0},
+		{Char: "b", Count: 3, Percentage: 30.0},
 	}
 
 	// Capture stdout
@@ -74,14 +74,14 @@ func TestOutputJSON(t *testing.T) {
 		t.Errorf("Expected 2 items in JSON output, got %d", len(result))
 	}
 
-	if result[0].Char != 'a' || result[0].Count != 5 || result[0].Percentage != 50.0 {
+	if result[0].Char != "a" || result[0].Count != 5 || result[0].Percentage != 50.0 {
 		t.Errorf("First JSON item incorrect: %+v", result[0])
 	}
 }
 
 func TestOutputJSONWithoutPercentages(t *testing.T) {
 	counts := CharCounts{
-		{Char: 'a', Count: 5, Percentage: 50.0},
+		{Char: "a", Count: 5, Percentage: 50.0},
 	}
 
 	// Capture stdout
@@ -112,9 +112,9 @@ func TestOutputJSONWithoutPercentages(t *testing.T) {
 
 func TestOutputCSV(t *testing.T) {
 	counts := CharCounts{
-		{Char: 'a', Count: 5, Percentage: 50.0},
-		{Char: ' ', Count: 3, Percentage: 30.0},
-		{Char: '\n', Count: 2, Percentage: 20.0},
+		{Char: "a", Count: 5, Percentage: 50.0},
+		{Char: " ", Count: 3, Percentage: 30.0},
+		{Char: "\n", Count: 2, Percentage: 20.0},
 	}
 
 	// Capture stdout
@@ -152,9 +152,9 @@ func TestOutputCSV(t *testing.T) {
 
 func TestOutputTable(t *testing.T) {
 	counts := CharCounts{
-		{Char: 'a', Count: 5, Percentage: 50.0},
-		{Char: '\t', Count: 3, Percentage: 30.0},
-		{Char: '\r', Count: 2, Percentage: 20.0},
+		{Char: "a", Count: 5, Percentage: 50.0},
+		{Char: "\t", Count: 3, Percentage: 30.0},
+		{Char: "\r", Count: 2, Percentage: 20.0},
 	}
 
 	// Capture stdout
@@ -191,7 +191,7 @@ func TestOutputTable(t *testing.T) {
 
 func TestOutputTableWithoutPercentages(t *testing.T) {
 	counts := CharCounts{
-		{Char: 'a', Count: 5, Percentage: 50.0},
+		{Char: "a", Count: 5, Percentage: 50.0},
 	}
 
 	// Capture stdout
@@ -265,17 +265,17 @@ func TestCountSymbolsIntegration(t *testing.T) {
 
 	// Should count characters from test1.txt (aaa) and .gitignore file (test2.txt\n)
 	// The .gitignore file contains "test2.txt\n" which adds more characters
-	// Let's check that 'a' is present with count 3
+	// Let's check that "a" is present with count 3
 	found_a := false
 	for _, char := range result {
-		if char.Char == 'a' && char.Count == 3 {
+		if char.Char == "a" && char.Count == 3 {
 			found_a = true
 			break
 		}
 	}
 
 	if !found_a {
-		t.Error("Expected to find character 'a' with count 3")
+		t.Error("Expected to find character \"a\" with count 3")
 	}
 }
 

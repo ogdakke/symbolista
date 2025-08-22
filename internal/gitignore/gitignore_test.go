@@ -15,7 +15,7 @@ func TestNewMatcher(t *testing.T) {
 	defer os.RemoveAll(tempDir)
 
 	// Test with no .gitignore file
-	matcher, err := NewMatcher(tempDir)
+	matcher, err := NewMatcher(tempDir, false)
 	if err != nil {
 		t.Errorf("Expected no error, got %v", err)
 	}
@@ -42,7 +42,7 @@ build/
 	}
 
 	// Test with .gitignore file
-	matcher, err = NewMatcher(tempDir)
+	matcher, err = NewMatcher(tempDir, false)
 	if err != nil {
 		t.Errorf("Expected no error, got %v", err)
 	}
@@ -90,7 +90,7 @@ func TestLoadGitignoreForDirectory(t *testing.T) {
 		t.Fatalf("Failed to create sub .gitignore: %v", err)
 	}
 
-	matcher, err := NewMatcher(tempDir)
+	matcher, err := NewMatcher(tempDir, false)
 	if err != nil {
 		t.Fatalf("Failed to create matcher: %v", err)
 	}
@@ -151,7 +151,7 @@ func TestShouldIgnore(t *testing.T) {
 		t.Fatalf("Failed to create sub .gitignore: %v", err)
 	}
 
-	matcher, err := NewMatcher(tempDir)
+	matcher, err := NewMatcher(tempDir, false)
 	if err != nil {
 		t.Fatalf("Failed to create matcher: %v", err)
 	}
@@ -260,7 +260,7 @@ func TestHierarchicalGitignore(t *testing.T) {
 		t.Fatalf("Failed to create src .gitignore: %v", err)
 	}
 
-	matcher, err := NewMatcher(tempDir)
+	matcher, err := NewMatcher(tempDir, false)
 	if err != nil {
 		t.Fatalf("Failed to create matcher: %v", err)
 	}
