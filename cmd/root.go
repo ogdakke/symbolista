@@ -7,6 +7,7 @@ import (
 
 	"github.com/ogdakke/symbolista/internal/counter"
 	"github.com/ogdakke/symbolista/internal/logger"
+	"github.com/ogdakke/symbolista/internal/tui"
 	"github.com/spf13/cobra"
 )
 
@@ -18,6 +19,7 @@ var (
 	workerCount     int
 	includeDotfiles bool
 	asciiOnly       bool
+	useTUI          bool
 )
 
 var rootCmd = &cobra.Command{
@@ -36,6 +38,16 @@ respecting gitignore rules and outputting the most used characters with counts a
 		}
 		if directory != "" {
 			dir = directory
+		}
+
+		if useTUI {
+			logger.Info("Starting TUI mode", "directory", dir, "verbosity", verboseCount, "workers", workerCount, "includeDotfiles", includeDotfiles, "asciiOnly", asciiOnly)
+			err := tui.RunTUI(dir, showPercentages, workerCount, includeDotfiles, asciiOnly)
+			if err != nil {
+				fmt.Printf("TUI error: %v\n", err)
+				os.Exit(1)
+			}
+			return
 		}
 
 		logger.Info("Starting symbol analysis", "directory", dir, "format", outputFormat, "verbosity", verboseCount, "workers", workerCount, "includeDotfiles", includeDotfiles, "asciiOnly", asciiOnly)
@@ -63,4 +75,5 @@ func init() {
 	rootCmd.Flags().IntVarP(&workerCount, "workers", "w", 0, "Number of worker goroutines (0 = auto-detect based on CPU cores)")
 	rootCmd.Flags().BoolVar(&includeDotfiles, "include-dotfiles", false, "Include dotfiles in analysis (by default dotfiles are ignored)")
 	rootCmd.Flags().BoolVar(&asciiOnly, "ascii-only", true, "Count only ASCII characters (0-127). Use --ascii-only=false to include all Unicode characters")
+	rootCmd.Flags().BoolVar(&useTUI, "tui", false, "Launch interactive TUI interface")
 }
