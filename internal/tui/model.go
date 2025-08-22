@@ -30,13 +30,14 @@ type Model struct {
 	includeDotfiles bool
 	asciiOnly       bool
 
-	charCounts     counter.CharCounts
-	filteredCounts counter.CharCounts
-	chart          barchart.Model
-	ready          bool
-	loading        bool
-	err            error
-	filterMode     FilterMode
+	charCounts        counter.CharCounts
+	filteredCounts    counter.CharCounts
+	chart             barchart.Model
+	ready             bool
+	loading           bool
+	err               error
+	filterMode        FilterMode
+	excludeWhitespace bool
 
 	width  int
 	height int
@@ -57,6 +58,10 @@ func isSymbol(r rune) bool {
 	return !unicode.IsLetter(r) && !unicode.IsDigit(r)
 }
 
+func isWhitespace(r rune) bool {
+	return r == ' ' || r == '\t' || r == '\n' || r == '\r' || unicode.IsSpace(r)
+}
+
 func (m *Model) applyFilter() {
 	m.filteredCounts = m.filteredCounts[:0]
 
@@ -66,6 +71,11 @@ func (m *Model) applyFilter() {
 		}
 
 		r := []rune(charCount.Char)[0]
+
+		// Skip whitespace characters if exclusion is enabled
+		if m.excludeWhitespace && isWhitespace(r) {
+			continue
+		}
 
 		switch m.filterMode {
 		case FilterAll:
@@ -100,13 +110,14 @@ func (m FilterMode) String() string {
 
 func NewModel(directory string, showPercentages bool, workerCount int, includeDotfiles bool, asciiOnly bool) Model {
 	return Model{
-		directory:       directory,
-		showPercentages: showPercentages,
-		workerCount:     workerCount,
-		includeDotfiles: includeDotfiles,
-		asciiOnly:       asciiOnly,
-		loading:         true,
-		filterMode:      FilterAll,
+		directory:         directory,
+		showPercentages:   showPercentages,
+		workerCount:       workerCount,
+		includeDotfiles:   includeDotfiles,
+		asciiOnly:         asciiOnly,
+		loading:           true,
+		filterMode:        FilterAll,
+		excludeWhitespace: true,
 	}
 }
 
@@ -202,6 +213,12 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.applyFilter()
 				m.updateChart()
 			}
+		case "w":
+			if m.ready {
+				m.excludeWhitespace = !m.excludeWhitespace
+				m.applyFilter()
+				m.updateChart()
+			}
 		}
 	}
 
@@ -292,9 +309,14 @@ func (m Model) View() string {
 		Foreground(lipgloss.Color("14")).
 		Render("Symbol Distribution")
 
+	whitespaceStatus := ""
+	if m.excludeWhitespace {
+		whitespaceStatus = " | No whitespace"
+	}
+
 	info := lipgloss.NewStyle().
 		Foreground(lipgloss.Color("8")).
-		Render(fmt.Sprintf("Directory: %s | Filter: %s | Showing: %d/%d chars", m.directory, m.filterMode.String(), len(m.filteredCounts), len(m.charCounts)))
+		Render(fmt.Sprintf("Directory: %s | Filter: %s%s | Showing: %d/%d chars", m.directory, m.filterMode.String(), whitespaceStatus, len(m.filteredCounts), len(m.charCounts)))
 
 	chart := m.chart.View()
 
@@ -303,7 +325,7 @@ func (m Model) View() string {
 
 	controls := lipgloss.NewStyle().
 		Foreground(lipgloss.Color("8")).
-		Render("Controls: 'a' all | 'l' letters/numbers | 's' symbols | 'r' refresh | 'q' quit")
+		Render("Controls: 'a' all | 'l' letters/numbers | 's' symbols | 'w' toggle whitespace | 'r' refresh | 'q' quit")
 
 	return fmt.Sprintf("%s\n%s\n\n%s\n\n%s\n\n%s", title, info, chart, legend, controls)
 }
@@ -313,7 +335,7 @@ func (m Model) createLegend() string {
 		return ""
 	}
 
-	maxItems := min(m.width/15, len(m.filteredCounts), 8) // Fit legend items on screen
+	maxItems := min(m.width/12, len(m.filteredCounts), 32) // Fit legend items on screen
 	colors := []string{"10", "9", "11", "14", "13", "12", "6", "5", "4", "3", "2", "1"}
 
 	var legendItems []string
