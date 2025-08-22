@@ -23,6 +23,13 @@ const (
 	FilterSymbols
 )
 
+type LabelMode int
+
+const (
+	LabelCount LabelMode = iota
+	LabelPercentage
+)
+
 type Model struct {
 	directory       string
 	showPercentages bool
@@ -41,14 +48,19 @@ type Model struct {
 
 	width  int
 	height int
+
+	// Horizontal scrolling
+	scrollOffset int
+	maxVisible   int
+
+	// Label display mode
+	labelMode LabelMode
 }
 
 type analysisCompleteMsg struct {
 	counts counter.CharCounts
 	err    error
 }
-
-type analysisStartMsg struct{}
 
 func isLetterOrNumber(r rune) bool {
 	return unicode.IsLetter(r) || unicode.IsDigit(r)
@@ -93,6 +105,9 @@ func (m *Model) applyFilter() {
 
 	// Re-sort the filtered counts
 	sort.Sort(m.filteredCounts)
+
+	// Reset scroll position when filter changes
+	m.scrollOffset = 0
 }
 
 func (m FilterMode) String() string {
@@ -105,6 +120,17 @@ func (m FilterMode) String() string {
 		return "Symbols"
 	default:
 		return "All"
+	}
+}
+
+func (m LabelMode) String() string {
+	switch m {
+	case LabelCount:
+		return "Count"
+	case LabelPercentage:
+		return "Percentage"
+	default:
+		return "Count"
 	}
 }
 
@@ -219,6 +245,31 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.applyFilter()
 				m.updateChart()
 			}
+		case "left":
+			if m.ready && m.scrollOffset > 0 {
+				m.scrollOffset--
+				m.updateChart()
+			}
+		case "right":
+			if m.ready && m.scrollOffset < len(m.filteredCounts)-m.maxVisible {
+				m.scrollOffset++
+				m.updateChart()
+			}
+		case "home":
+			if m.ready {
+				m.scrollOffset = 0
+				m.updateChart()
+			}
+		case "end":
+			if m.ready && len(m.filteredCounts) > m.maxVisible {
+				m.scrollOffset = len(m.filteredCounts) - m.maxVisible
+				m.updateChart()
+			}
+		case "t":
+			if m.ready {
+				m.labelMode = (m.labelMode + 1) % 2
+				m.updateChart()
+			}
 		}
 	}
 
@@ -245,36 +296,56 @@ func (m *Model) updateChart() {
 	// Calculate how many items can fit based on average label width
 	// Each bar with label needs roughly 11 characters of space
 	estimatedLabelWidth := 11
-	maxItems := min(chartWidth/estimatedLabelWidth, len(m.filteredCounts), 25)
+	m.maxVisible = min(chartWidth/estimatedLabelWidth, len(m.filteredCounts), 25)
+
+	// Ensure scroll offset is within bounds
+	if m.scrollOffset < 0 {
+		m.scrollOffset = 0
+	}
+	maxScrollOffset := max(0, len(m.filteredCounts)-m.maxVisible)
+	if m.scrollOffset > maxScrollOffset {
+		m.scrollOffset = maxScrollOffset
+	}
 
 	var barData []barchart.BarData
 	colors := []string{"10", "9", "11", "14", "13", "12", "6", "5", "4", "3", "2", "1"}
 
-	for i := range maxItems {
+	// Calculate visible range
+	startIndex := m.scrollOffset
+	endIndex := min(startIndex+m.maxVisible, len(m.filteredCounts))
+
+	for i := startIndex; i < endIndex; i++ {
 		char := m.filteredCounts[i]
 		displayChar := char.Char
 
 		switch char.Char {
 		case " ":
-			displayChar = "⎵" // Unicode space symbol
+			displayChar = "⎵"
 		case "\t":
-			displayChar = "⇥" // Unicode tab symbol
+			displayChar = "⇥"
 		case "\n":
-			displayChar = "↵" // Unicode return/newline symbol
+			displayChar = "↵"
 		case "\r":
-			displayChar = "⏎" // Unicode carriage return symbol
+			displayChar = "⏎"
 		}
 
+		// Use original index for color consistency across scrolling
 		color := colors[i%len(colors)]
 
-		// Format the count for display - use shorter format for large numbers
-		countStr := strconv.Itoa(char.Count)
-		if char.Count >= 1000 {
-			countStr = fmt.Sprintf("%.1fk", float64(char.Count)/1000)
+		// Format the value based on label mode
+		var valueStr string
+		switch m.labelMode {
+		case LabelCount:
+			if char.Count >= 1000 {
+				valueStr = fmt.Sprintf("%.1fk", float64(char.Count)/1000)
+			} else {
+				valueStr = strconv.Itoa(char.Count)
+			}
+		case LabelPercentage:
+			valueStr = fmt.Sprintf("%.1f%%", char.Percentage)
 		}
 
-		// Put the count in the same line as the character with a separator
-		labelWithCount := fmt.Sprintf("%s:%s", displayChar, countStr)
+		labelWithCount := fmt.Sprintf("%s:%s", displayChar, valueStr)
 
 		barData = append(barData, barchart.BarData{
 			Label: labelWithCount,
@@ -284,8 +355,6 @@ func (m *Model) updateChart() {
 		})
 	}
 
-	// Configure chart to show y-axis with count values
-	m.chart.SetShowAxis(true)
 	m.chart.PushAll(barData)
 	m.chart.Draw()
 
@@ -314,73 +383,24 @@ func (m Model) View() string {
 		whitespaceStatus = " | No whitespace"
 	}
 
+	// Create scroll indicator
+	scrollInfo := ""
+	if len(m.filteredCounts) > m.maxVisible {
+		scrollInfo = fmt.Sprintf(" | View: %d-%d/%d", m.scrollOffset+1, min(m.scrollOffset+m.maxVisible, len(m.filteredCounts)), len(m.filteredCounts))
+	}
+
+	// Add label mode indicator
+	labelModeInfo := fmt.Sprintf(" | Labels: %s", m.labelMode.String())
+
 	info := lipgloss.NewStyle().
 		Foreground(lipgloss.Color("8")).
-		Render(fmt.Sprintf("Directory: %s | Filter: %s%s | Showing: %d/%d chars", m.directory, m.filterMode.String(), whitespaceStatus, len(m.filteredCounts), len(m.charCounts)))
+		Render(fmt.Sprintf("Directory: %s | Filter: %s%s | Showing: %d/%d chars%s%s", m.directory, m.filterMode.String(), whitespaceStatus, len(m.filteredCounts), len(m.charCounts), scrollInfo, labelModeInfo))
 
 	chart := m.chart.View()
 
-	// Create a legend showing top characters with their counts
-	legend := m.createLegend()
-
 	controls := lipgloss.NewStyle().
 		Foreground(lipgloss.Color("8")).
-		Render("Controls: 'a' all | 'l' letters/numbers | 's' symbols | 'w' toggle whitespace | 'r' refresh | 'q' quit")
+		Render("Controls: 'a' all | 'l' letters/numbers | 's' symbols | 'w' toggle whitespace | 't' toggle labels | ←→ scroll | home/end | 'r' refresh | 'q' quit")
 
-	return fmt.Sprintf("%s\n%s\n\n%s\n\n%s\n\n%s", title, info, chart, legend, controls)
-}
-
-func (m Model) createLegend() string {
-	if !m.ready || len(m.filteredCounts) == 0 {
-		return ""
-	}
-
-	maxItems := min(m.width/12, len(m.filteredCounts), 32) // Fit legend items on screen
-	colors := []string{"10", "9", "11", "14", "13", "12", "6", "5", "4", "3", "2", "1"}
-
-	var legendItems []string
-	for i := range maxItems {
-		char := m.filteredCounts[i]
-		displayChar := char.Char
-
-		switch char.Char {
-		case " ":
-			displayChar = "⎵" // Unicode space symbol
-		case "\t":
-			displayChar = "⇥" // Unicode tab symbol
-		case "\n":
-			displayChar = "↵" // Unicode return/newline symbol
-		case "\r":
-			displayChar = "⏎" // Unicode carriage return symbol
-		}
-
-		color := colors[i%len(colors)]
-		coloredChar := lipgloss.NewStyle().
-			Foreground(lipgloss.Color(color)).
-			Bold(true).
-			Render(displayChar)
-
-		percentage := ""
-		if m.showPercentages {
-			percentage = fmt.Sprintf(" (%.1f%%)", char.Percentage)
-		}
-
-		// Since counts are now shown on bars, make legend more compact
-		legendItems = append(legendItems, fmt.Sprintf("%s%s", coloredChar, percentage))
-	}
-
-	legendTitle := lipgloss.NewStyle().
-		Foreground(lipgloss.Color("8")).
-		Render("Top Characters: ")
-
-	// Join items with spaces, making sure they fit on one line
-	legendContent := ""
-	for i, item := range legendItems {
-		if i > 0 {
-			legendContent += " | "
-		}
-		legendContent += item
-	}
-
-	return legendTitle + legendContent
+	return fmt.Sprintf("%s\n%s\n\n%s\n\n%s", title, info, chart, controls)
 }
