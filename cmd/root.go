@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/ogdakke/symbolista/internal/counter"
 	"github.com/ogdakke/symbolista/internal/logger"
@@ -23,6 +24,7 @@ var rootCmd = &cobra.Command{
 respecting gitignore rules and outputting the most used characters with counts and percentages.`,
 	Args: cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
+		startTime := time.Now()
 		logger.SetVerbosity(verboseCount)
 
 		dir := "."
@@ -35,6 +37,11 @@ respecting gitignore rules and outputting the most used characters with counts a
 
 		logger.Info("Starting symbol analysis", "directory", dir, "format", outputFormat, "verbosity", verboseCount)
 		counter.CountSymbols(dir, outputFormat, showPercentages)
+
+		totalExecutionTime := time.Since(startTime)
+		if verboseCount > 0 {
+			logger.Info("Total execution time", "duration", totalExecutionTime)
+		}
 	},
 }
 

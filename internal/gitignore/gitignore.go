@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/ogdakke/symbolista/internal/logger"
 )
@@ -51,6 +52,7 @@ func (m *Matcher) ShouldIgnore(path string) bool {
 		return false
 	}
 
+	start := time.Now()
 	relPath, err := filepath.Rel(m.basePath, path)
 	if err != nil {
 		logger.Debug("Cannot get relative path", "base", m.basePath, "path", path, "error", err)
@@ -62,9 +64,15 @@ func (m *Matcher) ShouldIgnore(path string) bool {
 
 	for _, pattern := range m.patterns {
 		if m.matchesPattern(relPath, pattern) {
-			logger.Trace("File matched gitignore pattern", "path", relPath, "pattern", pattern)
+			duration := time.Since(start)
+			logger.Trace("File matched gitignore pattern", "path", relPath, "pattern", pattern, "match_duration", duration)
 			return true
 		}
+	}
+
+	duration := time.Since(start)
+	if duration > time.Microsecond*100 { // Only log slow pattern matching
+		logger.Trace("Gitignore pattern matching completed", "path", relPath, "patterns_checked", len(m.patterns), "duration", duration)
 	}
 
 	return false
