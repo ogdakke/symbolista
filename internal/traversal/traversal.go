@@ -83,7 +83,7 @@ type ConcurrentResult struct {
 }
 
 // WalkDirectoryConcurrent processes files using a worker pool and returns aggregated results
-func WalkDirectoryConcurrent(rootPath string, matcher *gitignore.Matcher, workerCount int) (ConcurrentResult, error) {
+func WalkDirectoryConcurrent(rootPath string, matcher *gitignore.Matcher, workerCount int, asciiOnly bool) (ConcurrentResult, error) {
 	if workerCount <= 0 {
 		workerCount = runtime.NumCPU()
 	}
@@ -100,7 +100,7 @@ func WalkDirectoryConcurrent(rootPath string, matcher *gitignore.Matcher, worker
 
 	// Start file discovery in a separate goroutine
 	var discoveryError error
-	go concurrent.DiscoverFiles(rootPath, matcher, pool.Jobs(), func(err error) {
+	go concurrent.DiscoverFiles(rootPath, matcher, pool.Jobs(), asciiOnly, func(err error) {
 		if discoveryError == nil {
 			discoveryError = err
 		}

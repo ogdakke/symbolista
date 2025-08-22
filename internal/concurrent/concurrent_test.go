@@ -192,7 +192,7 @@ func TestDiscoverFiles(t *testing.T) {
 	jobChan := make(chan FileJob, 10)
 	var discoveryError error
 
-	go DiscoverFiles(tmpDir, matcher, jobChan, func(err error) {
+	go DiscoverFiles(tmpDir, matcher, jobChan, true, func(err error) {
 		discoveryError = err
 	})
 

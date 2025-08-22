@@ -27,10 +27,10 @@ func (c CharCounts) Less(i, j int) bool { return c[i].Count > c[j].Count }
 func (c CharCounts) Swap(i, j int)      { c[i], c[j] = c[j], c[i] }
 
 func CountSymbols(directory, format string, showPercentages bool) {
-	CountSymbolsConcurrent(directory, format, showPercentages, 0, false)
+	CountSymbolsConcurrent(directory, format, showPercentages, 0, false, true)
 }
 
-func CountSymbolsConcurrent(directory, format string, showPercentages bool, workerCount int, includeDotfiles bool) {
+func CountSymbolsConcurrent(directory, format string, showPercentages bool, workerCount int, includeDotfiles bool, asciiOnly bool) {
 	startTime := time.Now()
 
 	logger.Info("Initializing gitignore matcher", "directory", directory, "includeDotfiles", includeDotfiles)
@@ -48,7 +48,7 @@ func CountSymbolsConcurrent(directory, format string, showPercentages bool, work
 	logger.Info("Starting concurrent file traversal and character counting")
 	traversalStart := time.Now()
 
-	result, err := traversal.WalkDirectoryConcurrent(directory, matcher, workerCount)
+	result, err := traversal.WalkDirectoryConcurrent(directory, matcher, workerCount, asciiOnly)
 	traversalDuration := time.Since(traversalStart)
 
 	if err != nil {

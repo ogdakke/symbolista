@@ -10,7 +10,7 @@ import (
 	"github.com/ogdakke/symbolista/internal/logger"
 )
 
-func DiscoverFiles(rootPath string, matcher *gitignore.Matcher, jobChan chan<- FileJob, errorCallback func(error)) {
+func DiscoverFiles(rootPath string, matcher *gitignore.Matcher, jobChan chan<- FileJob, asciiOnly bool, errorCallback func(error)) {
 	defer close(jobChan)
 
 	logger.Debug("Starting file discovery", "root_path", rootPath)
@@ -77,8 +77,9 @@ func DiscoverFiles(rootPath string, matcher *gitignore.Matcher, jobChan chan<- F
 
 		// Send job to worker pool
 		job := FileJob{
-			Path:    path,
-			Content: content,
+			Path:      path,
+			Content:   content,
+			AsciiOnly: asciiOnly,
 		}
 
 		select {

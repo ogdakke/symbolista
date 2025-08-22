@@ -3,8 +3,9 @@ package concurrent
 import "sync"
 
 type FileJob struct {
-	Path    string
-	Content []byte
+	Path      string
+	Content   []byte
+	AsciiOnly bool
 }
 
 type CharCountResult struct {

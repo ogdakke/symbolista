@@ -77,6 +77,10 @@ func (wp *WorkerPool) processFile(job FileJob, workerID int) CharCountResult {
 
 	for _, r := range string(job.Content) {
 		if unicode.IsGraphic(r) || unicode.IsSpace(r) {
+			// Filter ASCII characters if asciiOnly is enabled
+			if job.AsciiOnly && r > 127 {
+				continue
+			}
 			charMap[r]++
 			charCount++
 		}
