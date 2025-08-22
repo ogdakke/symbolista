@@ -248,8 +248,17 @@ func (m *Model) updateChart() {
 
 		color := colors[i%len(colors)]
 
+		// Format the count for display - use shorter format for large numbers
+		countStr := strconv.Itoa(char.Count)
+		if char.Count >= 1000 {
+			countStr = fmt.Sprintf("%.1fk", float64(char.Count)/1000)
+		}
+		
+		// Put the count in the same line as the character with a separator
+		labelWithCount := fmt.Sprintf("%s:%s", displayChar, countStr)
+		
 		barData = append(barData, barchart.BarData{
-			Label: displayChar,
+			Label: labelWithCount,
 			Values: []barchart.BarValue{
 				{Name: strconv.Itoa(char.Count), Value: float64(char.Count), Style: lipgloss.NewStyle().Foreground(lipgloss.Color(color))},
 			},
@@ -332,7 +341,8 @@ func (m Model) createLegend() string {
 			percentage = fmt.Sprintf(" (%.1f%%)", char.Percentage)
 		}
 
-		legendItems = append(legendItems, fmt.Sprintf("%s:%d%s", coloredChar, char.Count, percentage))
+		// Since counts are now shown on bars, make legend more compact
+		legendItems = append(legendItems, fmt.Sprintf("%s%s", coloredChar, percentage))
 	}
 
 	legendTitle := lipgloss.NewStyle().
