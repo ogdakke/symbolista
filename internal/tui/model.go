@@ -30,13 +30,13 @@ type Model struct {
 	includeDotfiles bool
 	asciiOnly       bool
 
-	charCounts    counter.CharCounts
+	charCounts     counter.CharCounts
 	filteredCounts counter.CharCounts
-	chart         barchart.Model
-	ready         bool
-	loading       bool
-	err           error
-	filterMode    FilterMode
+	chart          barchart.Model
+	ready          bool
+	loading        bool
+	err            error
+	filterMode     FilterMode
 
 	width  int
 	height int
@@ -59,14 +59,14 @@ func isSymbol(r rune) bool {
 
 func (m *Model) applyFilter() {
 	m.filteredCounts = m.filteredCounts[:0]
-	
+
 	for _, charCount := range m.charCounts {
 		if len(charCount.Char) == 0 {
 			continue
 		}
-		
+
 		r := []rune(charCount.Char)[0]
-		
+
 		switch m.filterMode {
 		case FilterAll:
 			m.filteredCounts = append(m.filteredCounts, charCount)
@@ -80,7 +80,7 @@ func (m *Model) applyFilter() {
 			}
 		}
 	}
-	
+
 	// Re-sort the filtered counts
 	sort.Sort(m.filteredCounts)
 }
@@ -213,11 +213,11 @@ func (m *Model) updateChart() {
 		return
 	}
 
-	chartWidth := m.width - 4
+	chartWidth := m.width - 2
 	chartHeight := m.height - 8
 
-	if chartWidth < 20 {
-		chartWidth = 20
+	if chartWidth < 30 {
+		chartWidth = 30
 	}
 	if chartHeight < 10 {
 		chartHeight = 10
@@ -225,8 +225,10 @@ func (m *Model) updateChart() {
 
 	m.chart = barchart.New(chartWidth, chartHeight)
 
-	// Limit number of items that can fit on screen
-	maxItems := min(chartWidth/4, len(m.filteredCounts), 20) // Allow space for each bar
+	// Calculate how many items can fit based on average label width
+	// Each bar with label needs roughly 11 characters of space
+	estimatedLabelWidth := 11
+	maxItems := min(chartWidth/estimatedLabelWidth, len(m.filteredCounts), 25)
 
 	var barData []barchart.BarData
 	colors := []string{"10", "9", "11", "14", "13", "12", "6", "5", "4", "3", "2", "1"}
@@ -237,13 +239,13 @@ func (m *Model) updateChart() {
 
 		switch char.Char {
 		case " ":
-			displayChar = "SPC"
+			displayChar = "⎵" // Unicode space symbol
 		case "\t":
-			displayChar = "TAB"
+			displayChar = "⇥" // Unicode tab symbol
 		case "\n":
-			displayChar = "LF"
+			displayChar = "↵" // Unicode return/newline symbol
 		case "\r":
-			displayChar = "CR"
+			displayChar = "⏎" // Unicode carriage return symbol
 		}
 
 		color := colors[i%len(colors)]
@@ -253,10 +255,10 @@ func (m *Model) updateChart() {
 		if char.Count >= 1000 {
 			countStr = fmt.Sprintf("%.1fk", float64(char.Count)/1000)
 		}
-		
+
 		// Put the count in the same line as the character with a separator
 		labelWithCount := fmt.Sprintf("%s:%s", displayChar, countStr)
-		
+
 		barData = append(barData, barchart.BarData{
 			Label: labelWithCount,
 			Values: []barchart.BarValue{
@@ -321,13 +323,13 @@ func (m Model) createLegend() string {
 
 		switch char.Char {
 		case " ":
-			displayChar = "SPC"
+			displayChar = "⎵" // Unicode space symbol
 		case "\t":
-			displayChar = "TAB"
+			displayChar = "⇥" // Unicode tab symbol
 		case "\n":
-			displayChar = "LF"
+			displayChar = "↵" // Unicode return/newline symbol
 		case "\r":
-			displayChar = "CR"
+			displayChar = "⏎" // Unicode carriage return symbol
 		}
 
 		color := colors[i%len(colors)]
