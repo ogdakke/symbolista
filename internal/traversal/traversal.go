@@ -4,8 +4,6 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-	"slices"
-	"strings"
 	"unicode/utf8"
 
 	"github.com/ogdakke/symbolista/internal/gitignore"
@@ -20,8 +18,14 @@ func WalkDirectory(rootPath string, matcher *gitignore.Matcher, processor FilePr
 			return err
 		}
 
+		// Check if this directory should be ignored
 		if info.IsDir() {
-			logger.Trace("Skipping directory", "path", path)
+			// Don't traverse into the root directory
+			if path != rootPath && matcher != nil && matcher.ShouldIgnore(path) {
+				logger.Debug("Skipping directory (gitignore)", "path", path)
+				return filepath.SkipDir
+			}
+			logger.Trace("Entering directory", "path", path)
 			return nil
 		}
 
@@ -33,14 +37,6 @@ func WalkDirectory(rootPath string, matcher *gitignore.Matcher, processor FilePr
 
 		if matcher != nil && matcher.ShouldIgnore(path) {
 			logger.Debug("Skipping file (gitignore)", "path", path)
-			return nil
-		}
-
-		// Skip binary files by checking file extension
-		ext := strings.ToLower(filepath.Ext(path))
-		binaryExtensions := []string{".exe", ".dll", ".so", ".dylib", ".bin", ".o", ".a", ".zip", ".tar", ".gz", ".jpg", ".jpeg", ".png", ".gif", ".pdf", ".mp4", ".mp3", ".avi"}
-		if slices.Contains(binaryExtensions, ext) {
-			logger.Debug("Skipping binary file", "path", path, "extension", ext)
 			return nil
 		}
 
