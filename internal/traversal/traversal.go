@@ -4,8 +4,10 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"runtime"
 	"unicode/utf8"
 
+	"github.com/ogdakke/symbolista/internal/concurrent"
 	"github.com/ogdakke/symbolista/internal/gitignore"
 	"github.com/ogdakke/symbolista/internal/logger"
 )
@@ -70,4 +72,65 @@ func WalkDirectory(rootPath string, matcher *gitignore.Matcher, processor FilePr
 
 		return processor(path, content)
 	})
+}
+
+// ConcurrentResult contains the results of concurrent file processing
+type ConcurrentResult struct {
+	CharMap     map[rune]int
+	FileCount   int
+	TotalChars  int
+	UniqueChars int
+}
+
+// WalkDirectoryConcurrent processes files using a worker pool and returns aggregated results
+func WalkDirectoryConcurrent(rootPath string, matcher *gitignore.Matcher, workerCount int) (ConcurrentResult, error) {
+	if workerCount <= 0 {
+		workerCount = runtime.NumCPU()
+	}
+
+	// Calculate buffer size based on worker count
+	bufferSize := workerCount * 2
+
+	// Create worker pool
+	pool := concurrent.NewWorkerPool(workerCount, bufferSize)
+	collector := concurrent.NewResultCollector()
+
+	// Start worker pool
+	pool.Start()
+
+	// Start file discovery in a separate goroutine
+	var discoveryError error
+	go concurrent.DiscoverFiles(rootPath, matcher, pool.Jobs(), func(err error) {
+		if discoveryError == nil {
+			discoveryError = err
+		}
+	})
+
+	// Collect results
+	for result := range pool.Results() {
+		collector.AddResult(result)
+	}
+
+	// Wait for completion
+	<-pool.Done()
+
+	if discoveryError != nil {
+		return ConcurrentResult{}, discoveryError
+	}
+
+	// Get aggregated results
+	charMap, fileCount, totalChars := collector.GetResults()
+
+	logger.Debug("Concurrent processing completed",
+		"files_processed", fileCount,
+		"total_characters", totalChars,
+		"unique_characters", len(charMap),
+		"workers", workerCount)
+
+	return ConcurrentResult{
+		CharMap:     charMap,
+		FileCount:   fileCount,
+		TotalChars:  totalChars,
+		UniqueChars: len(charMap),
+	}, nil
 }

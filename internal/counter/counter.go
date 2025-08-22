@@ -8,7 +8,6 @@ import (
 	"sort"
 	"strings"
 	"time"
-	"unicode"
 
 	"github.com/ogdakke/symbolista/internal/gitignore"
 	"github.com/ogdakke/symbolista/internal/logger"
@@ -28,6 +27,10 @@ func (c CharCounts) Less(i, j int) bool { return c[i].Count > c[j].Count }
 func (c CharCounts) Swap(i, j int)      { c[i], c[j] = c[j], c[i] }
 
 func CountSymbols(directory, format string, showPercentages bool) {
+	CountSymbolsConcurrent(directory, format, showPercentages, 0)
+}
+
+func CountSymbolsConcurrent(directory, format string, showPercentages bool, workerCount int) {
 	startTime := time.Now()
 
 	logger.Info("Initializing gitignore matcher", "directory", directory)
@@ -42,25 +45,10 @@ func CountSymbols(directory, format string, showPercentages bool) {
 		logger.Debug("Gitignore matcher created successfully", "duration", gitignoreDuration)
 	}
 
-	charMap := make(map[rune]int)
-	totalChars := 0
-	processedFiles := 0
-
-	logger.Info("Starting file traversal and character counting")
+	logger.Info("Starting concurrent file traversal and character counting")
 	traversalStart := time.Now()
-	err = traversal.WalkDirectory(directory, matcher, func(path string, content []byte) error {
-		processedFiles++
-		fileChars := 0
-		for _, r := range string(content) {
-			if unicode.IsGraphic(r) || unicode.IsSpace(r) {
-				charMap[r]++
-				totalChars++
-				fileChars++
-			}
-		}
-		logger.Trace("Processed file", "path", path, "chars", fileChars)
-		return nil
-	})
+
+	result, err := traversal.WalkDirectoryConcurrent(directory, matcher, workerCount)
 	traversalDuration := time.Since(traversalStart)
 
 	if err != nil {
@@ -68,6 +56,10 @@ func CountSymbols(directory, format string, showPercentages bool) {
 		fmt.Printf("Error processing files: %v\n", err)
 		return
 	}
+
+	charMap := result.CharMap
+	totalChars := result.TotalChars
+	processedFiles := result.FileCount
 
 	logger.Info("File processing completed",
 		"files_processed", processedFiles,
