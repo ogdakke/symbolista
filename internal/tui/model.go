@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sort"
 	"strconv"
+	"unicode"
 
 	"github.com/NimbleMarkets/ntcharts/barchart"
 	tea "github.com/charmbracelet/bubbletea"
@@ -14,6 +15,14 @@ import (
 	"github.com/ogdakke/symbolista/internal/traversal"
 )
 
+type FilterMode int
+
+const (
+	FilterAll FilterMode = iota
+	FilterLettersNumbers
+	FilterSymbols
+)
+
 type Model struct {
 	directory       string
 	showPercentages bool
@@ -21,11 +30,13 @@ type Model struct {
 	includeDotfiles bool
 	asciiOnly       bool
 
-	charCounts counter.CharCounts
-	chart      barchart.Model
-	ready      bool
-	loading    bool
-	err        error
+	charCounts    counter.CharCounts
+	filteredCounts counter.CharCounts
+	chart         barchart.Model
+	ready         bool
+	loading       bool
+	err           error
+	filterMode    FilterMode
 
 	width  int
 	height int
@@ -38,6 +49,55 @@ type analysisCompleteMsg struct {
 
 type analysisStartMsg struct{}
 
+func isLetterOrNumber(r rune) bool {
+	return unicode.IsLetter(r) || unicode.IsDigit(r)
+}
+
+func isSymbol(r rune) bool {
+	return !unicode.IsLetter(r) && !unicode.IsDigit(r)
+}
+
+func (m *Model) applyFilter() {
+	m.filteredCounts = m.filteredCounts[:0]
+	
+	for _, charCount := range m.charCounts {
+		if len(charCount.Char) == 0 {
+			continue
+		}
+		
+		r := []rune(charCount.Char)[0]
+		
+		switch m.filterMode {
+		case FilterAll:
+			m.filteredCounts = append(m.filteredCounts, charCount)
+		case FilterLettersNumbers:
+			if isLetterOrNumber(r) {
+				m.filteredCounts = append(m.filteredCounts, charCount)
+			}
+		case FilterSymbols:
+			if isSymbol(r) {
+				m.filteredCounts = append(m.filteredCounts, charCount)
+			}
+		}
+	}
+	
+	// Re-sort the filtered counts
+	sort.Sort(m.filteredCounts)
+}
+
+func (m FilterMode) String() string {
+	switch m {
+	case FilterAll:
+		return "All"
+	case FilterLettersNumbers:
+		return "Letters & Numbers"
+	case FilterSymbols:
+		return "Symbols"
+	default:
+		return "All"
+	}
+}
+
 func NewModel(directory string, showPercentages bool, workerCount int, includeDotfiles bool, asciiOnly bool) Model {
 	return Model{
 		directory:       directory,
@@ -46,6 +106,7 @@ func NewModel(directory string, showPercentages bool, workerCount int, includeDo
 		includeDotfiles: includeDotfiles,
 		asciiOnly:       asciiOnly,
 		loading:         true,
+		filterMode:      FilterAll,
 	}
 }
 
@@ -95,6 +156,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.width = msg.Width
 		m.height = msg.Height
 		if m.ready {
+			m.applyFilter()
 			m.updateChart()
 		}
 		return m, nil
@@ -108,6 +170,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		m.charCounts = msg.counts
 		m.ready = true
+		m.applyFilter()
 		m.updateChart()
 		return m, nil
 
@@ -121,6 +184,24 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.ready = false
 				return m, startAnalysis(m.directory, m.workerCount, m.includeDotfiles, m.asciiOnly)
 			}
+		case "a":
+			if m.ready {
+				m.filterMode = FilterAll
+				m.applyFilter()
+				m.updateChart()
+			}
+		case "l":
+			if m.ready {
+				m.filterMode = FilterLettersNumbers
+				m.applyFilter()
+				m.updateChart()
+			}
+		case "s":
+			if m.ready {
+				m.filterMode = FilterSymbols
+				m.applyFilter()
+				m.updateChart()
+			}
 		}
 	}
 
@@ -128,7 +209,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m *Model) updateChart() {
-	if !m.ready || len(m.charCounts) == 0 {
+	if !m.ready || len(m.filteredCounts) == 0 {
 		return
 	}
 
@@ -145,13 +226,13 @@ func (m *Model) updateChart() {
 	m.chart = barchart.New(chartWidth, chartHeight)
 
 	// Limit number of items that can fit on screen
-	maxItems := min(chartWidth/4, len(m.charCounts), 20) // Allow space for each bar
+	maxItems := min(chartWidth/4, len(m.filteredCounts), 20) // Allow space for each bar
 
 	var barData []barchart.BarData
 	colors := []string{"10", "9", "11", "14", "13", "12", "6", "5", "4", "3", "2", "1"}
 
 	for i := range maxItems {
-		char := m.charCounts[i]
+		char := m.filteredCounts[i]
 		displayChar := char.Char
 
 		switch char.Char {
@@ -202,7 +283,7 @@ func (m Model) View() string {
 
 	info := lipgloss.NewStyle().
 		Foreground(lipgloss.Color("8")).
-		Render(fmt.Sprintf("Directory: %s | Total unique chars: %d", m.directory, len(m.charCounts)))
+		Render(fmt.Sprintf("Directory: %s | Filter: %s | Showing: %d/%d chars", m.directory, m.filterMode.String(), len(m.filteredCounts), len(m.charCounts)))
 
 	chart := m.chart.View()
 
@@ -211,22 +292,22 @@ func (m Model) View() string {
 
 	controls := lipgloss.NewStyle().
 		Foreground(lipgloss.Color("8")).
-		Render("Press 'r' to refresh, 'q' to quit")
+		Render("Controls: 'a' all | 'l' letters/numbers | 's' symbols | 'r' refresh | 'q' quit")
 
 	return fmt.Sprintf("%s\n%s\n\n%s\n\n%s\n\n%s", title, info, chart, legend, controls)
 }
 
 func (m Model) createLegend() string {
-	if !m.ready || len(m.charCounts) == 0 {
+	if !m.ready || len(m.filteredCounts) == 0 {
 		return ""
 	}
 
-	maxItems := min(m.width/15, len(m.charCounts), 8) // Fit legend items on screen
+	maxItems := min(m.width/15, len(m.filteredCounts), 8) // Fit legend items on screen
 	colors := []string{"10", "9", "11", "14", "13", "12", "6", "5", "4", "3", "2", "1"}
 
 	var legendItems []string
 	for i := range maxItems {
-		char := m.charCounts[i]
+		char := m.filteredCounts[i]
 		displayChar := char.Char
 
 		switch char.Char {
