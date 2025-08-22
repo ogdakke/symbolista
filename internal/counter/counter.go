@@ -123,13 +123,14 @@ func outputTable(counts CharCounts, showPercentages bool) {
 
 	for _, c := range counts {
 		char := string(c.Char)
-		if c.Char == ' ' {
+		switch c.Char {
+		case ' ':
 			char = "<space>"
-		} else if c.Char == '\t' {
+		case '\t':
 			char = "<tab>"
-		} else if c.Char == '\n' {
+		case '\n':
 			char = "<newline>"
-		} else if c.Char == '\r' {
+		case '\r':
 			char = "<return>"
 		}
 

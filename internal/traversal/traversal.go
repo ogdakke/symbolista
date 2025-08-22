@@ -20,6 +20,13 @@ func WalkDirectory(rootPath string, matcher *gitignore.Matcher, processor FilePr
 
 		// Check if this directory should be ignored
 		if info.IsDir() {
+			// Load gitignore file if it exists in this directory
+			if matcher != nil {
+				if err := matcher.LoadGitignoreForDirectory(path); err != nil {
+					logger.Debug("Error loading gitignore", "path", path, "error", err)
+				}
+			}
+
 			// Don't traverse into the root directory
 			if path != rootPath && matcher != nil && matcher.ShouldIgnore(path) {
 				logger.Debug("Skipping directory (gitignore)", "path", path)

@@ -13,66 +13,110 @@ import (
 type Matcher struct {
 	patterns []string
 	basePath string
+	// Stack of gitignore matchers for nested directories
+	matchers map[string][]string
 }
 
 func NewMatcher(basePath string) (*Matcher, error) {
 	matcher := &Matcher{
 		basePath: basePath,
+		matchers: make(map[string][]string),
 	}
 
-	gitignorePath := filepath.Join(basePath, ".gitignore")
+	// Load root gitignore if it exists
+	if err := matcher.loadGitignoreForDir(basePath); err != nil {
+		return nil, err
+	}
+
+	return matcher, nil
+}
+
+func (m *Matcher) loadGitignoreForDir(dirPath string) error {
+	gitignorePath := filepath.Join(dirPath, ".gitignore")
 	if _, err := os.Stat(gitignorePath); os.IsNotExist(err) {
 		logger.Debug("No .gitignore found", "path", gitignorePath)
-		return matcher, nil
+		return nil
 	}
 
 	logger.Debug("Loading .gitignore", "path", gitignorePath)
 	file, err := os.Open(gitignorePath)
 	if err != nil {
 		logger.Error("Cannot open .gitignore", "path", gitignorePath, "error", err)
-		return nil, err
+		return err
 	}
 	defer file.Close()
 
+	var patterns []string
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())
 		if line != "" && !strings.HasPrefix(line, "#") {
-			matcher.patterns = append(matcher.patterns, line)
-			logger.Trace("Added gitignore pattern", "pattern", line)
+			patterns = append(patterns, line)
+			logger.Trace("Added gitignore pattern", "pattern", line, "dir", dirPath)
 		}
 	}
 
-	logger.Info("Gitignore patterns loaded", "patterns", len(matcher.patterns))
-	return matcher, scanner.Err()
+	if len(patterns) > 0 {
+		m.matchers[dirPath] = patterns
+		// Also add to legacy patterns for root directory compatibility
+		if dirPath == m.basePath {
+			m.patterns = patterns
+		}
+		logger.Info("Gitignore patterns loaded", "patterns", len(patterns), "dir", dirPath)
+	}
+
+	return scanner.Err()
+}
+
+func (m *Matcher) LoadGitignoreForDirectory(dirPath string) error {
+	return m.loadGitignoreForDir(dirPath)
 }
 
 func (m *Matcher) ShouldIgnore(path string) bool {
-	if m == nil || len(m.patterns) == 0 {
+	if m == nil {
 		return false
 	}
 
 	start := time.Now()
-	relPath, err := filepath.Rel(m.basePath, path)
-	if err != nil {
-		logger.Debug("Cannot get relative path", "base", m.basePath, "path", path, "error", err)
-		return false
-	}
 
-	// Clean the relative path to use forward slashes consistently
-	relPath = filepath.ToSlash(relPath)
-
-	for _, pattern := range m.patterns {
-		if m.matchesPattern(relPath, pattern) {
-			duration := time.Since(start)
-			logger.Trace("File matched gitignore pattern", "path", relPath, "pattern", pattern, "match_duration", duration)
-			return true
+	// Check all gitignore files from root to the directory containing this path
+	currentDir := filepath.Dir(path)
+	for {
+		// Check if currentDir is within our base path
+		relDir, err := filepath.Rel(m.basePath, currentDir)
+		if err != nil || strings.HasPrefix(relDir, "..") {
+			break
 		}
+
+		// Check patterns from this directory's gitignore
+		if patterns, exists := m.matchers[currentDir]; exists {
+			// Get relative path from this directory's perspective
+			relPath, err := filepath.Rel(currentDir, path)
+			if err != nil {
+				logger.Debug("Cannot get relative path", "base", currentDir, "path", path, "error", err)
+			} else {
+				relPath = filepath.ToSlash(relPath)
+				for _, pattern := range patterns {
+					if m.matchesPattern(relPath, pattern) {
+						duration := time.Since(start)
+						logger.Trace("File matched gitignore pattern", "path", relPath, "pattern", pattern, "gitignore_dir", currentDir, "match_duration", duration)
+						return true
+					}
+				}
+			}
+		}
+
+		// Move up one directory
+		parentDir := filepath.Dir(currentDir)
+		if parentDir == currentDir || parentDir == "." {
+			break
+		}
+		currentDir = parentDir
 	}
 
 	duration := time.Since(start)
-	if duration > time.Microsecond*100 { // Only log slow pattern matching
-		logger.Trace("Gitignore pattern matching completed", "path", relPath, "patterns_checked", len(m.patterns), "duration", duration)
+	if duration > time.Microsecond*100 {
+		logger.Trace("Gitignore pattern matching completed", "path", path, "duration", duration)
 	}
 
 	return false
