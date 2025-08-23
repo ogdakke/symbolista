@@ -1,10 +1,13 @@
-.PHONY: dev build lint test version version-major version-minor version-patch
+.PHONY: dev build build-prod lint test version version-major version-minor version-patch
 
 dev:
 	go run main.go
 
 build:
 	go build -o tmp/symbolista
+
+build-prod:
+	CGO_ENABLED=0 go build -ldflags="-s -w" -trimpath -o tmp/symbolista
 
 lint:
 	go vet ./... && go fmt ./...
