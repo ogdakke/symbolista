@@ -1,4 +1,4 @@
-package gitignore
+package ignorer
 
 import (
 	"bufio"
@@ -10,22 +10,19 @@ import (
 	"github.com/ogdakke/symbolista/internal/logger"
 )
 
-type Matcher struct {
-	patterns        []string
-	basePath        string
-	includeDotfiles bool
+type GitignoreMatcher struct {
+	patterns []string
+	basePath string
 	// Stack of gitignore matchers for nested directories
 	matchers map[string][]string
 }
 
-func NewMatcher(basePath string, includeDotfiles bool) (*Matcher, error) {
-	matcher := &Matcher{
-		basePath:        basePath,
-		includeDotfiles: includeDotfiles,
-		matchers:        make(map[string][]string),
+func NewGitignoreMatcher(basePath string) (*GitignoreMatcher, error) {
+	matcher := &GitignoreMatcher{
+		basePath: basePath,
+		matchers: make(map[string][]string),
 	}
 
-	// Load root gitignore if it exists
 	if err := matcher.loadGitignoreForDir(basePath); err != nil {
 		return nil, err
 	}
@@ -33,7 +30,7 @@ func NewMatcher(basePath string, includeDotfiles bool) (*Matcher, error) {
 	return matcher, nil
 }
 
-func (m *Matcher) loadGitignoreForDir(dirPath string) error {
+func (m *GitignoreMatcher) loadGitignoreForDir(dirPath string) error {
 	gitignorePath := filepath.Join(dirPath, ".gitignore")
 	if _, err := os.Stat(gitignorePath); os.IsNotExist(err) {
 		logger.Debug("No .gitignore found", "path", gitignorePath)
@@ -60,7 +57,6 @@ func (m *Matcher) loadGitignoreForDir(dirPath string) error {
 
 	if len(patterns) > 0 {
 		m.matchers[dirPath] = patterns
-		// Also add to legacy patterns for root directory compatibility
 		if dirPath == m.basePath {
 			m.patterns = patterns
 		}
@@ -70,28 +66,19 @@ func (m *Matcher) loadGitignoreForDir(dirPath string) error {
 	return scanner.Err()
 }
 
-func (m *Matcher) LoadGitignoreForDirectory(dirPath string) error {
+func (m *GitignoreMatcher) LoadGitignoreForDirectory(dirPath string) error {
 	return m.loadGitignoreForDir(dirPath)
 }
 
-func (m *Matcher) ShouldIgnore(path string) bool {
+func (m *GitignoreMatcher) ShouldIgnore(path string) bool {
 	if m == nil {
 		return false
-	}
-
-	if !m.includeDotfiles {
-		filename := filepath.Base(path)
-		if strings.HasPrefix(filename, ".") && filename != "." && filename != ".." {
-			logger.Trace("Ignoring dotfile", "path", path)
-			return true
-		}
 	}
 
 	start := time.Now()
 
 	currentDir := filepath.Dir(path)
 	for {
-
 		relDir, err := filepath.Rel(m.basePath, currentDir)
 		if err != nil || strings.HasPrefix(relDir, "..") {
 			break
@@ -129,12 +116,10 @@ func (m *Matcher) ShouldIgnore(path string) bool {
 	return false
 }
 
-func (m *Matcher) matchesPattern(relPath, pattern string) bool {
-
+func (m *GitignoreMatcher) matchesPattern(relPath, pattern string) bool {
 	pattern = filepath.ToSlash(pattern)
 
 	if strings.HasSuffix(pattern, "/") {
-
 		dirPattern := strings.TrimSuffix(pattern, "/")
 		if relPath == dirPattern || strings.HasPrefix(relPath, dirPattern+"/") {
 			return true
@@ -143,7 +128,6 @@ func (m *Matcher) matchesPattern(relPath, pattern string) bool {
 		parts := strings.Split(relPath, "/")
 		for i, part := range parts {
 			if part == dirPattern {
-
 				if i == len(parts)-1 || len(parts) > i+1 {
 					return true
 				}

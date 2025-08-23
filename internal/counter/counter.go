@@ -174,7 +174,6 @@ func CountSymbolsConcurrent(directory, format string, showPercentages bool, work
 	}
 	outputDuration := time.Since(outputStart)
 
-	// Update timing with output duration
 	result.Timing.OutputDuration = outputDuration
 	totalDuration := result.Timing.TotalDuration + outputDuration
 

@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ogdakke/symbolista/internal/gitignore"
+	"github.com/ogdakke/symbolista/internal/ignorer"
 )
 
 func TestWalkDirectoryBasic(t *testing.T) {
@@ -93,7 +93,7 @@ func TestWalkDirectoryWithGitignore(t *testing.T) {
 		t.Fatalf("Failed to create .gitignore: %v", err)
 	}
 
-	matcher, err := gitignore.NewMatcher(tempDir, true)
+	matcher, err := ignorer.NewMatcher(tempDir, true)
 	if err != nil {
 		t.Fatalf("Failed to create gitignore matcher: %v", err)
 	}
@@ -278,13 +278,11 @@ func TestWalkDirectoryWithHierarchicalGitignore(t *testing.T) {
 		t.Fatalf("Failed to create src tmp: %v", err)
 	}
 
-	// Create gitignore matcher - include dotfiles so we can test processing .gitignore
-	matcher, err := gitignore.NewMatcher(tempDir, true)
+	matcher, err := ignorer.NewMatcher(tempDir, true)
 	if err != nil {
 		t.Fatalf("Failed to create gitignore matcher: %v", err)
 	}
 
-	// Track processed files
 	var processedFiles []string
 
 	processor := func(path string, content []byte) error {
@@ -297,13 +295,11 @@ func TestWalkDirectoryWithHierarchicalGitignore(t *testing.T) {
 		t.Fatalf("WalkDirectory failed: %v", err)
 	}
 
-	// Check which files were processed
 	processedSet := make(map[string]bool)
 	for _, path := range processedFiles {
 		processedSet[filepath.Base(path)] = true
 	}
 
-	// Files that should be processed
 	expectedProcessed := []string{"root.txt", "project.txt", "src.txt"}
 	for _, expected := range expectedProcessed {
 		if !processedSet[expected] {
@@ -311,7 +307,6 @@ func TestWalkDirectoryWithHierarchicalGitignore(t *testing.T) {
 		}
 	}
 
-	// Files that should be ignored
 	expectedIgnored := []string{"root.log", "project.log", "project.tmp", "src.log", "src.tmp"}
 	for _, expected := range expectedIgnored {
 		if processedSet[expected] {
@@ -361,7 +356,7 @@ func TestWalkDirectoryIgnoresDirectories(t *testing.T) {
 	}
 
 	// Create gitignore matcher - include dotfiles so we can test processing .gitignore
-	matcher, err := gitignore.NewMatcher(tempDir, true)
+	matcher, err := ignorer.NewMatcher(tempDir, true)
 	if err != nil {
 		t.Fatalf("Failed to create gitignore matcher: %v", err)
 	}

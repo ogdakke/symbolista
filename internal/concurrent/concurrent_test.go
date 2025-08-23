@@ -7,7 +7,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/ogdakke/symbolista/internal/gitignore"
+	"github.com/ogdakke/symbolista/internal/ignorer"
 )
 
 func TestNewWorkerPool(t *testing.T) {
@@ -175,7 +175,7 @@ func TestDiscoverFiles(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	matcher, err := gitignore.NewMatcher(tmpDir, false)
+	matcher, err := ignorer.NewMatcher(tmpDir, false)
 	if err != nil {
 		t.Fatal(err)
 	}

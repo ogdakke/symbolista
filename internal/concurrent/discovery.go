@@ -6,11 +6,11 @@ import (
 	"path/filepath"
 	"unicode/utf8"
 
-	"github.com/ogdakke/symbolista/internal/gitignore"
+	"github.com/ogdakke/symbolista/internal/ignorer"
 	"github.com/ogdakke/symbolista/internal/logger"
 )
 
-func DiscoverFiles(rootPath string, matcher *gitignore.Matcher, jobChan chan<- FileJob, asciiOnly bool, collector *ResultCollector, progressCallback ProgressCallback, errorCallback func(error)) {
+func DiscoverFiles(rootPath string, matcher *ignorer.Matcher, jobChan chan<- FileJob, asciiOnly bool, collector *ResultCollector, progressCallback ProgressCallback, errorCallback func(error)) {
 	defer close(jobChan)
 
 	logger.Debug("Starting file discovery", "root_path", rootPath)

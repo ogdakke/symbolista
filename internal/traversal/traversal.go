@@ -8,13 +8,13 @@ import (
 	"unicode/utf8"
 
 	"github.com/ogdakke/symbolista/internal/concurrent"
-	"github.com/ogdakke/symbolista/internal/gitignore"
+	"github.com/ogdakke/symbolista/internal/ignorer"
 	"github.com/ogdakke/symbolista/internal/logger"
 )
 
 type FileProcessor func(path string, content []byte) error
 
-func WalkDirectory(rootPath string, matcher *gitignore.Matcher, processor FileProcessor) error {
+func WalkDirectory(rootPath string, matcher *ignorer.Matcher, processor FileProcessor) error {
 	return filepath.WalkDir(rootPath, func(path string, d os.DirEntry, err error) error {
 		if err != nil {
 			return err
@@ -79,7 +79,7 @@ type ConcurrentResult struct {
 }
 
 // WalkDirectoryConcurrent processes files using a worker pool and returns aggregated results
-func WalkDirectoryConcurrent(rootPath string, matcher *gitignore.Matcher, workerCount int, asciiOnly bool, progressCallback concurrent.ProgressCallback) (ConcurrentResult, error) {
+func WalkDirectoryConcurrent(rootPath string, matcher *ignorer.Matcher, workerCount int, asciiOnly bool, progressCallback concurrent.ProgressCallback) (ConcurrentResult, error) {
 	if workerCount <= 0 {
 		workerCount = runtime.NumCPU()
 	}
