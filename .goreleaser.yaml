@@ -51,4 +51,4 @@ homebrew_casks:
     description: "A CLI tool to count occurrances of characters in a directory, with a TUI mode"
     repository:
       owner: ogdakke
-      name: tap
+      name: homebrew-tap
