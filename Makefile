@@ -22,6 +22,12 @@ test-snapshots:
 test-snapshots-update:
 	cd tests && UPDATE_SNAPSHOTS=1 go test -v
 
+test-cli-snapshots:
+	cd tests && go test -run TestCLISnapshots -v
+
+test-cli-snapshots-update:
+	cd tests && UPDATE_SNAPSHOTS=1 go test -run TestCLISnapshots -v
+
 # Versioning commands
 version:
 	@echo "Usage: make version-<level> where level is major, minor, or patch"
