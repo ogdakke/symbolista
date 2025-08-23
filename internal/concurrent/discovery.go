@@ -10,7 +10,7 @@ import (
 	"github.com/ogdakke/symbolista/internal/logger"
 )
 
-func DiscoverFiles(rootPath string, matcher *gitignore.Matcher, jobChan chan<- FileJob, asciiOnly bool, collector *ResultCollector, errorCallback func(error)) {
+func DiscoverFiles(rootPath string, matcher *gitignore.Matcher, jobChan chan<- FileJob, asciiOnly bool, collector *ResultCollector, progressCallback ProgressCallback, errorCallback func(error)) {
 	defer close(jobChan)
 
 	logger.Debug("Starting file discovery", "root_path", rootPath)
@@ -43,6 +43,12 @@ func DiscoverFiles(rootPath string, matcher *gitignore.Matcher, jobChan chan<- F
 
 		// Count all regular files found
 		collector.IncrementFound()
+
+		// Report progress if callback provided
+		if progressCallback != nil {
+			_, _, _, filesFound, filesIgnored := collector.GetResults()
+			progressCallback(filesFound, filesFound-filesIgnored)
+		}
 
 		// Skip symlinks and special files
 		if d.Type()&os.ModeType != 0 {

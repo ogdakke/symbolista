@@ -56,11 +56,21 @@ type Model struct {
 
 	// File statistics and timing
 	result counter.AnalysisResult
+
+	// Progress tracking
+	filesFound     int
+	filesProcessed int
+	progressChan   chan progressMsg
 }
 
 type analysisCompleteMsg struct {
 	result counter.AnalysisResult
 	err    error
+}
+
+type progressMsg struct {
+	filesFound     int
+	filesProcessed int
 }
 
 func isLetterOrNumber(r rune) bool {
@@ -85,7 +95,6 @@ func (m *Model) applyFilter() {
 
 		r := []rune(charCount.Char)[0]
 
-		// Skip whitespace characters if exclusion is enabled
 		if m.excludeWhitespace && isWhitespace(r) {
 			continue
 		}
@@ -104,10 +113,8 @@ func (m *Model) applyFilter() {
 		}
 	}
 
-	// Re-sort the filtered counts
 	sort.Sort(m.filteredCounts)
 
-	// Reset scroll position when filter changes
 	m.scrollOffset = 0
 }
 
@@ -155,19 +162,62 @@ func (m Model) Init() tea.Cmd {
 	)
 }
 
+type analysisStartedMsg struct {
+	progressChan chan progressMsg
+	doneChan     chan analysisCompleteMsg
+}
+
+func listenForProgress(progressChan <-chan progressMsg) tea.Cmd {
+	return func() tea.Msg {
+		progress, ok := <-progressChan
+		if !ok {
+			return nil
+		}
+		return progress
+	}
+}
+
+func listenForCompletion(doneChan <-chan analysisCompleteMsg) tea.Cmd {
+	return func() tea.Msg {
+		return <-doneChan
+	}
+}
+
 func startAnalysis(directory string, workerCount int, includeDotfiles bool, asciiOnly bool) tea.Cmd {
-	return tea.Cmd(func() tea.Msg {
-		logger.Info("Starting TUI analysis", "directory", directory)
+	return func() tea.Msg {
+		logger.Info("Starting async TUI analysis", "directory", directory)
 
-		result, err := counter.AnalyzeSymbols(directory, workerCount, includeDotfiles, asciiOnly)
-		if err != nil {
-			return analysisCompleteMsg{err: err}
-		}
+		progressChan := make(chan progressMsg, 10)
+		doneChan := make(chan analysisCompleteMsg, 1)
 
-		return analysisCompleteMsg{
-			result: result,
+		go func() {
+			defer close(progressChan)
+			defer close(doneChan)
+
+			progressFunc := func(filesFound, filesProcessed int) {
+				select {
+				case progressChan <- progressMsg{
+					filesFound:     filesFound,
+					filesProcessed: filesProcessed,
+				}:
+				default:
+					// Channel full, skip update
+				}
+			}
+
+			result, err := counter.AnalyzeSymbols(directory, workerCount, includeDotfiles, asciiOnly, progressFunc)
+
+			doneChan <- analysisCompleteMsg{
+				result: result,
+				err:    err,
+			}
+		}()
+
+		return analysisStartedMsg{
+			progressChan: progressChan,
+			doneChan:     doneChan,
 		}
-	})
+	}
 }
 
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -178,6 +228,23 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if m.ready {
 			m.applyFilter()
 			m.updateChart()
+		}
+		return m, nil
+
+	case analysisStartedMsg:
+
+		m.progressChan = msg.progressChan
+		return m, tea.Batch(
+			listenForProgress(msg.progressChan),
+			listenForCompletion(msg.doneChan),
+		)
+
+	case progressMsg:
+		if m.loading && msg.filesFound > 0 {
+			m.filesFound = msg.filesFound
+			m.filesProcessed = msg.filesProcessed
+
+			return m, listenForProgress(m.progressChan)
 		}
 		return m, nil
 
@@ -353,7 +420,11 @@ func (m Model) View() string {
 	}
 
 	if m.loading {
-		return "Analyzing files...\n\nPress 'q' to quit"
+		progressText := "Analyzing files..."
+		if m.filesFound > 0 {
+			progressText = fmt.Sprintf("Files found: %d, Processed: %d", m.filesFound, m.filesProcessed)
+		}
+		return progressText + "\n\nPress 'q' to quit"
 	}
 
 	if !m.ready {

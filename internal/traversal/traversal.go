@@ -79,7 +79,7 @@ type ConcurrentResult struct {
 }
 
 // WalkDirectoryConcurrent processes files using a worker pool and returns aggregated results
-func WalkDirectoryConcurrent(rootPath string, matcher *gitignore.Matcher, workerCount int, asciiOnly bool) (ConcurrentResult, error) {
+func WalkDirectoryConcurrent(rootPath string, matcher *gitignore.Matcher, workerCount int, asciiOnly bool, progressCallback concurrent.ProgressCallback) (ConcurrentResult, error) {
 	if workerCount <= 0 {
 		workerCount = runtime.NumCPU()
 	}
@@ -92,7 +92,7 @@ func WalkDirectoryConcurrent(rootPath string, matcher *gitignore.Matcher, worker
 	pool.Start()
 
 	var discoveryError error
-	go concurrent.DiscoverFiles(rootPath, matcher, pool.Jobs(), asciiOnly, collector, func(err error) {
+	go concurrent.DiscoverFiles(rootPath, matcher, pool.Jobs(), asciiOnly, collector, progressCallback, func(err error) {
 		if discoveryError == nil {
 			discoveryError = err
 		}

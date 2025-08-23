@@ -8,6 +8,8 @@ type FileJob struct {
 	AsciiOnly bool
 }
 
+type ProgressCallback func(filesFound, filesProcessed int)
+
 type CharCountResult struct {
 	CharMap   map[rune]int
 	FileCount int
@@ -23,21 +25,21 @@ type WorkerPool struct {
 }
 
 type ResultCollector struct {
-	totalCharMap  map[rune]int
-	totalFiles    int
-	totalChars    int
-	filesFound    int
-	filesIgnored  int
-	mu            sync.RWMutex
+	totalCharMap map[rune]int
+	totalFiles   int
+	totalChars   int
+	filesFound   int
+	filesIgnored int
+	mu           sync.RWMutex
 }
 
 func NewResultCollector() *ResultCollector {
 	return &ResultCollector{
-		totalCharMap:  make(map[rune]int),
-		totalFiles:    0,
-		totalChars:    0,
-		filesFound:    0,
-		filesIgnored:  0,
+		totalCharMap: make(map[rune]int),
+		totalFiles:   0,
+		totalChars:   0,
+		filesFound:   0,
+		filesIgnored: 0,
 	}
 }
 

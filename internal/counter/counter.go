@@ -47,31 +47,31 @@ func CountSymbols(directory, format string, showPercentages bool) {
 	CountSymbolsConcurrent(directory, format, showPercentages, 0, false, true)
 }
 
-func AnalyzeSymbols(directory string, workerCount int, includeDotfiles bool, asciiOnly bool) (AnalysisResult, error) {
+func AnalyzeSymbols(directory string, workerCount int, includeDotfiles bool, asciiOnly bool, progressCallback func(filesFound, filesProcessed int)) (AnalysisResult, error) {
 	startTime := time.Now()
 
 	logger.Info("Initializing gitignore matcher", "directory", directory, "includeDotfiles", includeDotfiles)
-	gitignoreStart := time.Now()
-	matcher, err := gitignore.NewMatcher(directory, includeDotfiles)
-	gitignoreDuration := time.Since(gitignoreStart)
+	matcher, err := gitignore.NewTimingMatcher(directory, includeDotfiles)
 
 	if err != nil {
-		logger.Error("Could not load gitignore", "error", err, "duration", gitignoreDuration)
+		logger.Error("Could not load gitignore", "error", err)
 		return AnalysisResult{}, fmt.Errorf("could not load gitignore: %w", err)
 	} else {
-		logger.Debug("Gitignore matcher created successfully", "duration", gitignoreDuration)
+		logger.Debug("Gitignore matcher created successfully", "initial_duration", matcher.GetLoadTime())
 	}
 
 	logger.Info("Starting concurrent file traversal and character counting")
 	traversalStart := time.Now()
 
-	result, err := traversal.WalkDirectoryConcurrent(directory, matcher, workerCount, asciiOnly)
+	result, err := traversal.WalkDirectoryConcurrent(directory, matcher.Matcher, workerCount, asciiOnly, progressCallback)
 	traversalDuration := time.Since(traversalStart)
 
 	if err != nil {
 		logger.Error("Error during file processing", "error", err, "duration", traversalDuration)
 		return AnalysisResult{}, fmt.Errorf("error processing files: %w", err)
 	}
+
+	gitignoreDuration := matcher.GetTotalTime()
 
 	charMap := result.CharMap
 	totalChars := result.TotalChars
@@ -129,7 +129,18 @@ func AnalyzeSymbols(directory string, workerCount int, includeDotfiles bool, asc
 }
 
 func CountSymbolsConcurrent(directory, format string, showPercentages bool, workerCount int, includeDotfiles bool, asciiOnly bool) {
-	result, err := AnalyzeSymbols(directory, workerCount, includeDotfiles, asciiOnly)
+
+	var progressFunc func(int, int)
+	if format == "table" {
+		progressFunc = func(filesFound, filesProcessed int) {
+			fmt.Printf("\rFiles found: %d, Processed: %d", filesFound, filesProcessed)
+		}
+	}
+
+	result, err := AnalyzeSymbols(directory, workerCount, includeDotfiles, asciiOnly, progressFunc)
+	if format == "table" && progressFunc != nil {
+		fmt.Printf("\n")
+	}
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
 		return

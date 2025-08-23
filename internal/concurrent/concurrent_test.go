@@ -35,10 +35,10 @@ func TestNewWorkerPool(t *testing.T) {
 func TestResultCollector(t *testing.T) {
 	collector := NewResultCollector()
 
-	charMap, fileCount, totalChars := collector.GetResults()
-	if len(charMap) != 0 || fileCount != 0 || totalChars != 0 {
-		t.Errorf("Expected empty results, got charMap=%d, fileCount=%d, totalChars=%d",
-			len(charMap), fileCount, totalChars)
+	charMap, fileCount, totalChars, filesFound, filesIgnored := collector.GetResults()
+	if len(charMap) != 0 || fileCount != 0 || totalChars != 0 || filesFound != 0 || filesIgnored != 0 {
+		t.Errorf("Expected empty results, got charMap=%d, fileCount=%d, totalChars=%d, filesFound=%d, filesIgnored=%d",
+			len(charMap), fileCount, totalChars, filesFound, filesIgnored)
 	}
 
 	result1 := CharCountResult{
@@ -55,7 +55,7 @@ func TestResultCollector(t *testing.T) {
 	collector.AddResult(result1)
 	collector.AddResult(result2)
 
-	charMap, fileCount, totalChars = collector.GetResults()
+	charMap, fileCount, totalChars, filesFound, filesIgnored = collector.GetResults()
 
 	if fileCount != 2 {
 		t.Errorf("Expected 2 files, got %d", fileCount)
@@ -98,7 +98,7 @@ func TestConcurrentResultCollector(t *testing.T) {
 
 	wg.Wait()
 
-	charMap, fileCount, totalChars := collector.GetResults()
+	charMap, fileCount, totalChars, _, _ := collector.GetResults()
 
 	expectedFiles := numGoroutines * resultsPerGoroutine
 	if fileCount != expectedFiles {
@@ -183,7 +183,8 @@ func TestDiscoverFiles(t *testing.T) {
 	jobChan := make(chan FileJob, 10)
 	var discoveryError error
 
-	go DiscoverFiles(tmpDir, matcher, jobChan, true, func(err error) {
+	collector := NewResultCollector()
+	go DiscoverFiles(tmpDir, matcher, jobChan, true, collector, nil, func(err error) {
 		discoveryError = err
 	})
 

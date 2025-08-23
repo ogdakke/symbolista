@@ -12,6 +12,7 @@
 - Use structured logging with `slog` via `internal/logger`
 - Error handling: wrap errors with `fmt.Errorf("context: %w", err)`
 - Use receiver methods for types (e.g. `func (c CharCounts) Len()`)
+- Comments are not allowed by default. Only when the code is very difficult to understand without, and in that case you should probably refactor it to be simpler.
 
 ## Project Structure
 - CLI commands in `cmd/` using Cobra framework
