@@ -43,8 +43,23 @@ type AnalysisResult struct {
 	Timing       TimingBreakdown
 }
 
+type JSONMetadata struct {
+	Directory       string          `json:"directory"`
+	FilesFound      int             `json:"files_found"`
+	FilesProcessed  int             `json:"files_processed"`
+	FilesIgnored    int             `json:"files_ignored"`
+	TotalCharacters int             `json:"total_characters"`
+	UniqueChars     int             `json:"unique_characters"`
+	Timing          TimingBreakdown `json:"timing"`
+}
+
+type JSONOutput struct {
+	Result   CharCounts    `json:"result"`
+	Metadata *JSONMetadata `json:"metadata,omitempty"`
+}
+
 func CountSymbols(directory, format string, showPercentages bool) {
-	CountSymbolsConcurrent(directory, format, showPercentages, 0, false, true)
+	CountSymbolsConcurrent(directory, format, showPercentages, 0, false, true, false)
 }
 
 func AnalyzeSymbols(directory string, workerCount int, includeDotfiles bool, asciiOnly bool, progressCallback func(filesFound, filesProcessed int)) (AnalysisResult, error) {
@@ -128,7 +143,7 @@ func AnalyzeSymbols(directory string, workerCount int, includeDotfiles bool, asc
 	}, nil
 }
 
-func CountSymbolsConcurrent(directory, format string, showPercentages bool, workerCount int, includeDotfiles bool, asciiOnly bool) {
+func CountSymbolsConcurrent(directory, format string, showPercentages bool, workerCount int, includeDotfiles bool, asciiOnly bool, includeMetadata bool) {
 
 	var progressFunc func(int, int)
 	if format == "table" {
@@ -150,7 +165,8 @@ func CountSymbolsConcurrent(directory, format string, showPercentages bool, work
 	switch format {
 	case "json":
 		logger.Debug("Outputting results as JSON")
-		outputJSON(result.CharCounts, showPercentages)
+		outputJSON(result.CharCounts, showPercentages, directory, result, includeMetadata)
+		return // Don't print summary for JSON format
 	case "csv":
 		logger.Debug("Outputting results as CSV")
 		outputCSV(result.CharCounts, showPercentages)
@@ -199,14 +215,30 @@ func outputTable(counts CharCounts, showPercentages bool) {
 	fmt.Println(strings.Repeat("-", 35))
 }
 
-func outputJSON(counts CharCounts, showPercentages bool) {
+func outputJSON(counts CharCounts, showPercentages bool, directory string, result AnalysisResult, includeMetadata bool) {
 	if !showPercentages {
 		for i := range counts {
 			counts[i].Percentage = 0
 		}
 	}
 
-	data, err := json.MarshalIndent(counts, "", "  ")
+	output := JSONOutput{
+		Result: counts,
+	}
+
+	if includeMetadata {
+		output.Metadata = &JSONMetadata{
+			Directory:       directory,
+			FilesFound:      result.FilesFound,
+			FilesProcessed:  result.FilesFound - result.FilesIgnored,
+			FilesIgnored:    result.FilesIgnored,
+			TotalCharacters: result.TotalChars,
+			UniqueChars:     result.UniqueChars,
+			Timing:          result.Timing,
+		}
+	}
+
+	data, err := json.MarshalIndent(output, "", "  ")
 	if err != nil {
 		fmt.Printf("Error marshaling JSON: %v\n", err)
 		return

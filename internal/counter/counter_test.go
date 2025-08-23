@@ -48,7 +48,8 @@ func TestOutputJSON(t *testing.T) {
 	r, w, _ := os.Pipe()
 	os.Stdout = w
 
-	outputJSON(counts, true)
+	analysisResult := AnalysisResult{CharCounts: counts, FilesFound: 1, FilesIgnored: 0, TotalChars: 4, UniqueChars: 2}
+	outputJSON(counts, true, "/test", analysisResult, false)
 
 	w.Close()
 	os.Stdout = old
@@ -57,11 +58,12 @@ func TestOutputJSON(t *testing.T) {
 	io.Copy(&buf, r)
 	output := buf.String()
 
-	var result []CharCount
-	err := json.Unmarshal([]byte(output), &result)
+	var jsonOutput JSONOutput
+	err := json.Unmarshal([]byte(output), &jsonOutput)
 	if err != nil {
 		t.Fatalf("Output is not valid JSON: %v", err)
 	}
+	result := jsonOutput.Result
 
 	if len(result) != 2 {
 		t.Errorf("Expected 2 items in JSON output, got %d", len(result))
@@ -82,7 +84,8 @@ func TestOutputJSONWithoutPercentages(t *testing.T) {
 	r, w, _ := os.Pipe()
 	os.Stdout = w
 
-	outputJSON(counts, false)
+	analysisResult := AnalysisResult{CharCounts: counts, FilesFound: 1, FilesIgnored: 0, TotalChars: 1, UniqueChars: 1}
+	outputJSON(counts, false, "/test", analysisResult, false)
 
 	w.Close()
 	os.Stdout = old
@@ -91,11 +94,12 @@ func TestOutputJSONWithoutPercentages(t *testing.T) {
 	io.Copy(&buf, r)
 	output := buf.String()
 
-	var result []CharCount
-	err := json.Unmarshal([]byte(output), &result)
+	var jsonOutput JSONOutput
+	err := json.Unmarshal([]byte(output), &jsonOutput)
 	if err != nil {
 		t.Fatalf("Output is not valid JSON: %v", err)
 	}
+	result := jsonOutput.Result
 
 	if result[0].Percentage != 0 {
 		t.Errorf("Expected percentage to be 0 when showPercentages is false, got %f", result[0].Percentage)
@@ -240,11 +244,12 @@ func TestCountSymbolsIntegration(t *testing.T) {
 	io.Copy(&buf, r)
 	output := buf.String()
 
-	var result []CharCount
-	err = json.Unmarshal([]byte(output), &result)
+	var jsonOutput JSONOutput
+	err = json.Unmarshal([]byte(output), &jsonOutput)
 	if err != nil {
 		t.Fatalf("CountSymbols output is not valid JSON: %v", err)
 	}
+	result := jsonOutput.Result
 
 	found_a := false
 	for _, char := range result {
@@ -295,8 +300,8 @@ func TestCountSymbolsWithMultipleFormats(t *testing.T) {
 
 			switch format {
 			case "json":
-				var result []CharCount
-				err := json.Unmarshal([]byte(output), &result)
+				var jsonOutput JSONOutput
+				err := json.Unmarshal([]byte(output), &jsonOutput)
 				if err != nil {
 					t.Errorf("Invalid JSON output for format %s: %v", format, err)
 				}

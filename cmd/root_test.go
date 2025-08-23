@@ -24,13 +24,11 @@ func TestExecuteWithDefaultArgs(t *testing.T) {
 		t.Fatalf("Failed to create test file: %v", err)
 	}
 
-	originalDirectory := directory
 	originalFormat := outputFormat
 	originalPercentages := showPercentages
 	originalVerbosity := verboseCount
 	originalArgs := os.Args
 
-	directory = tempDir
 	outputFormat = "json"
 	showPercentages = true
 	verboseCount = 0
@@ -40,7 +38,7 @@ func TestExecuteWithDefaultArgs(t *testing.T) {
 	os.Stdout = w
 
 	os.Args = []string{"symbolista"}
-	rootCmd.Run(rootCmd, []string{})
+	rootCmd.Run(rootCmd, []string{tempDir})
 
 	w.Close()
 	os.Stdout = oldStdout
@@ -49,17 +47,17 @@ func TestExecuteWithDefaultArgs(t *testing.T) {
 	buf.ReadFrom(r)
 	output := buf.String()
 
-	directory = originalDirectory
 	outputFormat = originalFormat
 	showPercentages = originalPercentages
 	verboseCount = originalVerbosity
 	os.Args = originalArgs
 
-	var result []counter.CharCount
-	err = json.Unmarshal([]byte(output), &result)
+	var jsonOutput counter.JSONOutput
+	err = json.Unmarshal([]byte(output), &jsonOutput)
 	if err != nil {
 		t.Fatalf("Command output is not valid JSON: %v", err)
 	}
+	result := jsonOutput.Result
 
 	if len(result) != 3 {
 		t.Errorf("Expected 3 characters, got %d", len(result))
@@ -113,11 +111,12 @@ func TestExecuteWithDirectoryArg(t *testing.T) {
 	showPercentages = originalPercentages
 	verboseCount = originalVerbosity
 
-	var result []counter.CharCount
-	err = json.Unmarshal([]byte(output), &result)
+	var jsonOutput counter.JSONOutput
+	err = json.Unmarshal([]byte(output), &jsonOutput)
 	if err != nil {
 		t.Fatalf("Command output is not valid JSON: %v", err)
 	}
+	result := jsonOutput.Result
 
 	if len(result) != 3 {
 		t.Errorf("Expected 3 characters, got %d", len(result))
@@ -146,13 +145,11 @@ func TestExecuteWithCSVFormat(t *testing.T) {
 	}
 
 	// Save original values
-	originalDirectory := directory
 	originalFormat := outputFormat
 	originalPercentages := showPercentages
 	originalVerbosity := verboseCount
 
 	// Set test values
-	directory = tempDir
 	outputFormat = "csv"
 	showPercentages = true
 	verboseCount = 0
@@ -163,7 +160,7 @@ func TestExecuteWithCSVFormat(t *testing.T) {
 	os.Stdout = w
 
 	// Execute the command
-	rootCmd.Run(rootCmd, []string{})
+	rootCmd.Run(rootCmd, []string{tempDir})
 
 	w.Close()
 	os.Stdout = oldStdout
@@ -173,7 +170,6 @@ func TestExecuteWithCSVFormat(t *testing.T) {
 	output := buf.String()
 
 	// Restore original values
-	directory = originalDirectory
 	outputFormat = originalFormat
 	showPercentages = originalPercentages
 	verboseCount = originalVerbosity
@@ -205,13 +201,11 @@ func TestExecuteWithTableFormat(t *testing.T) {
 	}
 
 	// Save original values
-	originalDirectory := directory
 	originalFormat := outputFormat
 	originalPercentages := showPercentages
 	originalVerbosity := verboseCount
 
 	// Set test values
-	directory = tempDir
 	outputFormat = "table"
 	showPercentages = true
 	verboseCount = 0
@@ -222,7 +216,7 @@ func TestExecuteWithTableFormat(t *testing.T) {
 	os.Stdout = w
 
 	// Execute the command
-	rootCmd.Run(rootCmd, []string{})
+	rootCmd.Run(rootCmd, []string{tempDir})
 
 	w.Close()
 	os.Stdout = oldStdout
@@ -232,7 +226,6 @@ func TestExecuteWithTableFormat(t *testing.T) {
 	output := buf.String()
 
 	// Restore original values
-	directory = originalDirectory
 	outputFormat = originalFormat
 	showPercentages = originalPercentages
 	verboseCount = originalVerbosity
@@ -279,13 +272,11 @@ func TestExecuteWithGitignore(t *testing.T) {
 	}
 
 	// Save original values
-	originalDirectory := directory
 	originalFormat := outputFormat
 	originalPercentages := showPercentages
 	originalVerbosity := verboseCount
 
 	// Set test values
-	directory = tempDir
 	outputFormat = "json"
 	showPercentages = false
 	verboseCount = 0
@@ -296,7 +287,7 @@ func TestExecuteWithGitignore(t *testing.T) {
 	os.Stdout = w
 
 	// Execute the command
-	rootCmd.Run(rootCmd, []string{})
+	rootCmd.Run(rootCmd, []string{tempDir})
 
 	w.Close()
 	os.Stdout = oldStdout
@@ -306,17 +297,17 @@ func TestExecuteWithGitignore(t *testing.T) {
 	output := buf.String()
 
 	// Restore original values
-	directory = originalDirectory
 	outputFormat = originalFormat
 	showPercentages = originalPercentages
 	verboseCount = originalVerbosity
 
 	// Verify JSON output
-	var result []counter.CharCount
-	err = json.Unmarshal([]byte(output), &result)
+	var jsonOutput counter.JSONOutput
+	err = json.Unmarshal([]byte(output), &jsonOutput)
 	if err != nil {
 		t.Fatalf("Command output is not valid JSON: %v", err)
 	}
+	result := jsonOutput.Result
 
 	// Should include characters from "include" and from ".gitignore" file content ("*.log\n")
 	// Should not include characters from "ignore.log" file content
@@ -352,13 +343,11 @@ func TestExecuteWithVerbosity(t *testing.T) {
 	}
 
 	// Save original values
-	originalDirectory := directory
 	originalFormat := outputFormat
 	originalPercentages := showPercentages
 	originalVerbosity := verboseCount
 
 	// Set test values
-	directory = tempDir
 	outputFormat = "json"
 	showPercentages = false
 	verboseCount = 2 // Debug level
@@ -372,7 +361,7 @@ func TestExecuteWithVerbosity(t *testing.T) {
 	os.Stderr = wErr
 
 	// Execute the command
-	rootCmd.Run(rootCmd, []string{})
+	rootCmd.Run(rootCmd, []string{tempDir})
 
 	wOut.Close()
 	wErr.Close()
@@ -386,14 +375,13 @@ func TestExecuteWithVerbosity(t *testing.T) {
 	stderr := bufErr.String()
 
 	// Restore original values
-	directory = originalDirectory
 	outputFormat = originalFormat
 	showPercentages = originalPercentages
 	verboseCount = originalVerbosity
 
 	// Verify JSON output still works
-	var result []counter.CharCount
-	err = json.Unmarshal([]byte(stdout), &result)
+	var jsonOutput counter.JSONOutput
+	err = json.Unmarshal([]byte(stdout), &jsonOutput)
 	if err != nil {
 		t.Fatalf("Command output is not valid JSON: %v", err)
 	}
@@ -405,12 +393,10 @@ func TestExecuteWithVerbosity(t *testing.T) {
 
 func TestExecuteWithNonExistentDirectory(t *testing.T) {
 	// Save original values
-	originalDirectory := directory
 	originalFormat := outputFormat
 	originalVerbosity := verboseCount
 
 	// Set test values
-	directory = "/nonexistent/directory"
 	outputFormat = "json"
 	verboseCount = 0
 
@@ -423,7 +409,7 @@ func TestExecuteWithNonExistentDirectory(t *testing.T) {
 	os.Stderr = wErr
 
 	// Execute the command
-	rootCmd.Run(rootCmd, []string{})
+	rootCmd.Run(rootCmd, []string{"/nonexistent/directory"})
 
 	wOut.Close()
 	wErr.Close()
@@ -437,7 +423,6 @@ func TestExecuteWithNonExistentDirectory(t *testing.T) {
 	stderr := bufErr.String()
 
 	// Restore original values
-	directory = originalDirectory
 	outputFormat = originalFormat
 	verboseCount = originalVerbosity
 

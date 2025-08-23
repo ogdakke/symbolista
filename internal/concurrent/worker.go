@@ -29,7 +29,6 @@ func (wp *WorkerPool) Start() {
 		go wp.worker(i)
 	}
 
-	// Start a goroutine to close results channel when all workers are done
 	go func() {
 		wp.wg.Wait()
 		close(wp.results)
@@ -78,11 +77,11 @@ func (wp *WorkerPool) processFile(job FileJob, workerID int) CharCountResult {
 
 	for _, r := range string(job.Content) {
 		if unicode.IsGraphic(r) || unicode.IsSpace(r) {
-			// Filter ASCII characters if asciiOnly is enabled
+
 			if job.AsciiOnly && r > 127 {
 				continue
 			}
-			// Normalize character to lowercase for counting
+
 			normalizedChar := []rune(strings.ToLower(string(r)))[0]
 			charMap[normalizedChar]++
 			charCount++

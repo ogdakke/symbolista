@@ -22,6 +22,7 @@ var (
 	asciiOnly       bool
 	useTUI          bool
 	showVersion     bool
+	includeMetadata bool
 )
 
 var rootCmd = &cobra.Command{
@@ -60,7 +61,7 @@ respecting gitignore rules and outputting the most used characters with counts a
 		}
 
 		logger.Info("Starting symbol analysis", "directory", dir, "format", outputFormat, "verbosity", verboseCount, "workers", workerCount, "includeDotfiles", includeDotfiles, "asciiOnly", asciiOnly)
-		counter.CountSymbolsConcurrent(dir, outputFormat, showPercentages, workerCount, includeDotfiles, asciiOnly)
+		counter.CountSymbolsConcurrent(dir, outputFormat, showPercentages, workerCount, includeDotfiles, asciiOnly, includeMetadata)
 
 		totalExecutionTime := time.Since(startTime)
 		if verboseCount > 0 {
@@ -81,8 +82,9 @@ func init() {
 	rootCmd.Flags().StringVarP(&outputFormat, "format", "f", "table", "Output format (table, json, csv)")
 	rootCmd.Flags().BoolVarP(&showPercentages, "percentages", "p", true, "Show percentages in output")
 	rootCmd.Flags().CountVarP(&verboseCount, "verbose", "V", "Increase verbosity (-V info, -VV debug, -VVV trace)")
-	rootCmd.Flags().IntVarP(&workerCount, "workers", "w", 0, "Number of worker goroutines (0 = auto-detect based on CPU cores)")
-	rootCmd.Flags().BoolVar(&includeDotfiles, "include-dotfiles", false, "Include dotfiles in analysis (by default dotfiles are ignored)")
-	rootCmd.Flags().BoolVar(&asciiOnly, "ascii-only", true, "Count only ASCII characters (0-127). Use --ascii-only=false to include all Unicode characters")
+	rootCmd.Flags().IntVarP(&workerCount, "workers", "w", 0, "Number of worker goroutines (0 = auto-detect based on CPU cores) (default 0)")
+	rootCmd.Flags().BoolVar(&includeDotfiles, "include-dotfiles", false, "Include dotfiles in analysis (default false)")
+	rootCmd.Flags().BoolVar(&asciiOnly, "ascii-only", true, "Count only ASCII characters. Use --ascii-only=false to include all Unicode characters")
 	rootCmd.Flags().BoolVar(&useTUI, "tui", false, "Launch interactive TUI interface")
+	rootCmd.Flags().BoolVarP(&includeMetadata, "metadata", "m", true, "Include metadata in JSON output (directory, file counts, timing info) (default true)")
 }

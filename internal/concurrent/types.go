@@ -1,6 +1,9 @@
 package concurrent
 
-import "sync"
+import (
+	"maps"
+	"sync"
+)
 
 type FileJob struct {
 	Path      string
@@ -72,9 +75,7 @@ func (rc *ResultCollector) GetResults() (map[rune]int, int, int, int, int) {
 
 	// Create a copy to avoid data races
 	charMapCopy := make(map[rune]int)
-	for char, count := range rc.totalCharMap {
-		charMapCopy[char] = count
-	}
+	maps.Copy(charMapCopy, rc.totalCharMap)
 
 	return charMapCopy, rc.totalFiles, rc.totalChars, rc.filesFound, rc.filesIgnored
 }
