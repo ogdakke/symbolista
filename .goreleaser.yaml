@@ -44,3 +44,11 @@ release:
     ---
 
     Released by [GoReleaser](https://github.com/goreleaser/goreleaser).
+
+homebrew_casks:
+  - name: symbolista
+    homepage: "https://github.com/ogdakke/symbolista"
+    description: "A CLI tool to count occurrances of characters in a directory, with a TUI mode"
+    repository:
+      owner: ogdakke
+      name: tap
