@@ -23,6 +23,7 @@ var (
 	useTUI          bool
 	showVersion     bool
 	includeMetadata bool
+	jsonFile        string
 )
 
 var rootCmd = &cobra.Command{
@@ -37,7 +38,12 @@ respecting gitignore rules and outputting the most used characters with counts a
 			return
 		}
 
-		if len(args) == 0 {
+		if jsonFile != "" && !useTUI {
+			fmt.Println("Error: --from-json flag requires --tui flag")
+			os.Exit(1)
+		}
+
+		if jsonFile == "" && len(args) == 0 {
 			cmd.Help()
 			return
 		}
@@ -51,6 +57,15 @@ respecting gitignore rules and outputting the most used characters with counts a
 		}
 
 		if useTUI {
+			if jsonFile != "" {
+				logger.Info("Starting TUI mode from JSON file", "file", jsonFile)
+				err := tui.RunTUIFromJSON(jsonFile)
+				if err != nil {
+					fmt.Printf("TUI error: %v\n", err)
+					os.Exit(1)
+				}
+				return
+			}
 			logger.Info("Starting TUI mode", "directory", dir, "verbosity", verboseCount, "workers", workerCount, "includeDotfiles", includeDotfiles, "asciiOnly", asciiOnly)
 			err := tui.RunTUI(dir, showPercentages, workerCount, includeDotfiles, asciiOnly)
 			if err != nil {
@@ -87,4 +102,5 @@ func init() {
 	rootCmd.Flags().BoolVar(&asciiOnly, "ascii-only", true, "Count only ASCII characters. Use --ascii-only=false to include all Unicode characters")
 	rootCmd.Flags().BoolVar(&useTUI, "tui", false, "Launch interactive TUI interface")
 	rootCmd.Flags().BoolVarP(&includeMetadata, "metadata", "m", true, "Include metadata in JSON output (directory, file counts, timing info) (default true)")
+	rootCmd.Flags().StringVarP(&jsonFile, "from-json", "j", "", "Load data from JSON file and launch TUI (requires --tui flag)")
 }

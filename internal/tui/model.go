@@ -155,7 +155,49 @@ func NewModel(directory string, showPercentages bool, workerCount int, includeDo
 	}
 }
 
+func NewModelFromJSON(jsonOutput counter.JSONOutput) Model {
+	model := Model{
+		directory:         "from JSON file",
+		showPercentages:   true,
+		charCounts:        jsonOutput.Result,
+		ready:             true,
+		loading:           false,
+		filterMode:        FilterAll,
+		excludeWhitespace: true,
+	}
+
+	if jsonOutput.Metadata != nil {
+		model.directory = jsonOutput.Metadata.Directory
+		model.result = counter.AnalysisResult{
+			CharCounts:   jsonOutput.Result,
+			FilesFound:   jsonOutput.Metadata.FilesFound,
+			FilesIgnored: jsonOutput.Metadata.FilesIgnored,
+			TotalChars:   jsonOutput.Metadata.TotalCharacters,
+			UniqueChars:  jsonOutput.Metadata.UniqueChars,
+			Timing:       jsonOutput.Metadata.Timing,
+		}
+	} else {
+		totalChars := 0
+		for _, c := range jsonOutput.Result {
+			totalChars += c.Count
+		}
+		model.result = counter.AnalysisResult{
+			CharCounts:   jsonOutput.Result,
+			FilesFound:   0,
+			FilesIgnored: 0,
+			TotalChars:   totalChars,
+			UniqueChars:  len(jsonOutput.Result),
+		}
+	}
+
+	model.applyFilter()
+	return model
+}
+
 func (m Model) Init() tea.Cmd {
+	if m.ready {
+		return tea.EnterAltScreen
+	}
 	return tea.Batch(
 		startAnalysis(m.directory, m.workerCount, m.includeDotfiles, m.asciiOnly),
 		tea.EnterAltScreen,
