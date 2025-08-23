@@ -7,7 +7,7 @@ I used it to decide which keys I wanted to remap, based on the frequency of use 
 ## Installation
 
 ```sh
-brew install symbolista
+brew install --cask ogdakke/homebrew-tap/symbolista
 ```
 
 or use go
@@ -19,18 +19,21 @@ go install github.com/ogdakke/symbolista@latest
 ## Usage
 
 ```sh
-symbolista [directory] [flags]
+Usage:
+  symbolista [directory] [flags]
 
 Flags:
-    --ascii-only         Count only ASCII characters (0-127). Use --ascii-only=false to include all Unicode characters (default true)
--f, --format string      Output format (table, json, csv) (default "table")
--h, --help               help for symbolista
-    --include-dotfiles   Include dotfiles in analysis (by default dotfiles are ignored)
--p, --percentages        Show percentages in output (default true)
-    --tui                Launch interactive TUI interface
--V, --verbose count      Increase verbosity (-V info, -VV debug, -VVV trace)
--v, --version            Show version and exit
--w, --workers int        Number of worker goroutines (0 = auto-detect based on CPU cores) (default 0)
+      --ascii-only         Count only ASCII characters. Use --ascii-only=false to include all Unicode characters (default true)
+  -f, --format string      Output format (table, json, csv) (default "table")
+  -j, --from-json string   Load data from JSON file and launch TUI (requires --tui flag)
+  -h, --help               help for symbolista
+      --include-dotfiles   Include dotfiles in analysis (default false)
+  -m, --metadata           Include metadata in JSON output (directory, file counts, timing info) (default true) (default true)
+  -p, --percentages        Show percentages in output (default true)
+      --tui                Launch interactive TUI interface
+  -V, --verbose count      Increase verbosity (-V info, -VV debug, -VVV trace)
+  -v, --version            Show version and exit
+  -w, --workers int        Number of worker goroutines (0 = auto-detect based on CPU cores) (default 0)
 ```
 
 ## Development
