@@ -6,17 +6,26 @@ import (
 )
 
 type FileJob struct {
-	Path      string
-	Content   []byte
-	AsciiOnly bool
+	Path           string
+	Content        []byte
+	AsciiOnly      bool
+	SequenceConfig SequenceConfig
+}
+
+type SequenceConfig struct {
+	Enabled   bool
+	MinLength int
+	MaxLength int
+	Threshold int
 }
 
 type ProgressCallback func(filesFound, filesProcessed int)
 
 type CharCountResult struct {
-	CharMap   map[rune]int
-	FileCount int
-	CharCount int
+	CharMap     map[rune]int
+	SequenceMap map[string]int
+	FileCount   int
+	CharCount   int
 }
 
 type WorkerPool struct {
@@ -28,21 +37,23 @@ type WorkerPool struct {
 }
 
 type ResultCollector struct {
-	totalCharMap map[rune]int
-	totalFiles   int
-	totalChars   int
-	filesFound   int
-	filesIgnored int
-	mu           sync.RWMutex
+	totalCharMap     map[rune]int
+	totalSequenceMap map[string]int
+	totalFiles       int
+	totalChars       int
+	filesFound       int
+	filesIgnored     int
+	mu               sync.RWMutex
 }
 
 func NewResultCollector() *ResultCollector {
 	return &ResultCollector{
-		totalCharMap: make(map[rune]int),
-		totalFiles:   0,
-		totalChars:   0,
-		filesFound:   0,
-		filesIgnored: 0,
+		totalCharMap:     make(map[rune]int),
+		totalSequenceMap: make(map[string]int),
+		totalFiles:       0,
+		totalChars:       0,
+		filesFound:       0,
+		filesIgnored:     0,
 	}
 }
 
@@ -52,6 +63,9 @@ func (rc *ResultCollector) AddResult(result CharCountResult) {
 
 	for char, count := range result.CharMap {
 		rc.totalCharMap[char] += count
+	}
+	for seq, count := range result.SequenceMap {
+		rc.totalSequenceMap[seq] += count
 	}
 	rc.totalFiles += result.FileCount
 	rc.totalChars += result.CharCount
@@ -69,13 +83,15 @@ func (rc *ResultCollector) IncrementIgnored() {
 	rc.filesIgnored++
 }
 
-func (rc *ResultCollector) GetResults() (map[rune]int, int, int, int, int) {
+func (rc *ResultCollector) GetResults() (map[rune]int, map[string]int, int, int, int, int) {
 	rc.mu.RLock()
 	defer rc.mu.RUnlock()
 
-	// Create a copy to avoid data races
+	// Create copies to avoid data races
 	charMapCopy := make(map[rune]int)
+	sequenceMapCopy := make(map[string]int)
 	maps.Copy(charMapCopy, rc.totalCharMap)
+	maps.Copy(sequenceMapCopy, rc.totalSequenceMap)
 
-	return charMapCopy, rc.totalFiles, rc.totalChars, rc.filesFound, rc.filesIgnored
+	return charMapCopy, sequenceMapCopy, rc.totalFiles, rc.totalChars, rc.filesFound, rc.filesIgnored
 }

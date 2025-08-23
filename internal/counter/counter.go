@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ogdakke/symbolista/internal/concurrent"
 	"github.com/ogdakke/symbolista/internal/ignorer"
 	"github.com/ogdakke/symbolista/internal/logger"
 	"github.com/ogdakke/symbolista/internal/traversal"
@@ -19,6 +20,23 @@ type CharCount struct {
 	Count      int     `json:"count"`
 	Percentage float64 `json:"percentage"`
 }
+
+type SequenceCount struct {
+	Sequence   string  `json:"sequence"`
+	Count      int     `json:"count"`
+	Percentage float64 `json:"percentage"`
+}
+
+type SequenceCounts []SequenceCount
+
+func (s SequenceCounts) Len() int { return len(s) }
+func (s SequenceCounts) Less(i, j int) bool {
+	if s[i].Count != s[j].Count {
+		return s[i].Count > s[j].Count
+	}
+	return s[i].Sequence < s[j].Sequence
+}
+func (s SequenceCounts) Swap(i, j int) { s[i], s[j] = s[j], s[i] }
 
 type CharCounts []CharCount
 
@@ -40,12 +58,14 @@ type TimingBreakdown struct {
 }
 
 type AnalysisResult struct {
-	CharCounts   CharCounts
-	FilesFound   int
-	FilesIgnored int
-	TotalChars   int
-	UniqueChars  int
-	Timing       TimingBreakdown
+	CharCounts      CharCounts
+	SequenceCounts  SequenceCounts
+	FilesFound      int
+	FilesIgnored    int
+	TotalChars      int
+	UniqueChars     int
+	UniqueSequences int
+	Timing          TimingBreakdown
 }
 
 type JSONMetadata struct {
@@ -58,8 +78,13 @@ type JSONMetadata struct {
 	Timing          TimingBreakdown `json:"timing"`
 }
 
+type JSONResult struct {
+	Characters CharCounts     `json:"characters"`
+	Sequences  SequenceCounts `json:"sequences"`
+}
+
 type JSONOutput struct {
-	Result   CharCounts    `json:"result"`
+	Result   JSONResult    `json:"result"`
 	Metadata *JSONMetadata `json:"metadata,omitempty"`
 }
 
@@ -67,7 +92,7 @@ func CountSymbols(directory, format string, showPercentages bool) {
 	CountSymbolsConcurrent(directory, format, showPercentages, 0, false, true, false)
 }
 
-func AnalyzeSymbols(directory string, workerCount int, includeDotfiles bool, asciiOnly bool, progressCallback func(filesFound, filesProcessed int)) (AnalysisResult, error) {
+func AnalyzeSymbols(directory string, workerCount int, includeDotfiles bool, asciiOnly bool, sequenceConfig concurrent.SequenceConfig, progressCallback func(filesFound, filesProcessed int)) (AnalysisResult, error) {
 	startTime := time.Now()
 
 	logger.Info("Initializing gitignore matcher", "directory", directory, "includeDotfiles", includeDotfiles)
@@ -83,7 +108,7 @@ func AnalyzeSymbols(directory string, workerCount int, includeDotfiles bool, asc
 	logger.Info("Starting concurrent file traversal and character counting")
 	traversalStart := time.Now()
 
-	result, err := traversal.WalkDirectoryConcurrent(directory, matcher.Matcher, workerCount, asciiOnly, progressCallback)
+	result, err := traversal.WalkDirectoryConcurrent(directory, matcher.Matcher, workerCount, asciiOnly, sequenceConfig, progressCallback)
 	traversalDuration := time.Since(traversalStart)
 
 	if err != nil {
@@ -94,6 +119,7 @@ func AnalyzeSymbols(directory string, workerCount int, includeDotfiles bool, asc
 	gitignoreDuration := matcher.GetTotalTime()
 
 	charMap := result.CharMap
+	sequenceMap := result.SequenceMap
 	totalChars := result.TotalChars
 	processedFiles := result.FileCount
 	filesFound := result.FilesFound
@@ -108,6 +134,8 @@ func AnalyzeSymbols(directory string, workerCount int, includeDotfiles bool, asc
 		"traversal_duration", traversalDuration)
 
 	sortingStart := time.Now()
+
+	// Process character counts
 	var counts CharCounts
 	for char, count := range charMap {
 		percentage := float64(count) / float64(totalChars) * 100
@@ -117,10 +145,27 @@ func AnalyzeSymbols(directory string, workerCount int, includeDotfiles bool, asc
 			Percentage: percentage,
 		})
 	}
-
 	sort.Sort(counts)
+
+	// Process sequence counts
+	var sequenceCounts SequenceCounts
+	totalSequences := 0
+	for _, count := range sequenceMap {
+		totalSequences += count
+	}
+
+	for sequence, count := range sequenceMap {
+		percentage := float64(count) / float64(totalSequences) * 100
+		sequenceCounts = append(sequenceCounts, SequenceCount{
+			Sequence:   sequence,
+			Count:      count,
+			Percentage: percentage,
+		})
+	}
+	sort.Sort(sequenceCounts)
+
 	sortingDuration := time.Since(sortingStart)
-	logger.Debug("Character counts sorted", "unique_chars", len(counts), "duration", sortingDuration)
+	logger.Debug("Counts sorted", "unique_chars", len(counts), "unique_sequences", len(sequenceCounts), "duration", sortingDuration)
 
 	totalDuration := time.Since(startTime)
 
@@ -139,12 +184,14 @@ func AnalyzeSymbols(directory string, workerCount int, includeDotfiles bool, asc
 		"sorting_duration", sortingDuration)
 
 	return AnalysisResult{
-		CharCounts:   counts,
-		FilesFound:   filesFound,
-		FilesIgnored: filesIgnored,
-		TotalChars:   totalChars,
-		UniqueChars:  len(charMap),
-		Timing:       timing,
+		CharCounts:      counts,
+		SequenceCounts:  sequenceCounts,
+		FilesFound:      filesFound,
+		FilesIgnored:    filesIgnored,
+		TotalChars:      totalChars,
+		UniqueChars:     len(charMap),
+		UniqueSequences: len(sequenceMap),
+		Timing:          timing,
 	}, nil
 }
 
@@ -156,7 +203,15 @@ func CountSymbolsConcurrent(directory, format string, showPercentages bool, work
 		fmt.Fprintf(os.Stderr, "\rFiles found: %d, Processed: %d", filesFound, filesProcessed)
 	}
 
-	result, err := AnalyzeSymbols(directory, workerCount, includeDotfiles, asciiOnly, progressFunc)
+	// Default sequence config - enabled with reasonable threshold
+	sequenceConfig := concurrent.SequenceConfig{
+		Enabled:   true,
+		MinLength: 2,
+		MaxLength: 3,
+		Threshold: 2,
+	}
+
+	result, err := AnalyzeSymbols(directory, workerCount, includeDotfiles, asciiOnly, sequenceConfig, progressFunc)
 
 	fmt.Fprintf(os.Stderr, "\n")
 
@@ -172,10 +227,10 @@ func CountSymbolsConcurrent(directory, format string, showPercentages bool, work
 		outputJSON(result.CharCounts, showPercentages, directory, result, includeMetadata)
 	case "csv":
 		logger.Debug("Outputting results as CSV")
-		outputCSV(result.CharCounts, showPercentages)
+		outputCSV(result.CharCounts, result.SequenceCounts, showPercentages)
 	default:
 		logger.Debug("Outputting results as table")
-		outputTable(result.CharCounts, showPercentages)
+		outputTable(result.CharCounts, result.SequenceCounts, showPercentages)
 	}
 	outputDuration := time.Since(outputStart)
 
@@ -196,7 +251,9 @@ func CountSymbolsConcurrent(directory, format string, showPercentages bool, work
 	fmt.Fprintf(os.Stderr, "Total time: %s\n", totalDuration)
 }
 
-func outputTable(counts CharCounts, showPercentages bool) {
+func outputTable(counts CharCounts, sequences SequenceCounts, showPercentages bool) {
+	// Characters table
+	fmt.Println("Characters:")
 	fmt.Println(strings.Repeat("-", 35))
 	fmt.Printf("%-10s %-10s", "Character", "Count")
 	if showPercentages {
@@ -213,6 +270,27 @@ func outputTable(counts CharCounts, showPercentages bool) {
 		fmt.Println()
 	})
 	fmt.Println(strings.Repeat("-", 35))
+
+	// Sequences table (if sequences exist)
+	if len(sequences) > 0 {
+		fmt.Printf("\nSequences (2-3 chars):\n")
+		fmt.Println(strings.Repeat("-", 35))
+		fmt.Printf("%-10s %-10s", "Sequence", "Count")
+		if showPercentages {
+			fmt.Printf(" %-12s", "Percentage")
+		}
+		fmt.Println()
+		fmt.Println(strings.Repeat("-", 35))
+
+		for _, seq := range sequences {
+			fmt.Printf("%-10s %-10d", seq.Sequence, seq.Count)
+			if showPercentages {
+				fmt.Printf(" %-12.2f%%", seq.Percentage)
+			}
+			fmt.Println()
+		}
+		fmt.Println(strings.Repeat("-", 35))
+	}
 }
 
 func outputJSON(counts CharCounts, showPercentages bool, directory string, result AnalysisResult, includeMetadata bool) {
@@ -223,7 +301,10 @@ func outputJSON(counts CharCounts, showPercentages bool, directory string, resul
 	}
 
 	output := JSONOutput{
-		Result: counts,
+		Result: JSONResult{
+			Characters: counts,
+			Sequences:  result.SequenceCounts,
+		},
 	}
 
 	if includeMetadata {
@@ -246,23 +327,33 @@ func outputJSON(counts CharCounts, showPercentages bool, directory string, resul
 	fmt.Println(string(data))
 }
 
-func outputCSV(counts CharCounts, showPercentages bool) {
+func outputCSV(counts CharCounts, sequences SequenceCounts, showPercentages bool) {
 	writer := csv.NewWriter(os.Stdout)
 	defer writer.Flush()
 
-	headers := []string{"Character", "Count"}
+	headers := []string{"type", "sequence", "count"}
 	if showPercentages {
-		headers = append(headers, "Percentage")
+		headers = append(headers, "percentage")
 	}
 	writer.Write(headers)
 
+	// Write character data
 	formatChars(counts, func(char string, count int, percentage float64) {
-		row := []string{char, fmt.Sprintf("%d", count)}
+		row := []string{"character", char, fmt.Sprintf("%d", count)}
 		if showPercentages {
 			row = append(row, fmt.Sprintf("%.2f%%", percentage))
 		}
 		writer.Write(row)
 	})
+
+	// Write sequence data
+	for _, seq := range sequences {
+		row := []string{"sequence", seq.Sequence, fmt.Sprintf("%d", seq.Count)}
+		if showPercentages {
+			row = append(row, fmt.Sprintf("%.2f%%", seq.Percentage))
+		}
+		writer.Write(row)
+	}
 }
 
 type OnCharFunc func(char string, count int, percentage float64)

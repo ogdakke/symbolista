@@ -70,16 +70,18 @@ func WalkDirectory(rootPath string, matcher *ignorer.Matcher, processor FileProc
 }
 
 type ConcurrentResult struct {
-	CharMap      map[rune]int
-	FileCount    int
-	FilesFound   int
-	FilesIgnored int
-	TotalChars   int
-	UniqueChars  int
+	CharMap         map[rune]int
+	SequenceMap     map[string]int
+	FileCount       int
+	FilesFound      int
+	FilesIgnored    int
+	TotalChars      int
+	UniqueChars     int
+	UniqueSequences int
 }
 
 // WalkDirectoryConcurrent processes files using a worker pool and returns aggregated results
-func WalkDirectoryConcurrent(rootPath string, matcher *ignorer.Matcher, workerCount int, asciiOnly bool, progressCallback concurrent.ProgressCallback) (ConcurrentResult, error) {
+func WalkDirectoryConcurrent(rootPath string, matcher *ignorer.Matcher, workerCount int, asciiOnly bool, sequenceConfig concurrent.SequenceConfig, progressCallback concurrent.ProgressCallback) (ConcurrentResult, error) {
 	if workerCount <= 0 {
 		workerCount = runtime.NumCPU()
 	}
@@ -92,7 +94,7 @@ func WalkDirectoryConcurrent(rootPath string, matcher *ignorer.Matcher, workerCo
 	pool.Start()
 
 	var discoveryError error
-	go concurrent.DiscoverFiles(rootPath, matcher, pool.Jobs(), asciiOnly, collector, progressCallback, func(err error) {
+	go concurrent.DiscoverFiles(rootPath, matcher, pool.Jobs(), asciiOnly, sequenceConfig, collector, progressCallback, func(err error) {
 		if discoveryError == nil {
 			discoveryError = err
 		}
@@ -109,7 +111,7 @@ func WalkDirectoryConcurrent(rootPath string, matcher *ignorer.Matcher, workerCo
 	}
 
 	// Get aggregated results
-	charMap, fileCount, totalChars, filesFound, filesIgnored := collector.GetResults()
+	charMap, sequenceMap, fileCount, totalChars, filesFound, filesIgnored := collector.GetResults()
 
 	logger.Debug("Concurrent processing completed",
 		"files_processed", fileCount,
@@ -120,11 +122,13 @@ func WalkDirectoryConcurrent(rootPath string, matcher *ignorer.Matcher, workerCo
 		"workers", workerCount)
 
 	return ConcurrentResult{
-		CharMap:      charMap,
-		FileCount:    fileCount,
-		FilesFound:   filesFound,
-		FilesIgnored: filesIgnored,
-		TotalChars:   totalChars,
-		UniqueChars:  len(charMap),
+		CharMap:         charMap,
+		SequenceMap:     sequenceMap,
+		FileCount:       fileCount,
+		FilesFound:      filesFound,
+		FilesIgnored:    filesIgnored,
+		TotalChars:      totalChars,
+		UniqueChars:     len(charMap),
+		UniqueSequences: len(sequenceMap),
 	}, nil
 }

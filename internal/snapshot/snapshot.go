@@ -8,6 +8,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/ogdakke/symbolista/internal/concurrent"
 	"github.com/ogdakke/symbolista/internal/counter"
 )
 
@@ -54,7 +55,10 @@ func (st *SnapshotTester) Test(t *testing.T, testName string, testDir string, op
 	// Add JSON output if format is JSON
 	if options.OutputFormat == "json" {
 		jsonOutput := counter.JSONOutput{
-			Result: result.CharCounts,
+			Result: counter.JSONResult{
+				Characters: result.CharCounts,
+				Sequences:  result.SequenceCounts,
+			},
 			Metadata: &counter.JSONMetadata{
 				Directory:       testDir,
 				FilesFound:      result.FilesFound,
@@ -78,7 +82,13 @@ func (st *SnapshotTester) Test(t *testing.T, testName string, testDir string, op
 }
 
 func (st *SnapshotTester) runAnalysis(testDir string, options TestOptions) counter.AnalysisResult {
-	result, err := counter.AnalyzeSymbols(testDir, options.WorkerCount, options.IncludeDotfiles, options.ASCIIOnly, nil)
+	sequenceConfig := concurrent.SequenceConfig{
+		Enabled:   false,
+		MinLength: 2,
+		MaxLength: 3,
+		Threshold: 1,
+	}
+	result, err := counter.AnalyzeSymbols(testDir, options.WorkerCount, options.IncludeDotfiles, options.ASCIIOnly, sequenceConfig, nil)
 	if err != nil {
 		panic(fmt.Sprintf("Analysis failed: %v", err))
 	}

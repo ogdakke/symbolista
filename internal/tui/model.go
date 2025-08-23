@@ -9,6 +9,7 @@ import (
 	"github.com/NimbleMarkets/ntcharts/barchart"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/ogdakke/symbolista/internal/concurrent"
 	"github.com/ogdakke/symbolista/internal/counter"
 	"github.com/ogdakke/symbolista/internal/logger"
 )
@@ -28,6 +29,13 @@ const (
 	LabelPercentage
 )
 
+type ViewMode int
+
+const (
+	ViewCharacters ViewMode = iota
+	ViewSequences
+)
+
 type Model struct {
 	directory       string
 	showPercentages bool
@@ -36,12 +44,15 @@ type Model struct {
 	asciiOnly       bool
 
 	charCounts        counter.CharCounts
+	sequenceCounts    counter.SequenceCounts
 	filteredCounts    counter.CharCounts
+	filteredSequences counter.SequenceCounts
 	chart             barchart.Model
 	ready             bool
 	loading           bool
 	err               error
 	filterMode        FilterMode
+	viewMode          ViewMode
 	excludeWhitespace bool
 
 	width  int
@@ -87,7 +98,9 @@ func isWhitespace(r rune) bool {
 
 func (m *Model) applyFilter() {
 	m.filteredCounts = m.filteredCounts[:0]
+	m.filteredSequences = m.filteredSequences[:0]
 
+	// Filter characters
 	for _, charCount := range m.charCounts {
 		if len(charCount.Char) == 0 {
 			continue
@@ -113,7 +126,59 @@ func (m *Model) applyFilter() {
 		}
 	}
 
+	// Filter sequences (apply basic filtering)
+	for _, seqCount := range m.sequenceCounts {
+		// For sequences, we apply less strict filtering
+		// Only exclude if all characters in sequence are whitespace (shouldn't happen due to extraction logic)
+		includeSequence := true
+
+		if m.excludeWhitespace {
+			allWhitespace := true
+			for _, r := range seqCount.Sequence {
+				if !isWhitespace(r) {
+					allWhitespace = false
+					break
+				}
+			}
+			if allWhitespace {
+				includeSequence = false
+			}
+		}
+
+		if includeSequence {
+			switch m.filterMode {
+			case FilterAll:
+				m.filteredSequences = append(m.filteredSequences, seqCount)
+			case FilterLettersNumbers:
+				// Include if sequence contains any letters/numbers
+				hasLetterNumber := false
+				for _, r := range seqCount.Sequence {
+					if isLetterOrNumber(r) {
+						hasLetterNumber = true
+						break
+					}
+				}
+				if hasLetterNumber {
+					m.filteredSequences = append(m.filteredSequences, seqCount)
+				}
+			case FilterSymbols:
+				// Include if sequence contains any symbols
+				hasSymbol := false
+				for _, r := range seqCount.Sequence {
+					if isSymbol(r) {
+						hasSymbol = true
+						break
+					}
+				}
+				if hasSymbol {
+					m.filteredSequences = append(m.filteredSequences, seqCount)
+				}
+			}
+		}
+	}
+
 	sort.Sort(m.filteredCounts)
+	sort.Sort(m.filteredSequences)
 
 	m.scrollOffset = 0
 }
@@ -142,6 +207,17 @@ func (m LabelMode) String() string {
 	}
 }
 
+func (v ViewMode) String() string {
+	switch v {
+	case ViewCharacters:
+		return "Characters"
+	case ViewSequences:
+		return "Sequences"
+	default:
+		return "Characters"
+	}
+}
+
 func NewModel(directory string, showPercentages bool, workerCount int, includeDotfiles bool, asciiOnly bool) Model {
 	return Model{
 		directory:         directory,
@@ -151,6 +227,7 @@ func NewModel(directory string, showPercentages bool, workerCount int, includeDo
 		asciiOnly:         asciiOnly,
 		loading:           true,
 		filterMode:        FilterAll,
+		viewMode:          ViewCharacters,
 		excludeWhitespace: true,
 	}
 }
@@ -159,34 +236,40 @@ func NewModelFromJSON(jsonOutput counter.JSONOutput) Model {
 	model := Model{
 		directory:         "from JSON file",
 		showPercentages:   true,
-		charCounts:        jsonOutput.Result,
+		charCounts:        jsonOutput.Result.Characters,
+		sequenceCounts:    jsonOutput.Result.Sequences,
 		ready:             true,
 		loading:           false,
 		filterMode:        FilterAll,
+		viewMode:          ViewCharacters,
 		excludeWhitespace: true,
 	}
 
 	if jsonOutput.Metadata != nil {
 		model.directory = jsonOutput.Metadata.Directory
 		model.result = counter.AnalysisResult{
-			CharCounts:   jsonOutput.Result,
-			FilesFound:   jsonOutput.Metadata.FilesFound,
-			FilesIgnored: jsonOutput.Metadata.FilesIgnored,
-			TotalChars:   jsonOutput.Metadata.TotalCharacters,
-			UniqueChars:  jsonOutput.Metadata.UniqueChars,
-			Timing:       jsonOutput.Metadata.Timing,
+			CharCounts:      jsonOutput.Result.Characters,
+			SequenceCounts:  jsonOutput.Result.Sequences,
+			FilesFound:      jsonOutput.Metadata.FilesFound,
+			FilesIgnored:    jsonOutput.Metadata.FilesIgnored,
+			TotalChars:      jsonOutput.Metadata.TotalCharacters,
+			UniqueChars:     jsonOutput.Metadata.UniqueChars,
+			UniqueSequences: len(jsonOutput.Result.Sequences),
+			Timing:          jsonOutput.Metadata.Timing,
 		}
 	} else {
 		totalChars := 0
-		for _, c := range jsonOutput.Result {
+		for _, c := range jsonOutput.Result.Characters {
 			totalChars += c.Count
 		}
 		model.result = counter.AnalysisResult{
-			CharCounts:   jsonOutput.Result,
-			FilesFound:   0,
-			FilesIgnored: 0,
-			TotalChars:   totalChars,
-			UniqueChars:  len(jsonOutput.Result),
+			CharCounts:      jsonOutput.Result.Characters,
+			SequenceCounts:  jsonOutput.Result.Sequences,
+			FilesFound:      0,
+			FilesIgnored:    0,
+			TotalChars:      totalChars,
+			UniqueChars:     len(jsonOutput.Result.Characters),
+			UniqueSequences: len(jsonOutput.Result.Sequences),
 		}
 	}
 
@@ -247,7 +330,15 @@ func startAnalysis(directory string, workerCount int, includeDotfiles bool, asci
 				}
 			}
 
-			result, err := counter.AnalyzeSymbols(directory, workerCount, includeDotfiles, asciiOnly, progressFunc)
+			// Default sequence config - enabled
+			sequenceConfig := concurrent.SequenceConfig{
+				Enabled:   true,
+				MinLength: 2,
+				MaxLength: 3,
+				Threshold: 2,
+			}
+
+			result, err := counter.AnalyzeSymbols(directory, workerCount, includeDotfiles, asciiOnly, sequenceConfig, progressFunc)
 
 			doneChan <- analysisCompleteMsg{
 				result: result,
@@ -299,6 +390,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		m.result = msg.result
 		m.charCounts = msg.result.CharCounts
+		m.sequenceCounts = msg.result.SequenceCounts
 		m.ready = true
 		m.applyFilter()
 		m.updateChart()
@@ -344,9 +436,18 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.updateChart()
 			}
 		case "right":
-			if m.ready && m.scrollOffset < len(m.filteredCounts)-m.maxVisible {
-				m.scrollOffset++
-				m.updateChart()
+			if m.ready {
+				var maxItems int
+				switch m.viewMode {
+				case ViewCharacters:
+					maxItems = len(m.filteredCounts)
+				case ViewSequences:
+					maxItems = len(m.filteredSequences)
+				}
+				if m.scrollOffset < maxItems-m.maxVisible {
+					m.scrollOffset++
+					m.updateChart()
+				}
 			}
 		case "home":
 			if m.ready {
@@ -354,13 +455,29 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.updateChart()
 			}
 		case "end":
-			if m.ready && len(m.filteredCounts) > m.maxVisible {
-				m.scrollOffset = len(m.filteredCounts) - m.maxVisible
-				m.updateChart()
+			if m.ready {
+				var maxItems int
+				switch m.viewMode {
+				case ViewCharacters:
+					maxItems = len(m.filteredCounts)
+				case ViewSequences:
+					maxItems = len(m.filteredSequences)
+				}
+				if maxItems > m.maxVisible {
+					m.scrollOffset = maxItems - m.maxVisible
+					m.updateChart()
+				}
 			}
 		case "t":
 			if m.ready {
 				m.labelMode = (m.labelMode + 1) % 2
+				m.updateChart()
+			}
+		case "v":
+			if m.ready {
+				m.viewMode = (m.viewMode + 1) % 2
+				m.scrollOffset = 0 // Reset scroll when switching views
+				m.applyFilter()
 				m.updateChart()
 			}
 		}
@@ -370,7 +487,20 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m *Model) updateChart() {
-	if !m.ready || len(m.filteredCounts) == 0 {
+	if !m.ready {
+		return
+	}
+
+	// Check if we have data for the current view mode
+	var dataLen int
+	switch m.viewMode {
+	case ViewCharacters:
+		dataLen = len(m.filteredCounts)
+	case ViewSequences:
+		dataLen = len(m.filteredSequences)
+	}
+
+	if dataLen == 0 {
 		return
 	}
 
@@ -388,15 +518,14 @@ func (m *Model) updateChart() {
 	m.chart = barchart.New(chartWidth, chartHeight)
 
 	// Calculate how many items can fit based on average label width
-	// Each bar with label needs roughly 11 characters of space
 	estimatedLabelWidth := 11
-	m.maxVisible = min(chartWidth/estimatedLabelWidth, len(m.filteredCounts), 25)
+	m.maxVisible = min(chartWidth/estimatedLabelWidth, dataLen, 25)
 
 	// Ensure scroll offset is within bounds
 	if m.scrollOffset < 0 {
 		m.scrollOffset = 0
 	}
-	maxScrollOffset := max(0, len(m.filteredCounts)-m.maxVisible)
+	maxScrollOffset := max(0, dataLen-m.maxVisible)
 	if m.scrollOffset > maxScrollOffset {
 		m.scrollOffset = maxScrollOffset
 	}
@@ -406,54 +535,89 @@ func (m *Model) updateChart() {
 
 	// Calculate visible range
 	startIndex := m.scrollOffset
-	endIndex := min(startIndex+m.maxVisible, len(m.filteredCounts))
+	endIndex := min(startIndex+m.maxVisible, dataLen)
 
-	for i := startIndex; i < endIndex; i++ {
-		char := m.filteredCounts[i]
-		displayChar := char.Char
+	switch m.viewMode {
+	case ViewCharacters:
+		for i := startIndex; i < endIndex; i++ {
+			char := m.filteredCounts[i]
+			displayChar := char.Char
 
-		switch char.Char {
-		case " ":
-			displayChar = "⎵"
-		case "\t":
-			displayChar = "⇥"
-		case "\n":
-			displayChar = "↵"
-		case "\r":
-			displayChar = "⏎"
-		}
-
-		// Use original index for color consistency across scrolling
-		color := colors[i%len(colors)]
-
-		// Format the value based on label mode
-		var valueStr string
-		switch m.labelMode {
-		case LabelCount:
-			if char.Count >= 1000000 {
-				valueStr = fmt.Sprintf("%.1fM", float64(char.Count)/1000000)
-			} else if char.Count >= 1000 {
-				valueStr = fmt.Sprintf("%.1fk", float64(char.Count)/1000)
-			} else {
-				valueStr = strconv.Itoa(char.Count)
+			switch char.Char {
+			case " ":
+				displayChar = "⎵"
+			case "\t":
+				displayChar = "⇥"
+			case "\n":
+				displayChar = "↵"
+			case "\r":
+				displayChar = "⏎"
 			}
-		case LabelPercentage:
-			valueStr = fmt.Sprintf("%.1f%%", char.Percentage)
+
+			// Use original index for color consistency across scrolling
+			color := colors[i%len(colors)]
+
+			// Format the value based on label mode
+			var valueStr string
+			switch m.labelMode {
+			case LabelCount:
+				if char.Count >= 1000000 {
+					valueStr = fmt.Sprintf("%.1fM", float64(char.Count)/1000000)
+				} else if char.Count >= 1000 {
+					valueStr = fmt.Sprintf("%.1fk", float64(char.Count)/1000)
+				} else {
+					valueStr = strconv.Itoa(char.Count)
+				}
+			case LabelPercentage:
+				valueStr = fmt.Sprintf("%.1f%%", char.Percentage)
+			}
+
+			labelWithCount := fmt.Sprintf("%s:%s", displayChar, valueStr)
+
+			barData = append(barData, barchart.BarData{
+				Label: labelWithCount,
+				Values: []barchart.BarValue{
+					{Name: strconv.Itoa(char.Count), Value: float64(char.Count), Style: lipgloss.NewStyle().Foreground(lipgloss.Color(color))},
+				},
+			})
 		}
 
-		labelWithCount := fmt.Sprintf("%s:%s", displayChar, valueStr)
+	case ViewSequences:
+		for i := startIndex; i < endIndex; i++ {
+			seq := m.filteredSequences[i]
+			displaySeq := seq.Sequence
 
-		barData = append(barData, barchart.BarData{
-			Label: labelWithCount,
-			Values: []barchart.BarValue{
-				{Name: strconv.Itoa(char.Count), Value: float64(char.Count), Style: lipgloss.NewStyle().Foreground(lipgloss.Color(color))},
-			},
-		})
+			// Use original index for color consistency across scrolling
+			color := colors[i%len(colors)]
+
+			// Format the value based on label mode
+			var valueStr string
+			switch m.labelMode {
+			case LabelCount:
+				if seq.Count >= 1000000 {
+					valueStr = fmt.Sprintf("%.1fM", float64(seq.Count)/1000000)
+				} else if seq.Count >= 1000 {
+					valueStr = fmt.Sprintf("%.1fk", float64(seq.Count)/1000)
+				} else {
+					valueStr = strconv.Itoa(seq.Count)
+				}
+			case LabelPercentage:
+				valueStr = fmt.Sprintf("%.1f%%", seq.Percentage)
+			}
+
+			labelWithCount := fmt.Sprintf("%s:%s", displaySeq, valueStr)
+
+			barData = append(barData, barchart.BarData{
+				Label: labelWithCount,
+				Values: []barchart.BarValue{
+					{Name: strconv.Itoa(seq.Count), Value: float64(seq.Count), Style: lipgloss.NewStyle().Foreground(lipgloss.Color(color))},
+				},
+			})
+		}
 	}
 
 	m.chart.PushAll(barData)
 	m.chart.Draw()
-
 }
 
 func (m Model) View() string {
@@ -483,17 +647,27 @@ func (m Model) View() string {
 		whitespaceStatus = " | No whitespace"
 	}
 
-	// Create scroll indicator
-	scrollInfo := ""
-	if len(m.filteredCounts) > m.maxVisible {
-		scrollInfo = fmt.Sprintf(" | View: %d-%d/%d", m.scrollOffset+1, min(m.scrollOffset+m.maxVisible, len(m.filteredCounts)), len(m.filteredCounts))
+	// Create scroll indicator and display info based on view mode
+	var scrollInfo string
+	var displayInfo string
+
+	switch m.viewMode {
+	case ViewCharacters:
+		if len(m.filteredCounts) > m.maxVisible {
+			scrollInfo = fmt.Sprintf(" | View: %d-%d/%d", m.scrollOffset+1, min(m.scrollOffset+m.maxVisible, len(m.filteredCounts)), len(m.filteredCounts))
+		}
+		displayInfo = fmt.Sprintf("Directory: %s | Mode: %s | Filter: %s%s | Showing: %d/%d chars%s | Labels: %s",
+			m.directory, m.viewMode.String(), m.filterMode.String(), whitespaceStatus, len(m.filteredCounts), len(m.charCounts), scrollInfo, m.labelMode.String())
+	case ViewSequences:
+		if len(m.filteredSequences) > m.maxVisible {
+			scrollInfo = fmt.Sprintf(" | View: %d-%d/%d", m.scrollOffset+1, min(m.scrollOffset+m.maxVisible, len(m.filteredSequences)), len(m.filteredSequences))
+		}
+		displayInfo = fmt.Sprintf("Directory: %s | Mode: %s | Filter: %s%s | Showing: %d/%d sequences%s | Labels: %s",
+			m.directory, m.viewMode.String(), m.filterMode.String(), whitespaceStatus, len(m.filteredSequences), len(m.sequenceCounts), scrollInfo, m.labelMode.String())
 	}
 
-	// Add label mode indicator
-	labelModeInfo := fmt.Sprintf(" | Labels: %s", m.labelMode.String())
-
-	fileStats := fmt.Sprintf("Found: %d | Processed: %d | Files/dirs ignored: %d | Total chars: %d",
-		m.result.FilesFound, m.result.FilesFound-m.result.FilesIgnored, m.result.FilesIgnored, m.result.TotalChars)
+	fileStats := fmt.Sprintf("Found: %d | Processed: %d | Files/dirs ignored: %d | Total chars: %d | Unique sequences: %d",
+		m.result.FilesFound, m.result.FilesFound-m.result.FilesIgnored, m.result.FilesIgnored, m.result.TotalChars, m.result.UniqueSequences)
 
 	timingStats := fmt.Sprintf("Timing: Total %s | Gitignore %s | Traversal %s | Sorting %s",
 		m.result.Timing.TotalDuration,
@@ -503,7 +677,7 @@ func (m Model) View() string {
 
 	info := lipgloss.NewStyle().
 		Foreground(lipgloss.Color("8")).
-		Render(fmt.Sprintf("Directory: %s | Filter: %s%s | Showing: %d/%d chars%s%s", m.directory, m.filterMode.String(), whitespaceStatus, len(m.filteredCounts), len(m.charCounts), scrollInfo, labelModeInfo))
+		Render(displayInfo)
 
 	stats := lipgloss.NewStyle().
 		Foreground(lipgloss.Color("6")).
@@ -524,7 +698,7 @@ func (m Model) View() string {
 
 	controls := lipgloss.NewStyle().
 		Foreground(lipgloss.Color("8")).
-		Render("Controls: 'a' all | 'l' letters/numbers | 's' symbols | 'w' toggle whitespace | 't' toggle labels | ←→ scroll | home/end | 'r' refresh | 'q' quit")
+		Render("Controls: 'v' view mode | 'a' all | 'l' letters/numbers | 's' symbols | 'w' toggle whitespace | 't' toggle labels | ←→ scroll | home/end | 'r' refresh | 'q' quit")
 
 	return fmt.Sprintf("%s\n%s\n%s\n%s\n\n%s\n\n%s", title, info, stats, timing, chartWindow, controls)
 }

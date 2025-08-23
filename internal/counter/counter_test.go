@@ -65,12 +65,12 @@ func TestOutputJSON(t *testing.T) {
 	}
 	result := jsonOutput.Result
 
-	if len(result) != 2 {
-		t.Errorf("Expected 2 items in JSON output, got %d", len(result))
+	if len(result.Characters) != 2 {
+		t.Errorf("Expected 2 items in JSON output, got %d", len(result.Characters))
 	}
 
-	if result[0].Char != "a" || result[0].Count != 5 || result[0].Percentage != 50.0 {
-		t.Errorf("First JSON item incorrect: %+v", result[0])
+	if result.Characters[0].Char != "a" || result.Characters[0].Count != 5 || result.Characters[0].Percentage != 50.0 {
+		t.Errorf("First JSON item incorrect: %+v", result.Characters[0])
 	}
 }
 
@@ -101,8 +101,8 @@ func TestOutputJSONWithoutPercentages(t *testing.T) {
 	}
 	result := jsonOutput.Result
 
-	if result[0].Percentage != 0 {
-		t.Errorf("Expected percentage to be 0 when showPercentages is false, got %f", result[0].Percentage)
+	if result.Characters[0].Percentage != 0 {
+		t.Errorf("Expected percentage to be 0 when showPercentages is false, got %f", result.Characters[0].Percentage)
 	}
 }
 
@@ -118,7 +118,7 @@ func TestOutputCSV(t *testing.T) {
 	r, w, _ := os.Pipe()
 	os.Stdout = w
 
-	outputCSV(counts, true)
+	outputCSV(counts, SequenceCounts{}, true)
 
 	w.Close()
 	os.Stdout = old
@@ -132,15 +132,26 @@ func TestOutputCSV(t *testing.T) {
 		t.Errorf("Expected 4 lines in CSV output, got %d", len(lines))
 	}
 
-	if !strings.Contains(lines[0], "Character") || !strings.Contains(lines[0], "Count") || !strings.Contains(lines[0], "Percentage") {
+	if !strings.Contains(lines[0], "type") || !strings.Contains(lines[0], "sequence") || !strings.Contains(lines[0], "count") || !strings.Contains(lines[0], "percentage") {
 		t.Errorf("CSV header incorrect: %s", lines[0])
 	}
 
-	if !strings.Contains(lines[2], "<space>") {
-		t.Error("Space character should be formatted as <space>")
+	// Check that character data is present with new format
+	foundSpaceChar := false
+	foundNewlineChar := false
+	for _, line := range lines[1:] { // Skip header
+		if strings.Contains(line, "character,<space>") {
+			foundSpaceChar = true
+		}
+		if strings.Contains(line, "character,<newline>") {
+			foundNewlineChar = true
+		}
 	}
-	if !strings.Contains(lines[3], "<newline>") {
-		t.Error("Newline character should be formatted as <newline>")
+	if !foundSpaceChar {
+		t.Error("Space character should be formatted as <space> with character type")
+	}
+	if !foundNewlineChar {
+		t.Error("Newline character should be formatted as <newline> with character type")
 	}
 }
 
@@ -156,7 +167,7 @@ func TestOutputTable(t *testing.T) {
 	r, w, _ := os.Pipe()
 	os.Stdout = w
 
-	outputTable(counts, true)
+	outputTable(counts, SequenceCounts{}, true)
 
 	w.Close()
 	os.Stdout = old
@@ -192,7 +203,7 @@ func TestOutputTableWithoutPercentages(t *testing.T) {
 	r, w, _ := os.Pipe()
 	os.Stdout = w
 
-	outputTable(counts, false)
+	outputTable(counts, SequenceCounts{}, false)
 
 	w.Close()
 	os.Stdout = old
@@ -252,7 +263,7 @@ func TestCountSymbolsIntegration(t *testing.T) {
 	result := jsonOutput.Result
 
 	found_a := false
-	for _, char := range result {
+	for _, char := range result.Characters {
 		if char.Char == "a" && char.Count == 3 {
 			found_a = true
 			break
@@ -306,7 +317,7 @@ func TestCountSymbolsWithMultipleFormats(t *testing.T) {
 					t.Errorf("Invalid JSON output for format %s: %v", format, err)
 				}
 			case "csv":
-				if !strings.Contains(output, "Character,Count") {
+				if !strings.Contains(output, "type,sequence,count") {
 					t.Errorf("CSV output missing expected header for format %s", format)
 				}
 			case "table":

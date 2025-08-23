@@ -59,11 +59,11 @@ func TestExecuteWithDefaultArgs(t *testing.T) {
 	}
 	result := jsonOutput.Result
 
-	if len(result) != 3 {
-		t.Errorf("Expected 3 characters, got %d", len(result))
+	if len(result.Characters) != 3 {
+		t.Errorf("Expected 3 characters, got %d", len(result.Characters))
 	}
 
-	for _, char := range result {
+	for _, char := range result.Characters {
 		if char.Count != 1 {
 			t.Errorf("Expected count 1 for character %s, got %d", char.Char, char.Count)
 		}
@@ -118,11 +118,11 @@ func TestExecuteWithDirectoryArg(t *testing.T) {
 	}
 	result := jsonOutput.Result
 
-	if len(result) != 3 {
-		t.Errorf("Expected 3 characters, got %d", len(result))
+	if len(result.Characters) != 3 {
+		t.Errorf("Expected 3 characters, got %d", len(result.Characters))
 	}
 
-	for _, char := range result {
+	for _, char := range result.Characters {
 		if char.Percentage != 0 {
 			t.Errorf("Expected percentage 0 when showPercentages is false, got %f", char.Percentage)
 		}
@@ -180,7 +180,7 @@ func TestExecuteWithCSVFormat(t *testing.T) {
 		t.Errorf("Expected at least 2 lines in CSV output, got %d", len(lines))
 	}
 
-	if !strings.Contains(lines[0], "Character") || !strings.Contains(lines[0], "Count") {
+	if !strings.Contains(lines[0], "type") || !strings.Contains(lines[0], "sequence") || !strings.Contains(lines[0], "count") {
 		t.Errorf("CSV header incorrect: %s", lines[0])
 	}
 }
@@ -314,7 +314,7 @@ func TestExecuteWithGitignore(t *testing.T) {
 	expectedChars := map[rune]bool{'i': true, 'n': true, 'c': true, 'l': true, 'u': true, 'd': true, 'e': true}
 	foundChars := make(map[rune]bool)
 
-	for _, char := range result {
+	for _, char := range result.Characters {
 		if len(char.Char) > 0 {
 			foundChars[rune(char.Char[0])] = true
 		}

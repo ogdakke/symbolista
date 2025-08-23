@@ -305,10 +305,12 @@
         "percentage": 0.08375209380234507
       }
     ],
+    "SequenceCounts": null,
     "FilesFound": 8,
     "FilesIgnored": 1,
     "TotalChars": 1194,
     "UniqueChars": 59,
+    "UniqueSequences": 0,
     "Timing": {
       "total_duration": 0,
       "gitignore_duration": 0,

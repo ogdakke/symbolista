@@ -10,7 +10,7 @@ import (
 	"github.com/ogdakke/symbolista/internal/logger"
 )
 
-func DiscoverFiles(rootPath string, matcher *ignorer.Matcher, jobChan chan<- FileJob, asciiOnly bool, collector *ResultCollector, progressCallback ProgressCallback, errorCallback func(error)) {
+func DiscoverFiles(rootPath string, matcher *ignorer.Matcher, jobChan chan<- FileJob, asciiOnly bool, sequenceConfig SequenceConfig, collector *ResultCollector, progressCallback ProgressCallback, errorCallback func(error)) {
 	defer close(jobChan)
 
 	logger.Debug("Starting file discovery", "root_path", rootPath)
@@ -41,7 +41,7 @@ func DiscoverFiles(rootPath string, matcher *ignorer.Matcher, jobChan chan<- Fil
 		collector.IncrementFound()
 
 		if progressCallback != nil {
-			_, _, _, filesFound, filesIgnored := collector.GetResults()
+			_, _, _, _, filesFound, filesIgnored := collector.GetResults()
 			progressCallback(filesFound, filesFound-filesIgnored)
 		}
 
@@ -81,9 +81,10 @@ func DiscoverFiles(rootPath string, matcher *ignorer.Matcher, jobChan chan<- Fil
 		logger.Trace("Discovered file", "path", path, "size", len(content))
 
 		job := FileJob{
-			Path:      path,
-			Content:   content,
-			AsciiOnly: asciiOnly,
+			Path:           path,
+			Content:        content,
+			AsciiOnly:      asciiOnly,
+			SequenceConfig: sequenceConfig,
 		}
 
 		select {
