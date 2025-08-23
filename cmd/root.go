@@ -14,7 +14,6 @@ import (
 const Version = "v0.0.3"
 
 var (
-	directory       string
 	outputFormat    string
 	showPercentages bool
 	verboseCount    int
@@ -37,15 +36,17 @@ respecting gitignore rules and outputting the most used characters with counts a
 			return
 		}
 
+		if len(args) == 0 {
+			cmd.Help()
+			return
+		}
+
 		startTime := time.Now()
 		logger.SetVerbosity(verboseCount)
 
 		dir := "."
 		if len(args) > 0 {
 			dir = args[0]
-		}
-		if directory != "" {
-			dir = directory
 		}
 
 		if useTUI {
@@ -77,7 +78,6 @@ func Execute() {
 
 func init() {
 	rootCmd.Flags().BoolVarP(&showVersion, "version", "v", false, "Show version and exit")
-	rootCmd.Flags().StringVarP(&directory, "directory", "d", "", "Directory to analyze")
 	rootCmd.Flags().StringVarP(&outputFormat, "format", "f", "table", "Output format (table, json, csv)")
 	rootCmd.Flags().BoolVarP(&showPercentages, "percentages", "p", true, "Show percentages in output")
 	rootCmd.Flags().CountVarP(&verboseCount, "verbose", "V", "Increase verbosity (-V info, -VV debug, -VVV trace)")

@@ -5,7 +5,9 @@
       "Bash(go get:*)",
       "Bash(go build:*)",
       "Bash(go run:*)",
-      "Bash(./symbolista --format=json .)"
+      "Bash(./symbolista --format=json .)",
+      "Bash(./symbolista)",
+      "Bash(./symbolista:*)"
     ],
     "deny": [],
     "ask": []
