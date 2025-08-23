@@ -22,7 +22,6 @@ var (
 	asciiOnly       bool
 	useTUI          bool
 	showVersion     bool
-	useTraversalV2  bool
 )
 
 var rootCmd = &cobra.Command{
@@ -51,8 +50,8 @@ respecting gitignore rules and outputting the most used characters with counts a
 		}
 
 		if useTUI {
-			logger.Info("Starting TUI mode", "directory", dir, "verbosity", verboseCount, "workers", workerCount, "includeDotfiles", includeDotfiles, "asciiOnly", asciiOnly, "traversalV2", useTraversalV2)
-			err := tui.RunTUI(dir, showPercentages, workerCount, includeDotfiles, asciiOnly, useTraversalV2)
+			logger.Info("Starting TUI mode", "directory", dir, "verbosity", verboseCount, "workers", workerCount, "includeDotfiles", includeDotfiles, "asciiOnly", asciiOnly)
+			err := tui.RunTUI(dir, showPercentages, workerCount, includeDotfiles, asciiOnly)
 			if err != nil {
 				fmt.Printf("TUI error: %v\n", err)
 				os.Exit(1)
@@ -60,8 +59,8 @@ respecting gitignore rules and outputting the most used characters with counts a
 			return
 		}
 
-		logger.Info("Starting symbol analysis", "directory", dir, "format", outputFormat, "verbosity", verboseCount, "workers", workerCount, "includeDotfiles", includeDotfiles, "asciiOnly", asciiOnly, "traversalV2", useTraversalV2)
-		counter.CountSymbolsConcurrent(dir, outputFormat, showPercentages, workerCount, includeDotfiles, asciiOnly, useTraversalV2)
+		logger.Info("Starting symbol analysis", "directory", dir, "format", outputFormat, "verbosity", verboseCount, "workers", workerCount, "includeDotfiles", includeDotfiles, "asciiOnly", asciiOnly)
+		counter.CountSymbolsConcurrent(dir, outputFormat, showPercentages, workerCount, includeDotfiles, asciiOnly)
 
 		totalExecutionTime := time.Since(startTime)
 		if verboseCount > 0 {
@@ -86,5 +85,4 @@ func init() {
 	rootCmd.Flags().BoolVar(&includeDotfiles, "include-dotfiles", false, "Include dotfiles in analysis (by default dotfiles are ignored)")
 	rootCmd.Flags().BoolVar(&asciiOnly, "ascii-only", true, "Count only ASCII characters (0-127). Use --ascii-only=false to include all Unicode characters")
 	rootCmd.Flags().BoolVar(&useTUI, "tui", false, "Launch interactive TUI interface")
-	rootCmd.Flags().BoolVar(&useTraversalV2, "traversal-v2", false, "Use filepath.WalkDir instead of filepath.Walk for better performance")
 }

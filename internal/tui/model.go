@@ -34,7 +34,6 @@ type Model struct {
 	workerCount     int
 	includeDotfiles bool
 	asciiOnly       bool
-	useTraversalV2  bool
 
 	charCounts        counter.CharCounts
 	filteredCounts    counter.CharCounts
@@ -136,14 +135,13 @@ func (m LabelMode) String() string {
 	}
 }
 
-func NewModel(directory string, showPercentages bool, workerCount int, includeDotfiles bool, asciiOnly bool, useTraversalV2 bool) Model {
+func NewModel(directory string, showPercentages bool, workerCount int, includeDotfiles bool, asciiOnly bool) Model {
 	return Model{
 		directory:         directory,
 		showPercentages:   showPercentages,
 		workerCount:       workerCount,
 		includeDotfiles:   includeDotfiles,
 		asciiOnly:         asciiOnly,
-		useTraversalV2:    useTraversalV2,
 		loading:           true,
 		filterMode:        FilterAll,
 		excludeWhitespace: true,
@@ -152,16 +150,16 @@ func NewModel(directory string, showPercentages bool, workerCount int, includeDo
 
 func (m Model) Init() tea.Cmd {
 	return tea.Batch(
-		startAnalysis(m.directory, m.workerCount, m.includeDotfiles, m.asciiOnly, m.useTraversalV2),
+		startAnalysis(m.directory, m.workerCount, m.includeDotfiles, m.asciiOnly),
 		tea.EnterAltScreen,
 	)
 }
 
-func startAnalysis(directory string, workerCount int, includeDotfiles bool, asciiOnly bool, useTraversalV2 bool) tea.Cmd {
+func startAnalysis(directory string, workerCount int, includeDotfiles bool, asciiOnly bool) tea.Cmd {
 	return tea.Cmd(func() tea.Msg {
 		logger.Info("Starting TUI analysis", "directory", directory)
 
-		result, err := counter.AnalyzeSymbols(directory, workerCount, includeDotfiles, asciiOnly, useTraversalV2)
+		result, err := counter.AnalyzeSymbols(directory, workerCount, includeDotfiles, asciiOnly)
 		if err != nil {
 			return analysisCompleteMsg{err: err}
 		}
@@ -205,7 +203,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if m.ready {
 				m.loading = true
 				m.ready = false
-				return m, startAnalysis(m.directory, m.workerCount, m.includeDotfiles, m.asciiOnly, m.useTraversalV2)
+				return m, startAnalysis(m.directory, m.workerCount, m.includeDotfiles, m.asciiOnly)
 			}
 		case "a":
 			if m.ready {

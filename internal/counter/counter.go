@@ -44,10 +44,10 @@ type AnalysisResult struct {
 }
 
 func CountSymbols(directory, format string, showPercentages bool) {
-	CountSymbolsConcurrent(directory, format, showPercentages, 0, false, true, false)
+	CountSymbolsConcurrent(directory, format, showPercentages, 0, false, true)
 }
 
-func AnalyzeSymbols(directory string, workerCount int, includeDotfiles bool, asciiOnly bool, useTraversalV2 bool) (AnalysisResult, error) {
+func AnalyzeSymbols(directory string, workerCount int, includeDotfiles bool, asciiOnly bool) (AnalysisResult, error) {
 	startTime := time.Now()
 
 	logger.Info("Initializing gitignore matcher", "directory", directory, "includeDotfiles", includeDotfiles)
@@ -62,15 +62,10 @@ func AnalyzeSymbols(directory string, workerCount int, includeDotfiles bool, asc
 		logger.Debug("Gitignore matcher created successfully", "duration", gitignoreDuration)
 	}
 
-	logger.Info("Starting concurrent file traversal and character counting", "useTraversalV2", useTraversalV2)
+	logger.Info("Starting concurrent file traversal and character counting")
 	traversalStart := time.Now()
 
-	var result traversal.ConcurrentResult
-	if useTraversalV2 {
-		result, err = traversal.WalkDirectoryConcurrentV2(directory, matcher, workerCount, asciiOnly)
-	} else {
-		result, err = traversal.WalkDirectoryConcurrent(directory, matcher, workerCount, asciiOnly)
-	}
+	result, err := traversal.WalkDirectoryConcurrent(directory, matcher, workerCount, asciiOnly)
 	traversalDuration := time.Since(traversalStart)
 
 	if err != nil {
@@ -133,8 +128,8 @@ func AnalyzeSymbols(directory string, workerCount int, includeDotfiles bool, asc
 	}, nil
 }
 
-func CountSymbolsConcurrent(directory, format string, showPercentages bool, workerCount int, includeDotfiles bool, asciiOnly bool, useTraversalV2 bool) {
-	result, err := AnalyzeSymbols(directory, workerCount, includeDotfiles, asciiOnly, useTraversalV2)
+func CountSymbolsConcurrent(directory, format string, showPercentages bool, workerCount int, includeDotfiles bool, asciiOnly bool) {
+	result, err := AnalyzeSymbols(directory, workerCount, includeDotfiles, asciiOnly)
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
 		return
