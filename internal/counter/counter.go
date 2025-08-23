@@ -148,13 +148,13 @@ func CountSymbolsConcurrent(directory, format string, showPercentages bool, work
 	var progressFunc func(int, int)
 	if format == "table" {
 		progressFunc = func(filesFound, filesProcessed int) {
-			fmt.Printf("\rFiles found: %d, Processed: %d", filesFound, filesProcessed)
+			fmt.Fprintf(os.Stderr, "\rFiles found: %d, Processed: %d", filesFound, filesProcessed)
 		}
 	}
 
 	result, err := AnalyzeSymbols(directory, workerCount, includeDotfiles, asciiOnly, progressFunc)
 	if format == "table" && progressFunc != nil {
-		fmt.Printf("\n")
+		fmt.Fprintf(os.Stderr, "\n")
 	}
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
