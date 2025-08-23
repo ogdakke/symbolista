@@ -11,6 +11,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const Version = "v0.0.2"
+
 var (
 	directory       string
 	outputFormat    string
@@ -20,6 +22,7 @@ var (
 	includeDotfiles bool
 	asciiOnly       bool
 	useTUI          bool
+	showVersion     bool
 )
 
 var rootCmd = &cobra.Command{
@@ -29,6 +32,11 @@ var rootCmd = &cobra.Command{
 respecting gitignore rules and outputting the most used characters with counts and percentages.`,
 	Args: cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
+		if showVersion {
+			fmt.Println(Version)
+			return
+		}
+
 		startTime := time.Now()
 		logger.SetVerbosity(verboseCount)
 
@@ -68,6 +76,7 @@ func Execute() {
 }
 
 func init() {
+	rootCmd.Flags().BoolVarP(&showVersion, "version", "v", false, "Show version and exit")
 	rootCmd.Flags().StringVarP(&directory, "directory", "d", "", "Directory to analyze")
 	rootCmd.Flags().StringVarP(&outputFormat, "format", "f", "table", "Output format (table, json, csv)")
 	rootCmd.Flags().BoolVarP(&showPercentages, "percentages", "p", true, "Show percentages in output")

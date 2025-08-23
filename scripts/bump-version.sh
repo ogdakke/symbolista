@@ -56,11 +56,32 @@ if [[ -n $(git status --porcelain) ]]; then
     exit 1
 fi
 
+# Update the version in the code
+echo "Updating version in cmd/root.go..."
+sed -i.bak "s/const Version = \"v[0-9]*\.[0-9]*\.[0-9]*\"/const Version = \"$NEW_VERSION\"/" cmd/root.go
+
+# Verify the update was successful
+if ! grep -q "const Version = \"$NEW_VERSION\"" cmd/root.go; then
+    echo "Error: Failed to update version in cmd/root.go"
+    # Restore backup
+    mv cmd/root.go.bak cmd/root.go
+    exit 1
+fi
+
+# Remove backup file
+rm cmd/root.go.bak
+
+# Commit the version update
+echo "Committing version update..."
+git add cmd/root.go
+git commit -m "Bump version to $NEW_VERSION"
+
 # Create and push the tag
 echo "Creating tag $NEW_VERSION..."
 git tag -a "$NEW_VERSION" -m "Release $NEW_VERSION"
 
-echo "Pushing tag to origin..."
+echo "Pushing changes and tag to origin..."
+git push origin HEAD
 git push origin "$NEW_VERSION"
 
-echo "✅ Successfully created and pushed version $NEW_VERSION"
+echo "✅ Successfully updated, committed, and pushed version $NEW_VERSION"
