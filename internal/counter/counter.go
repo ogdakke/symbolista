@@ -146,16 +146,15 @@ func AnalyzeSymbols(directory string, workerCount int, includeDotfiles bool, asc
 func CountSymbolsConcurrent(directory, format string, showPercentages bool, workerCount int, includeDotfiles bool, asciiOnly bool, includeMetadata bool) {
 
 	var progressFunc func(int, int)
-	if format == "table" {
-		progressFunc = func(filesFound, filesProcessed int) {
-			fmt.Fprintf(os.Stderr, "\rFiles found: %d, Processed: %d", filesFound, filesProcessed)
-		}
+
+	progressFunc = func(filesFound, filesProcessed int) {
+		fmt.Fprintf(os.Stderr, "\rFiles found: %d, Processed: %d", filesFound, filesProcessed)
 	}
 
 	result, err := AnalyzeSymbols(directory, workerCount, includeDotfiles, asciiOnly, progressFunc)
-	if format == "table" && progressFunc != nil {
-		fmt.Fprintf(os.Stderr, "\n")
-	}
+
+	fmt.Fprintf(os.Stderr, "\n")
+
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
 		return
@@ -166,7 +165,6 @@ func CountSymbolsConcurrent(directory, format string, showPercentages bool, work
 	case "json":
 		logger.Debug("Outputting results as JSON")
 		outputJSON(result.CharCounts, showPercentages, directory, result, includeMetadata)
-		return // Don't print summary for JSON format
 	case "csv":
 		logger.Debug("Outputting results as CSV")
 		outputCSV(result.CharCounts, showPercentages)
@@ -180,20 +178,18 @@ func CountSymbolsConcurrent(directory, format string, showPercentages bool, work
 	result.Timing.OutputDuration = outputDuration
 	totalDuration := result.Timing.TotalDuration + outputDuration
 
-	fmt.Printf("Files found: %d\n", result.FilesFound)
-	fmt.Printf("Files processed: %d\n", result.FilesFound-result.FilesIgnored)
-	fmt.Printf("Files/directories ignored: %d\n", result.FilesIgnored)
-	fmt.Printf("Total characters: %d\n", result.TotalChars)
-	fmt.Printf("Unique characters: %d\n", result.UniqueChars)
+	fmt.Fprintf(os.Stderr, "Files/directories ignored: %d\n", result.FilesIgnored)
+	fmt.Fprintf(os.Stderr, "Total characters: %d\n", result.TotalChars)
+	fmt.Fprintf(os.Stderr, "Unique characters: %d\n", result.UniqueChars)
 
 	if logger.GetVerbosity() > 0 {
-		fmt.Println("\nTiming Breakdown:")
-		fmt.Printf("  Gitignore initialization: %s\n", result.Timing.GitignoreDuration)
-		fmt.Printf("  File traversal & counting: %s\n", result.Timing.TraversalDuration)
-		fmt.Printf("  Sorting results: %s\n", result.Timing.SortingDuration)
-		fmt.Printf("  Output formatting: %s\n", result.Timing.OutputDuration)
+		fmt.Fprintf(os.Stderr, "\nTiming Breakdown:\n")
+		fmt.Fprintf(os.Stderr, "  Gitignore initialization: %s\n", result.Timing.GitignoreDuration)
+		fmt.Fprintf(os.Stderr, "  File traversal & counting: %s\n", result.Timing.TraversalDuration)
+		fmt.Fprintf(os.Stderr, "  Sorting results: %s\n", result.Timing.SortingDuration)
+		fmt.Fprintf(os.Stderr, "  Output formatting: %s\n", result.Timing.OutputDuration)
 	}
-	fmt.Printf("Total time: %s\n", totalDuration)
+	fmt.Fprintf(os.Stderr, "Total time: %s\n", totalDuration)
 }
 
 func outputTable(counts CharCounts, showPercentages bool) {

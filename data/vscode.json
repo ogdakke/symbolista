@@ -3,376 +3,376 @@
     {
       "char": " ",
       "count": 9690951,
-      "percentage": 8.502017482538403
+      "percentage": 8.502017333359442
     },
     {
       "char": "e",
       "count": 9437663,
-      "percentage": 8.27980409975304
+      "percentage": 8.279803954473103
     },
     {
       "char": "t",
       "count": 6864353,
-      "percentage": 6.022200423086954
+      "percentage": 6.0222003174196095
     },
     {
       "char": "s",
       "count": 5500806,
-      "percentage": 4.825940073378984
+      "percentage": 4.8259399887015855
     },
     {
       "char": "i",
       "count": 5399584,
-      "percentage": 4.737136486030591
+      "percentage": 4.737136402911366
     },
     {
       "char": "o",
       "count": 5340861,
-      "percentage": 4.685617912401739
+      "percentage": 4.685617830186475
     },
     {
       "char": "\t",
       "count": 5284052,
-      "percentage": 4.635778519842069
+      "percentage": 4.635778438501301
     },
     {
       "char": "r",
       "count": 5187425,
-      "percentage": 4.55100619530083
+      "percentage": 4.551006115447504
     },
     {
       "char": "n",
       "count": 5151436,
-      "percentage": 4.519432502772711
+      "percentage": 4.519432423473386
     },
     {
       "char": "a",
       "count": 4623349,
-      "percentage": 4.056133812447968
+      "percentage": 4.056133741277821
     },
     {
       "char": "c",
       "count": 3408928,
-      "percentage": 2.990703951832454
+      "percentage": 2.9907038993566615
     },
     {
       "char": "l",
       "count": 3312141,
-      "percentage": 2.905791256877909
+      "percentage": 2.90579120589202
     },
     {
       "char": "d",
       "count": 3095031,
-      "percentage": 2.715317379171385
+      "percentage": 2.7153173315276082
     },
     {
       "char": "\n",
       "count": 2703302,
-      "percentage": 2.3716476189572138
+      "percentage": 2.3716475773435697
     },
     {
       "char": ".",
       "count": 2640869,
-      "percentage": 2.3168742063698096
+      "percentage": 2.3168741657172363
     },
     {
       "char": "u",
       "count": 2355792,
-      "percentage": 2.0667718544056317
+      "percentage": 2.06677181814143
     },
     {
       "char": "m",
       "count": 2265190,
-      "percentage": 1.9872853532404782
+      "percentage": 1.9872853183709707
     },
     {
       "char": "p",
       "count": 2263072,
-      "percentage": 1.9854271998943291
+      "percentage": 1.9854271650574251
     },
     {
       "char": "-",
       "count": 1844764,
-      "percentage": 1.6184392820846452
+      "percentage": 1.6184392536870218
     },
     {
       "char": "\"",
       "count": 1842073,
-      "percentage": 1.6160784271958413
+      "percentage": 1.616078398839642
     },
     {
       "char": "/",
       "count": 1643089,
-      "percentage": 1.4415067626868139
+      "percentage": 1.4415067373937018
     },
     {
       "char": "f",
       "count": 1517956,
-      "percentage": 1.3317256943847993
+      "percentage": 1.3317256710179388
     },
     {
       "char": "g",
       "count": 1476975,
-      "percentage": 1.2957724449615067
+      "percentage": 1.295772422225493
     },
     {
       "char": "h",
       "count": 1463314,
-      "percentage": 1.2837874436103538
+      "percentage": 1.2837874210846323
     },
     {
       "char": ":",
       "count": 1306744,
-      "percentage": 1.1464262210387983
+      "percentage": 1.1464262009232582
     },
     {
       "char": ",",
       "count": 1235745,
-      "percentage": 1.0841377274489798
+      "percentage": 1.0841377084263726
     },
     {
       "char": "b",
       "count": 1075796,
-      "percentage": 0.943812057211401
+      "percentage": 0.9438120406509901
     },
     {
       "char": ")",
       "count": 1033669,
-      "percentage": 0.9068534047027984
+      "percentage": 0.9068533887908752
     },
     {
       "char": "(",
       "count": 1033071,
-      "percentage": 0.906328770283064
+      "percentage": 0.9063287543803464
     },
     {
       "char": "v",
       "count": 982689,
-      "percentage": 0.8621278817629128
+      "percentage": 0.8621278666357571
     },
     {
       "char": "y",
       "count": 899873,
-      "percentage": 0.7894721558353026
+      "percentage": 0.7894721419829861
     },
     {
       "char": ";",
       "count": 720514,
-      "percentage": 0.63211779983344
+      "percentage": 0.6321177887421106
     },
     {
       "char": "$",
       "count": 711004,
-      "percentage": 0.6237745333925159
+      "percentage": 0.6237745224475799
     },
     {
       "char": "w",
       "count": 707964,
-      "percentage": 0.6211074955396862
+      "percentage": 0.621107484641547
     },
     {
       "char": "k",
       "count": 698263,
-      "percentage": 0.6125966619178771
+      "percentage": 0.6125966511690715
     },
     {
       "char": "'",
       "count": 679980,
-      "percentage": 0.5965567102523234
+      "percentage": 0.5965566997849596
     },
     {
       "char": "x",
       "count": 679431,
-      "percentage": 0.5960750642716643
+      "percentage": 0.5960750538127516
     },
     {
       "char": "}",
-      "count": 612458,
-      "percentage": 0.5373186412066788
+      "count": 612459,
+      "percentage": 0.5373195090937918
     },
     {
       "char": "{",
-      "count": 612407,
-      "percentage": 0.5372738981374372
+      "count": 612408,
+      "percentage": 0.5372747660253353
     },
     {
       "char": "_",
       "count": 608352,
-      "percentage": 0.5337163854751925
+      "percentage": 0.533716376110444
     },
     {
       "char": "0",
       "count": 527493,
-      "percentage": 0.46277756516534135
+      "percentage": 0.46277755704530676
     },
     {
       "char": "=",
       "count": 501615,
-      "percentage": 0.4400744054431294
+      "percentage": 0.44007439772145135
     },
     {
       "char": "\\",
       "count": 440400,
-      "percentage": 0.38636956262702316
+      "percentage": 0.38636955584766636
     },
     {
       "char": "1",
       "count": 345502,
-      "percentage": 0.30311411586458165
+      "percentage": 0.30311411054605003
     },
     {
       "char": "j",
       "count": 298541,
-      "percentage": 0.2619145222439467
+      "percentage": 0.2619145176483156
     },
     {
       "char": "|",
       "count": 294922,
-      "percentage": 0.25873951895796304
+      "percentage": 0.2587395144180415
     },
     {
       "char": "2",
       "count": 272459,
-      "percentage": 0.23903239024476863
+      "percentage": 0.23903238605063426
     },
     {
       "char": "4",
       "count": 251092,
-      "percentage": 0.22028679886272592
+      "percentage": 0.22028679499750736
     },
     {
       "char": "*",
       "count": 227367,
-      "percentage": 0.19947249851457396
+      "percentage": 0.1994724950145694
     },
     {
       "char": "#",
       "count": 214102,
-      "percentage": 0.1878349139363554
+      "percentage": 0.1878349106405474
     },
     {
       "char": "3",
       "count": 209163,
-      "percentage": 0.18350185474059047
+      "percentage": 0.18350185152081164
     },
     {
       "char": "[",
       "count": 207012,
-      "percentage": 0.1816147499966969
+      "percentage": 0.1816147468100298
     },
     {
       "char": "]",
       "count": 204595,
-      "percentage": 0.17949427944068075
+      "percentage": 0.17949427629122003
     },
     {
       "char": "5",
       "count": 201497,
-      "percentage": 0.17677635731302743
+      "percentage": 0.1767763542112562
     },
     {
       "char": "9",
       "count": 193039,
-      "percentage": 0.16935602633959565
+      "percentage": 0.16935602336802377
     },
     {
       "char": "?",
       "count": 173418,
-      "percentage": 0.15214222709276365
+      "percentage": 0.15214222442323028
     },
     {
       "char": "8",
       "count": 169402,
-      "percentage": 0.14861892971876242
+      "percentage": 0.1486189271110499
     },
     {
       "char": "q",
       "count": 166676,
-      "percentage": 0.14622736880204748
+      "percentage": 0.146227366236298
     },
     {
       "char": "\u003e",
       "count": 165550,
-      "percentage": 0.14523951201840074
+      "percentage": 0.14523950946998448
     },
     {
       "char": "6",
       "count": 160662,
-      "percentage": 0.14095119589187738
+      "percentage": 0.1409511934187052
     },
     {
       "char": "7",
       "count": 138508,
-      "percentage": 0.12151515753938175
+      "percentage": 0.12151515540724017
     },
     {
       "char": "z",
       "count": 135204,
-      "percentage": 0.1186165085045959
+      "percentage": 0.11861650642331491
     },
     {
       "char": "+",
       "count": 115945,
-      "percentage": 0.10172029731787056
+      "percentage": 0.10172029553305557
     },
     {
       "char": "\u003c",
       "count": 95723,
-      "percentage": 0.08397923170605481
+      "percentage": 0.0839792302325299
     },
     {
       "char": "\u0026",
       "count": 81150,
-      "percentage": 0.07119411899905297
+      "percentage": 0.07119411774985951
     },
     {
       "char": "!",
       "count": 80773,
-      "percentage": 0.07086337121269878
+      "percentage": 0.07086336996930871
     },
     {
       "char": "@",
       "count": 72873,
-      "percentage": 0.06393258205567452
+      "percentage": 0.06393258093389417
     },
     {
       "char": "`",
       "count": 69990,
-      "percentage": 0.06140328267090225
+      "percentage": 0.06140328159350175
     },
     {
       "char": "^",
       "count": 29905,
-      "percentage": 0.0262361075621279
+      "percentage": 0.02623610710178125
     },
     {
       "char": "\r",
       "count": 16230,
-      "percentage": 0.014238823799810594
+      "percentage": 0.0142388235499719
     },
     {
       "char": "%",
       "count": 10164,
-      "percentage": 0.008917030505315766
+      "percentage": 0.008917030348854861
     },
     {
       "char": "~",
       "count": 2226,
-      "percentage": 0.001952903375131139
+      "percentage": 0.0019529033408649077
     }
   ],
   "metadata": {
-    "directory": "./vscode",
-    "files_found": 8480,
-    "files_processed": 8094,
+    "directory": "vscode/",
+    "files_found": 8481,
+    "files_processed": 8095,
     "files_ignored": 386,
-    "total_characters": 113984134,
+    "total_characters": 113984136,
     "unique_characters": 72,
     "timing": {
-      "total_duration": 1450667166,
-      "gitignore_duration": 1481208,
-      "traversal_duration": 1449173792,
-      "sorting_duration": 11083,
+      "total_duration": 990170792,
+      "gitignore_duration": 80416,
+      "traversal_duration": 990076042,
+      "sorting_duration": 13209,
       "output_duration": 0
     }
   }
