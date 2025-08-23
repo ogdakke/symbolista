@@ -17,7 +17,7 @@ import (
 
 func CountSymbols(directory, format string, showPercentages bool) {
 	outputter := output.NewOutputter()
-	CountSymbolsConcurrent(outputter, directory, format, showPercentages, 0, false, true, false, 100)
+	CountSymbolsConcurrent(outputter, directory, format, showPercentages, 0, false, true, false, 100, true)
 }
 
 func AnalyzeSymbols(
@@ -145,6 +145,7 @@ func CountSymbolsConcurrent(
 	asciiOnly bool,
 	includeMetadata bool,
 	topNSeq int,
+	countSequences bool,
 ) {
 
 	var progressFunc func(int, int)
@@ -153,9 +154,8 @@ func CountSymbolsConcurrent(
 		fmt.Fprintf(os.Stderr, "\rFiles found: %d, Processed: %d", filesFound, filesProcessed)
 	}
 
-	// Default sequence config - enabled with reasonable threshold
 	sequenceConfig := concurrent.SequenceConfig{
-		Enabled:   true,
+		Enabled:   countSequences,
 		MinLength: 2,
 		MaxLength: 3,
 		Threshold: 2,
