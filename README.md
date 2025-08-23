@@ -36,6 +36,10 @@ Flags:
   -w, --workers int        Number of worker goroutines (0 = auto-detect based on CPU cores) (default 0)
 ```
 
+## Examples
+
+See [examples](./examples/) for some example outputs from known repositories, namely linux and vscode.
+
 ## Development
 
 Use make to build and lint and test the program.
