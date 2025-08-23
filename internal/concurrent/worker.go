@@ -2,6 +2,7 @@ package concurrent
 
 import (
 	"runtime"
+	"strings"
 	"unicode"
 
 	"github.com/ogdakke/symbolista/internal/logger"
@@ -81,7 +82,9 @@ func (wp *WorkerPool) processFile(job FileJob, workerID int) CharCountResult {
 			if job.AsciiOnly && r > 127 {
 				continue
 			}
-			charMap[r]++
+			// Normalize character to lowercase for counting
+			normalizedChar := []rune(strings.ToLower(string(r)))[0]
+			charMap[normalizedChar]++
 			charCount++
 		}
 	}

@@ -72,7 +72,7 @@ func CountSymbolsConcurrent(directory, format string, showPercentages bool, work
 	for char, count := range charMap {
 		percentage := float64(count) / float64(totalChars) * 100
 		counts = append(counts, CharCount{
-			Char:       string(char),
+			Char:       strings.ToLower(string(char)),
 			Count:      count,
 			Percentage: percentage,
 		})
