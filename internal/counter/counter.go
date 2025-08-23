@@ -183,25 +183,13 @@ func outputTable(counts CharCounts, showPercentages bool) {
 	fmt.Println()
 	fmt.Println(strings.Repeat("-", 35))
 
-	for _, c := range counts {
-		char := c.Char
-		switch c.Char {
-		case " ":
-			char = "<space>"
-		case "\t":
-			char = "<tab>"
-		case "\n":
-			char = "<newline>"
-		case "\r":
-			char = "<return>"
-		}
-
-		fmt.Printf("%-10s %-10d", char, c.Count)
+	formatChars(counts, func(char string, count int, percentage float64) {
+		fmt.Printf("%-10s %-10d", char, count)
 		if showPercentages {
-			fmt.Printf(" %-12.2f%%", c.Percentage)
+			fmt.Printf(" %-12.2f%%", percentage)
 		}
 		fmt.Println()
-	}
+	})
 	fmt.Println(strings.Repeat("-", 35))
 }
 
@@ -230,6 +218,18 @@ func outputCSV(counts CharCounts, showPercentages bool) {
 	}
 	writer.Write(headers)
 
+	formatChars(counts, func(char string, count int, percentage float64) {
+		row := []string{char, fmt.Sprintf("%d", count)}
+		if showPercentages {
+			row = append(row, fmt.Sprintf("%.2f%%", percentage))
+		}
+		writer.Write(row)
+	})
+}
+
+type OnCharFunc func(char string, count int, percentage float64)
+
+func formatChars(counts CharCounts, onChar OnCharFunc) CharCounts {
 	for _, c := range counts {
 		char := c.Char
 		switch c.Char {
@@ -241,12 +241,13 @@ func outputCSV(counts CharCounts, showPercentages bool) {
 			char = "<newline>"
 		case "\r":
 			char = "<return>"
+		case "\f":
+			char = "<formfeed>"
+		case "\v":
+			char = "<vert_tab>"
 		}
 
-		row := []string{char, fmt.Sprintf("%d", c.Count)}
-		if showPercentages {
-			row = append(row, fmt.Sprintf("%.2f%%", c.Percentage))
-		}
-		writer.Write(row)
+		onChar(char, c.Count, c.Percentage)
 	}
+	return counts
 }
