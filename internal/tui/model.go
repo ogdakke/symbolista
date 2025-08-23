@@ -55,11 +55,21 @@ type Model struct {
 
 	// Label display mode
 	labelMode LabelMode
+
+	// File statistics
+	filesFound    int
+	filesIgnored  int
+	totalChars    int
+	uniqueChars   int
 }
 
 type analysisCompleteMsg struct {
-	counts counter.CharCounts
-	err    error
+	counts       counter.CharCounts
+	filesFound   int
+	filesIgnored int
+	totalChars   int
+	uniqueChars  int
+	err          error
 }
 
 func isLetterOrNumber(r rune) bool {
@@ -170,6 +180,9 @@ func startAnalysis(directory string, workerCount int, includeDotfiles bool, asci
 
 		charMap := result.CharMap
 		totalChars := result.TotalChars
+		filesFound := result.FilesFound
+		filesIgnored := result.FilesIgnored
+		uniqueChars := len(charMap)
 
 		var counts counter.CharCounts
 		for char, count := range charMap {
@@ -183,7 +196,13 @@ func startAnalysis(directory string, workerCount int, includeDotfiles bool, asci
 
 		sort.Sort(counts)
 
-		return analysisCompleteMsg{counts: counts}
+		return analysisCompleteMsg{
+			counts:       counts,
+			filesFound:   filesFound,
+			filesIgnored: filesIgnored,
+			totalChars:   totalChars,
+			uniqueChars:  uniqueChars,
+		}
 	})
 }
 
@@ -206,6 +225,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 
 		m.charCounts = msg.counts
+		m.filesFound = msg.filesFound
+		m.filesIgnored = msg.filesIgnored
+		m.totalChars = msg.totalChars
+		m.uniqueChars = msg.uniqueChars
 		m.ready = true
 		m.applyFilter()
 		m.updateChart()
@@ -395,9 +418,16 @@ func (m Model) View() string {
 	// Add label mode indicator
 	labelModeInfo := fmt.Sprintf(" | Labels: %s", m.labelMode.String())
 
+	fileStats := fmt.Sprintf("Found: %d | Processed: %d | Files/dirs ignored: %d | Total chars: %d", 
+		m.filesFound, m.filesFound - m.filesIgnored, m.filesIgnored, m.totalChars)
+	
 	info := lipgloss.NewStyle().
 		Foreground(lipgloss.Color("8")).
 		Render(fmt.Sprintf("Directory: %s | Filter: %s%s | Showing: %d/%d chars%s%s", m.directory, m.filterMode.String(), whitespaceStatus, len(m.filteredCounts), len(m.charCounts), scrollInfo, labelModeInfo))
+	
+	stats := lipgloss.NewStyle().
+		Foreground(lipgloss.Color("6")).
+		Render(fileStats)
 
 	chart := m.chart.View()
 
@@ -412,5 +442,5 @@ func (m Model) View() string {
 		Foreground(lipgloss.Color("8")).
 		Render("Controls: 'a' all | 'l' letters/numbers | 's' symbols | 'w' toggle whitespace | 't' toggle labels | ←→ scroll | home/end | 'r' refresh | 'q' quit")
 
-	return fmt.Sprintf("%s\n%s\n\n%s\n\n%s", title, info, chartWindow, controls)
+	return fmt.Sprintf("%s\n%s\n%s\n\n%s\n\n%s", title, info, stats, chartWindow, controls)
 }

@@ -60,9 +60,13 @@ func CountSymbolsConcurrent(directory, format string, showPercentages bool, work
 	charMap := result.CharMap
 	totalChars := result.TotalChars
 	processedFiles := result.FileCount
+	filesFound := result.FilesFound
+	filesIgnored := result.FilesIgnored
 
 	logger.Info("File processing completed",
+		"files_found", filesFound,
 		"files_processed", processedFiles,
+		"files_ignored", filesIgnored,
 		"total_characters", totalChars,
 		"unique_characters", len(charMap),
 		"traversal_duration", traversalDuration)
@@ -95,8 +99,15 @@ func CountSymbolsConcurrent(directory, format string, showPercentages bool, work
 		outputTable(counts, showPercentages)
 	}
 	outputDuration := time.Since(outputStart)
-
 	totalDuration := time.Since(startTime)
+
+	fmt.Printf("Files found: %d\n", filesFound)
+	fmt.Printf("Files processed: %d\n", processedFiles)
+	fmt.Printf("Files/directories ignored: %d\n", filesIgnored)
+	fmt.Printf("Total characters: %d\n", totalChars)
+	fmt.Printf("Unique characters: %d\n", len(charMap))
+	fmt.Printf("Total duration: %s\n", totalDuration)
+
 	logger.Info("Analysis completed",
 		"total_duration", totalDuration,
 		"gitignore_duration", gitignoreDuration,
@@ -106,6 +117,7 @@ func CountSymbolsConcurrent(directory, format string, showPercentages bool, work
 }
 
 func outputTable(counts CharCounts, showPercentages bool) {
+	fmt.Println(strings.Repeat("-", 35))
 	fmt.Printf("%-10s %-10s", "Character", "Count")
 	if showPercentages {
 		fmt.Printf(" %-12s", "Percentage")
@@ -132,6 +144,7 @@ func outputTable(counts CharCounts, showPercentages bool) {
 		}
 		fmt.Println()
 	}
+	fmt.Println(strings.Repeat("-", 35))
 }
 
 func outputJSON(counts CharCounts, showPercentages bool) {

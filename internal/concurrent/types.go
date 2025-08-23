@@ -23,17 +23,21 @@ type WorkerPool struct {
 }
 
 type ResultCollector struct {
-	totalCharMap map[rune]int
-	totalFiles   int
-	totalChars   int
-	mu           sync.RWMutex
+	totalCharMap  map[rune]int
+	totalFiles    int
+	totalChars    int
+	filesFound    int
+	filesIgnored  int
+	mu            sync.RWMutex
 }
 
 func NewResultCollector() *ResultCollector {
 	return &ResultCollector{
-		totalCharMap: make(map[rune]int),
-		totalFiles:   0,
-		totalChars:   0,
+		totalCharMap:  make(map[rune]int),
+		totalFiles:    0,
+		totalChars:    0,
+		filesFound:    0,
+		filesIgnored:  0,
 	}
 }
 
@@ -48,7 +52,19 @@ func (rc *ResultCollector) AddResult(result CharCountResult) {
 	rc.totalChars += result.CharCount
 }
 
-func (rc *ResultCollector) GetResults() (map[rune]int, int, int) {
+func (rc *ResultCollector) IncrementFound() {
+	rc.mu.Lock()
+	defer rc.mu.Unlock()
+	rc.filesFound++
+}
+
+func (rc *ResultCollector) IncrementIgnored() {
+	rc.mu.Lock()
+	defer rc.mu.Unlock()
+	rc.filesIgnored++
+}
+
+func (rc *ResultCollector) GetResults() (map[rune]int, int, int, int, int) {
 	rc.mu.RLock()
 	defer rc.mu.RUnlock()
 
@@ -58,5 +74,5 @@ func (rc *ResultCollector) GetResults() (map[rune]int, int, int) {
 		charMapCopy[char] = count
 	}
 
-	return charMapCopy, rc.totalFiles, rc.totalChars
+	return charMapCopy, rc.totalFiles, rc.totalChars, rc.filesFound, rc.filesIgnored
 }

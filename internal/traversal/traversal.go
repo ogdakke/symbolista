@@ -70,10 +70,12 @@ func WalkDirectory(rootPath string, matcher *gitignore.Matcher, processor FilePr
 }
 
 type ConcurrentResult struct {
-	CharMap     map[rune]int
-	FileCount   int
-	TotalChars  int
-	UniqueChars int
+	CharMap      map[rune]int
+	FileCount    int
+	FilesFound   int
+	FilesIgnored int
+	TotalChars   int
+	UniqueChars  int
 }
 
 // WalkDirectoryConcurrent processes files using a worker pool and returns aggregated results
@@ -94,7 +96,7 @@ func WalkDirectoryConcurrent(rootPath string, matcher *gitignore.Matcher, worker
 
 	// Start file discovery in a separate goroutine
 	var discoveryError error
-	go concurrent.DiscoverFiles(rootPath, matcher, pool.Jobs(), asciiOnly, func(err error) {
+	go concurrent.DiscoverFiles(rootPath, matcher, pool.Jobs(), asciiOnly, collector, func(err error) {
 		if discoveryError == nil {
 			discoveryError = err
 		}
@@ -113,18 +115,22 @@ func WalkDirectoryConcurrent(rootPath string, matcher *gitignore.Matcher, worker
 	}
 
 	// Get aggregated results
-	charMap, fileCount, totalChars := collector.GetResults()
+	charMap, fileCount, totalChars, filesFound, filesIgnored := collector.GetResults()
 
 	logger.Debug("Concurrent processing completed",
 		"files_processed", fileCount,
+		"files_found", filesFound,
+		"files_ignored", filesIgnored,
 		"total_characters", totalChars,
 		"unique_characters", len(charMap),
 		"workers", workerCount)
 
 	return ConcurrentResult{
-		CharMap:     charMap,
-		FileCount:   fileCount,
-		TotalChars:  totalChars,
-		UniqueChars: len(charMap),
+		CharMap:      charMap,
+		FileCount:    fileCount,
+		FilesFound:   filesFound,
+		FilesIgnored: filesIgnored,
+		TotalChars:   totalChars,
+		UniqueChars:  len(charMap),
 	}, nil
 }

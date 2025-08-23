@@ -10,7 +10,7 @@ import (
 	"github.com/ogdakke/symbolista/internal/logger"
 )
 
-func DiscoverFiles(rootPath string, matcher *gitignore.Matcher, jobChan chan<- FileJob, asciiOnly bool, errorCallback func(error)) {
+func DiscoverFiles(rootPath string, matcher *gitignore.Matcher, jobChan chan<- FileJob, asciiOnly bool, collector *ResultCollector, errorCallback func(error)) {
 	defer close(jobChan)
 
 	logger.Debug("Starting file discovery", "root_path", rootPath)
@@ -41,15 +41,20 @@ func DiscoverFiles(rootPath string, matcher *gitignore.Matcher, jobChan chan<- F
 			return nil
 		}
 
+		// Count all regular files found
+		collector.IncrementFound()
+
 		// Skip symlinks and special files
 		if info.Mode()&os.ModeType != 0 {
 			logger.Debug("Skipping special file", "path", path, "mode", info.Mode().String())
+			collector.IncrementIgnored()
 			return nil
 		}
 
 		// Skip ignored files
 		if matcher != nil && matcher.ShouldIgnore(path) {
 			logger.Debug("Skipping file (gitignore)", "path", path)
+			collector.IncrementIgnored()
 			return nil
 		}
 
@@ -57,6 +62,7 @@ func DiscoverFiles(rootPath string, matcher *gitignore.Matcher, jobChan chan<- F
 		file, err := os.Open(path)
 		if err != nil {
 			logger.Debug("Cannot read file", "path", path, "error", err)
+			collector.IncrementIgnored()
 			return nil
 		}
 		defer file.Close()
@@ -64,12 +70,14 @@ func DiscoverFiles(rootPath string, matcher *gitignore.Matcher, jobChan chan<- F
 		content, err := io.ReadAll(file)
 		if err != nil {
 			logger.Debug("Cannot read file content", "path", path, "error", err)
+			collector.IncrementIgnored()
 			return nil
 		}
 
 		// Skip files that are not valid UTF-8 text
 		if !utf8.Valid(content) {
 			logger.Debug("Skipping non-UTF8 file", "path", path)
+			collector.IncrementIgnored()
 			return nil
 		}
 
