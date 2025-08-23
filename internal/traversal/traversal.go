@@ -14,6 +14,62 @@ import (
 
 type FileProcessor func(path string, content []byte) error
 
+// WalkDirectoryV2 uses filepath.WalkDir (Go 1.16+) for better performance
+func WalkDirectoryV2(rootPath string, matcher *gitignore.Matcher, processor FileProcessor) error {
+	return filepath.WalkDir(rootPath, func(path string, d os.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+
+		if d.IsDir() {
+			if matcher != nil {
+				if err := matcher.LoadGitignoreForDirectory(path); err != nil {
+					logger.Debug("Error loading gitignore", "path", path, "error", err)
+				}
+			}
+
+			if path != rootPath && matcher != nil && matcher.ShouldIgnore(path) {
+				logger.Debug("Skipping directory (gitignore)", "path", path)
+				return filepath.SkipDir
+			}
+			logger.Trace("Entering directory", "path", path)
+			return nil
+		}
+
+		if d.Type()&os.ModeType != 0 {
+			logger.Debug("Skipping special file", "path", path, "mode", d.Type().String())
+			return nil
+		}
+
+		if matcher != nil && matcher.ShouldIgnore(path) {
+			logger.Debug("Skipping file (gitignore)", "path", path)
+			return nil
+		}
+
+		file, err := os.Open(path)
+		if err != nil {
+			logger.Debug("Cannot read file", "path", path, "error", err)
+			return nil
+		}
+		defer file.Close()
+
+		content, err := io.ReadAll(file)
+		if err != nil {
+			logger.Debug("Cannot read file content", "path", path, "error", err)
+			return nil
+		}
+
+		if !utf8.Valid(content) {
+			logger.Debug("Skipping non-UTF8 file", "path", path)
+			return nil
+		}
+
+		logger.Trace("Processing file", "path", path, "size", len(content))
+
+		return processor(path, content)
+	})
+}
+
 func WalkDirectory(rootPath string, matcher *gitignore.Matcher, processor FileProcessor) error {
 	return filepath.Walk(rootPath, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
@@ -78,23 +134,70 @@ type ConcurrentResult struct {
 	UniqueChars  int
 }
 
+// WalkDirectoryConcurrentV2 processes files using a worker pool with filepath.WalkDir and returns aggregated results
+func WalkDirectoryConcurrentV2(rootPath string, matcher *gitignore.Matcher, workerCount int, asciiOnly bool) (ConcurrentResult, error) {
+	if workerCount <= 0 {
+		workerCount = runtime.NumCPU()
+	}
+
+	bufferSize := workerCount * 2
+
+	pool := concurrent.NewWorkerPool(workerCount, bufferSize)
+	collector := concurrent.NewResultCollector()
+
+	pool.Start()
+
+	var discoveryError error
+	go concurrent.DiscoverFilesV2(rootPath, matcher, pool.Jobs(), asciiOnly, collector, func(err error) {
+		if discoveryError == nil {
+			discoveryError = err
+		}
+	})
+
+	for result := range pool.Results() {
+		collector.AddResult(result)
+	}
+
+	<-pool.Done()
+
+	if discoveryError != nil {
+		return ConcurrentResult{}, discoveryError
+	}
+
+	// Get aggregated results
+	charMap, fileCount, totalChars, filesFound, filesIgnored := collector.GetResults()
+
+	logger.Debug("Concurrent processing completed (WalkDir)",
+		"files_processed", fileCount,
+		"files_found", filesFound,
+		"files_ignored", filesIgnored,
+		"total_characters", totalChars,
+		"unique_characters", len(charMap),
+		"workers", workerCount)
+
+	return ConcurrentResult{
+		CharMap:      charMap,
+		FileCount:    fileCount,
+		FilesFound:   filesFound,
+		FilesIgnored: filesIgnored,
+		TotalChars:   totalChars,
+		UniqueChars:  len(charMap),
+	}, nil
+}
+
 // WalkDirectoryConcurrent processes files using a worker pool and returns aggregated results
 func WalkDirectoryConcurrent(rootPath string, matcher *gitignore.Matcher, workerCount int, asciiOnly bool) (ConcurrentResult, error) {
 	if workerCount <= 0 {
 		workerCount = runtime.NumCPU()
 	}
 
-	// Calculate buffer size based on worker count
 	bufferSize := workerCount * 2
 
-	// Create worker pool
 	pool := concurrent.NewWorkerPool(workerCount, bufferSize)
 	collector := concurrent.NewResultCollector()
 
-	// Start worker pool
 	pool.Start()
 
-	// Start file discovery in a separate goroutine
 	var discoveryError error
 	go concurrent.DiscoverFiles(rootPath, matcher, pool.Jobs(), asciiOnly, collector, func(err error) {
 		if discoveryError == nil {
@@ -102,12 +205,10 @@ func WalkDirectoryConcurrent(rootPath string, matcher *gitignore.Matcher, worker
 		}
 	})
 
-	// Collect results
 	for result := range pool.Results() {
 		collector.AddResult(result)
 	}
 
-	// Wait for completion
 	<-pool.Done()
 
 	if discoveryError != nil {

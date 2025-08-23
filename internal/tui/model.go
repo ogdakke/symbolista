@@ -10,9 +10,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/ogdakke/symbolista/internal/counter"
-	"github.com/ogdakke/symbolista/internal/gitignore"
 	"github.com/ogdakke/symbolista/internal/logger"
-	"github.com/ogdakke/symbolista/internal/traversal"
 )
 
 type FilterMode int
@@ -36,6 +34,7 @@ type Model struct {
 	workerCount     int
 	includeDotfiles bool
 	asciiOnly       bool
+	useTraversalV2  bool
 
 	charCounts        counter.CharCounts
 	filteredCounts    counter.CharCounts
@@ -56,20 +55,13 @@ type Model struct {
 	// Label display mode
 	labelMode LabelMode
 
-	// File statistics
-	filesFound    int
-	filesIgnored  int
-	totalChars    int
-	uniqueChars   int
+	// File statistics and timing
+	result counter.AnalysisResult
 }
 
 type analysisCompleteMsg struct {
-	counts       counter.CharCounts
-	filesFound   int
-	filesIgnored int
-	totalChars   int
-	uniqueChars  int
-	err          error
+	result counter.AnalysisResult
+	err    error
 }
 
 func isLetterOrNumber(r rune) bool {
@@ -144,13 +136,14 @@ func (m LabelMode) String() string {
 	}
 }
 
-func NewModel(directory string, showPercentages bool, workerCount int, includeDotfiles bool, asciiOnly bool) Model {
+func NewModel(directory string, showPercentages bool, workerCount int, includeDotfiles bool, asciiOnly bool, useTraversalV2 bool) Model {
 	return Model{
 		directory:         directory,
 		showPercentages:   showPercentages,
 		workerCount:       workerCount,
 		includeDotfiles:   includeDotfiles,
 		asciiOnly:         asciiOnly,
+		useTraversalV2:    useTraversalV2,
 		loading:           true,
 		filterMode:        FilterAll,
 		excludeWhitespace: true,
@@ -159,49 +152,22 @@ func NewModel(directory string, showPercentages bool, workerCount int, includeDo
 
 func (m Model) Init() tea.Cmd {
 	return tea.Batch(
-		startAnalysis(m.directory, m.workerCount, m.includeDotfiles, m.asciiOnly),
+		startAnalysis(m.directory, m.workerCount, m.includeDotfiles, m.asciiOnly, m.useTraversalV2),
 		tea.EnterAltScreen,
 	)
 }
 
-func startAnalysis(directory string, workerCount int, includeDotfiles bool, asciiOnly bool) tea.Cmd {
+func startAnalysis(directory string, workerCount int, includeDotfiles bool, asciiOnly bool, useTraversalV2 bool) tea.Cmd {
 	return tea.Cmd(func() tea.Msg {
 		logger.Info("Starting TUI analysis", "directory", directory)
 
-		matcher, err := gitignore.NewMatcher(directory, includeDotfiles)
+		result, err := counter.AnalyzeSymbols(directory, workerCount, includeDotfiles, asciiOnly, useTraversalV2)
 		if err != nil {
 			return analysisCompleteMsg{err: err}
 		}
-
-		result, err := traversal.WalkDirectoryConcurrent(directory, matcher, workerCount, asciiOnly)
-		if err != nil {
-			return analysisCompleteMsg{err: err}
-		}
-
-		charMap := result.CharMap
-		totalChars := result.TotalChars
-		filesFound := result.FilesFound
-		filesIgnored := result.FilesIgnored
-		uniqueChars := len(charMap)
-
-		var counts counter.CharCounts
-		for char, count := range charMap {
-			percentage := float64(count) / float64(totalChars) * 100
-			counts = append(counts, counter.CharCount{
-				Char:       string(char),
-				Count:      count,
-				Percentage: percentage,
-			})
-		}
-
-		sort.Sort(counts)
 
 		return analysisCompleteMsg{
-			counts:       counts,
-			filesFound:   filesFound,
-			filesIgnored: filesIgnored,
-			totalChars:   totalChars,
-			uniqueChars:  uniqueChars,
+			result: result,
 		}
 	})
 }
@@ -224,11 +190,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, nil
 		}
 
-		m.charCounts = msg.counts
-		m.filesFound = msg.filesFound
-		m.filesIgnored = msg.filesIgnored
-		m.totalChars = msg.totalChars
-		m.uniqueChars = msg.uniqueChars
+		m.result = msg.result
+		m.charCounts = msg.result.CharCounts
 		m.ready = true
 		m.applyFilter()
 		m.updateChart()
@@ -242,7 +205,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if m.ready {
 				m.loading = true
 				m.ready = false
-				return m, startAnalysis(m.directory, m.workerCount, m.includeDotfiles, m.asciiOnly)
+				return m, startAnalysis(m.directory, m.workerCount, m.includeDotfiles, m.asciiOnly, m.useTraversalV2)
 			}
 		case "a":
 			if m.ready {
@@ -418,16 +381,26 @@ func (m Model) View() string {
 	// Add label mode indicator
 	labelModeInfo := fmt.Sprintf(" | Labels: %s", m.labelMode.String())
 
-	fileStats := fmt.Sprintf("Found: %d | Processed: %d | Files/dirs ignored: %d | Total chars: %d", 
-		m.filesFound, m.filesFound - m.filesIgnored, m.filesIgnored, m.totalChars)
-	
+	fileStats := fmt.Sprintf("Found: %d | Processed: %d | Files/dirs ignored: %d | Total chars: %d",
+		m.result.FilesFound, m.result.FilesFound-m.result.FilesIgnored, m.result.FilesIgnored, m.result.TotalChars)
+
+	timingStats := fmt.Sprintf("Timing: Total %s | Gitignore %s | Traversal %s | Sorting %s",
+		m.result.Timing.TotalDuration,
+		m.result.Timing.GitignoreDuration,
+		m.result.Timing.TraversalDuration,
+		m.result.Timing.SortingDuration)
+
 	info := lipgloss.NewStyle().
 		Foreground(lipgloss.Color("8")).
 		Render(fmt.Sprintf("Directory: %s | Filter: %s%s | Showing: %d/%d chars%s%s", m.directory, m.filterMode.String(), whitespaceStatus, len(m.filteredCounts), len(m.charCounts), scrollInfo, labelModeInfo))
-	
+
 	stats := lipgloss.NewStyle().
 		Foreground(lipgloss.Color("6")).
 		Render(fileStats)
+
+	timing := lipgloss.NewStyle().
+		Foreground(lipgloss.Color("5")).
+		Render(timingStats)
 
 	chart := m.chart.View()
 
@@ -442,5 +415,5 @@ func (m Model) View() string {
 		Foreground(lipgloss.Color("8")).
 		Render("Controls: 'a' all | 'l' letters/numbers | 's' symbols | 'w' toggle whitespace | 't' toggle labels | ←→ scroll | home/end | 'r' refresh | 'q' quit")
 
-	return fmt.Sprintf("%s\n%s\n%s\n\n%s\n\n%s", title, info, stats, chartWindow, controls)
+	return fmt.Sprintf("%s\n%s\n%s\n%s\n\n%s\n\n%s", title, info, stats, timing, chartWindow, controls)
 }

@@ -26,11 +26,28 @@ func (c CharCounts) Len() int           { return len(c) }
 func (c CharCounts) Less(i, j int) bool { return c[i].Count > c[j].Count }
 func (c CharCounts) Swap(i, j int)      { c[i], c[j] = c[j], c[i] }
 
-func CountSymbols(directory, format string, showPercentages bool) {
-	CountSymbolsConcurrent(directory, format, showPercentages, 0, false, true)
+type TimingBreakdown struct {
+	TotalDuration     time.Duration `json:"total_duration"`
+	GitignoreDuration time.Duration `json:"gitignore_duration"`
+	TraversalDuration time.Duration `json:"traversal_duration"`
+	SortingDuration   time.Duration `json:"sorting_duration"`
+	OutputDuration    time.Duration `json:"output_duration"`
 }
 
-func CountSymbolsConcurrent(directory, format string, showPercentages bool, workerCount int, includeDotfiles bool, asciiOnly bool) {
+type AnalysisResult struct {
+	CharCounts   CharCounts
+	FilesFound   int
+	FilesIgnored int
+	TotalChars   int
+	UniqueChars  int
+	Timing       TimingBreakdown
+}
+
+func CountSymbols(directory, format string, showPercentages bool) {
+	CountSymbolsConcurrent(directory, format, showPercentages, 0, false, true, false)
+}
+
+func AnalyzeSymbols(directory string, workerCount int, includeDotfiles bool, asciiOnly bool, useTraversalV2 bool) (AnalysisResult, error) {
 	startTime := time.Now()
 
 	logger.Info("Initializing gitignore matcher", "directory", directory, "includeDotfiles", includeDotfiles)
@@ -40,21 +57,25 @@ func CountSymbolsConcurrent(directory, format string, showPercentages bool, work
 
 	if err != nil {
 		logger.Error("Could not load gitignore", "error", err, "duration", gitignoreDuration)
-		fmt.Printf("Warning: Could not load gitignore: %v\n", err)
+		return AnalysisResult{}, fmt.Errorf("could not load gitignore: %w", err)
 	} else {
 		logger.Debug("Gitignore matcher created successfully", "duration", gitignoreDuration)
 	}
 
-	logger.Info("Starting concurrent file traversal and character counting")
+	logger.Info("Starting concurrent file traversal and character counting", "useTraversalV2", useTraversalV2)
 	traversalStart := time.Now()
 
-	result, err := traversal.WalkDirectoryConcurrent(directory, matcher, workerCount, asciiOnly)
+	var result traversal.ConcurrentResult
+	if useTraversalV2 {
+		result, err = traversal.WalkDirectoryConcurrentV2(directory, matcher, workerCount, asciiOnly)
+	} else {
+		result, err = traversal.WalkDirectoryConcurrent(directory, matcher, workerCount, asciiOnly)
+	}
 	traversalDuration := time.Since(traversalStart)
 
 	if err != nil {
 		logger.Error("Error during file processing", "error", err, "duration", traversalDuration)
-		fmt.Printf("Error processing files: %v\n", err)
-		return
+		return AnalysisResult{}, fmt.Errorf("error processing files: %w", err)
 	}
 
 	charMap := result.CharMap
@@ -86,34 +107,71 @@ func CountSymbolsConcurrent(directory, format string, showPercentages bool, work
 	sortingDuration := time.Since(sortingStart)
 	logger.Debug("Character counts sorted", "unique_chars", len(counts), "duration", sortingDuration)
 
-	outputStart := time.Now()
-	switch format {
-	case "json":
-		logger.Debug("Outputting results as JSON")
-		outputJSON(counts, showPercentages)
-	case "csv":
-		logger.Debug("Outputting results as CSV")
-		outputCSV(counts, showPercentages)
-	default:
-		logger.Debug("Outputting results as table")
-		outputTable(counts, showPercentages)
-	}
-	outputDuration := time.Since(outputStart)
 	totalDuration := time.Since(startTime)
 
-	fmt.Printf("Files found: %d\n", filesFound)
-	fmt.Printf("Files processed: %d\n", processedFiles)
-	fmt.Printf("Files/directories ignored: %d\n", filesIgnored)
-	fmt.Printf("Total characters: %d\n", totalChars)
-	fmt.Printf("Unique characters: %d\n", len(charMap))
-	fmt.Printf("Total duration: %s\n", totalDuration)
+	timing := TimingBreakdown{
+		TotalDuration:     totalDuration,
+		GitignoreDuration: gitignoreDuration,
+		TraversalDuration: traversalDuration,
+		SortingDuration:   sortingDuration,
+		OutputDuration:    0, // Will be set by the caller
+	}
 
 	logger.Info("Analysis completed",
 		"total_duration", totalDuration,
 		"gitignore_duration", gitignoreDuration,
 		"traversal_duration", traversalDuration,
-		"sorting_duration", sortingDuration,
-		"output_duration", outputDuration)
+		"sorting_duration", sortingDuration)
+
+	return AnalysisResult{
+		CharCounts:   counts,
+		FilesFound:   filesFound,
+		FilesIgnored: filesIgnored,
+		TotalChars:   totalChars,
+		UniqueChars:  len(charMap),
+		Timing:       timing,
+	}, nil
+}
+
+func CountSymbolsConcurrent(directory, format string, showPercentages bool, workerCount int, includeDotfiles bool, asciiOnly bool, useTraversalV2 bool) {
+	result, err := AnalyzeSymbols(directory, workerCount, includeDotfiles, asciiOnly, useTraversalV2)
+	if err != nil {
+		fmt.Printf("Error: %v\n", err)
+		return
+	}
+
+	outputStart := time.Now()
+	switch format {
+	case "json":
+		logger.Debug("Outputting results as JSON")
+		outputJSON(result.CharCounts, showPercentages)
+	case "csv":
+		logger.Debug("Outputting results as CSV")
+		outputCSV(result.CharCounts, showPercentages)
+	default:
+		logger.Debug("Outputting results as table")
+		outputTable(result.CharCounts, showPercentages)
+	}
+	outputDuration := time.Since(outputStart)
+
+	// Update timing with output duration
+	result.Timing.OutputDuration = outputDuration
+	totalDuration := result.Timing.TotalDuration + outputDuration
+
+	fmt.Printf("Files found: %d\n", result.FilesFound)
+	fmt.Printf("Files processed: %d\n", result.FilesFound-result.FilesIgnored)
+	fmt.Printf("Files/directories ignored: %d\n", result.FilesIgnored)
+	fmt.Printf("Total characters: %d\n", result.TotalChars)
+	fmt.Printf("Unique characters: %d\n", result.UniqueChars)
+
+	if logger.GetVerbosity() > 0 {
+		fmt.Println("\nTiming Breakdown:")
+		fmt.Printf("  Gitignore initialization: %s\n", result.Timing.GitignoreDuration)
+		fmt.Printf("  File traversal & counting: %s\n", result.Timing.TraversalDuration)
+		fmt.Printf("  Sorting results: %s\n", result.Timing.SortingDuration)
+		fmt.Printf("  Output formatting: %s\n", result.Timing.OutputDuration)
+	}
+	fmt.Printf("Total time: %s\n", totalDuration)
 }
 
 func outputTable(counts CharCounts, showPercentages bool) {
