@@ -19,7 +19,6 @@ tmp/*
 Thumbs.db
 
 # Test
-test_dir/
 # Added by goreleaser init:
 dist/
 

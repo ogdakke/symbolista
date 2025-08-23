@@ -11,305 +11,360 @@
     "CharCounts": [
       {
         "char": " ",
-        "count": 137,
-        "percentage": 11.474036850921273
-      },
-      {
-        "char": "\n",
-        "count": 74,
-        "percentage": 6.197654941373535
+        "count": 2383,
+        "percentage": 26.811431143114312
       },
       {
         "char": "e",
-        "count": 74,
-        "percentage": 6.197654941373535
-      },
-      {
-        "char": "n",
-        "count": 65,
-        "percentage": 5.443886097152429
-      },
-      {
-        "char": "s",
-        "count": 65,
-        "percentage": 5.443886097152429
-      },
-      {
-        "char": "t",
-        "count": 65,
-        "percentage": 5.443886097152429
+        "count": 618,
+        "percentage": 6.953195319531953
       },
       {
         "char": "r",
-        "count": 63,
-        "percentage": 5.276381909547738
+        "count": 543,
+        "percentage": 6.109360936093609
       },
       {
-        "char": "i",
-        "count": 53,
-        "percentage": 4.438860971524288
+        "char": "s",
+        "count": 431,
+        "percentage": 4.849234923492349
+      },
+      {
+        "char": "t",
+        "count": 430,
+        "percentage": 4.837983798379838
       },
       {
         "char": "o",
-        "count": 49,
-        "percentage": 4.103852596314908
+        "count": 346,
+        "percentage": 3.8928892889288926
+      },
+      {
+        "char": "i",
+        "count": 338,
+        "percentage": 3.802880288028803
+      },
+      {
+        "char": "\n",
+        "count": 326,
+        "percentage": 3.6678667866786676
       },
       {
         "char": "a",
-        "count": 44,
-        "percentage": 3.6850921273031827
+        "count": 284,
+        "percentage": 3.1953195319531953
+      },
+      {
+        "char": "n",
+        "count": 264,
+        "percentage": 2.9702970297029703
       },
       {
         "char": "\"",
-        "count": 42,
-        "percentage": 3.5175879396984926
-      },
-      {
-        "char": ",",
-        "count": 35,
-        "percentage": 2.9313232830820772
+        "count": 222,
+        "percentage": 2.4977497749774975
       },
       {
         "char": "u",
-        "count": 32,
-        "percentage": 2.680067001675042
-      },
-      {
-        "char": "g",
-        "count": 31,
-        "percentage": 2.5963149078726966
+        "count": 210,
+        "percentage": 2.362736273627363
       },
       {
         "char": "l",
-        "count": 26,
-        "percentage": 2.1775544388609713
-      },
-      {
-        "char": "p",
-        "count": 22,
-        "percentage": 1.8425460636515913
-      },
-      {
-        "char": "m",
-        "count": 21,
-        "percentage": 1.7587939698492463
+        "count": 205,
+        "percentage": 2.3064806480648063
       },
       {
         "char": "c",
-        "count": 20,
-        "percentage": 1.675041876046901
+        "count": 160,
+        "percentage": 1.8001800180018002
+      },
+      {
+        "char": "d",
+        "count": 150,
+        "percentage": 1.6876687668766877
+      },
+      {
+        "char": "p",
+        "count": 138,
+        "percentage": 1.5526552655265526
+      },
+      {
+        "char": "m",
+        "count": 122,
+        "percentage": 1.3726372637263726
+      },
+      {
+        "char": "f",
+        "count": 115,
+        "percentage": 1.2938793879387938
+      },
+      {
+        "char": "g",
+        "count": 103,
+        "percentage": 1.1588658865886587
+      },
+      {
+        "char": "h",
+        "count": 95,
+        "percentage": 1.0688568856885687
+      },
+      {
+        "char": ".",
+        "count": 87,
+        "percentage": 0.9788478847884788
+      },
+      {
+        "char": "\u003c",
+        "count": 75,
+        "percentage": 0.8438343834383438
+      },
+      {
+        "char": "\u003e",
+        "count": 74,
+        "percentage": 0.8325832583258326
+      },
+      {
+        "char": ";",
+        "count": 73,
+        "percentage": 0.8213321332133214
+      },
+      {
+        "char": "=",
+        "count": 73,
+        "percentage": 0.8213321332133214
+      },
+      {
+        "char": "{",
+        "count": 71,
+        "percentage": 0.7988298829882988
+      },
+      {
+        "char": "}",
+        "count": 71,
+        "percentage": 0.7988298829882988
+      },
+      {
+        "char": ",",
+        "count": 69,
+        "percentage": 0.7763276327632763
+      },
+      {
+        "char": "/",
+        "count": 67,
+        "percentage": 0.7538253825382538
+      },
+      {
+        "char": ":",
+        "count": 66,
+        "percentage": 0.7425742574257426
+      },
+      {
+        "char": "k",
+        "count": 65,
+        "percentage": 0.7313231323132313
+      },
+      {
+        "char": "(",
+        "count": 64,
+        "percentage": 0.7200720072007201
+      },
+      {
+        "char": ")",
+        "count": 64,
+        "percentage": 0.7200720072007201
+      },
+      {
+        "char": "v",
+        "count": 59,
+        "percentage": 0.6638163816381638
+      },
+      {
+        "char": "-",
+        "count": 56,
+        "percentage": 0.6300630063006301
+      },
+      {
+        "char": "x",
+        "count": 44,
+        "percentage": 0.49504950495049505
+      },
+      {
+        "char": "b",
+        "count": 35,
+        "percentage": 0.3937893789378938
+      },
+      {
+        "char": "y",
+        "count": 30,
+        "percentage": 0.33753375337533753
+      },
+      {
+        "char": "w",
+        "count": 27,
+        "percentage": 0.3037803780378038
+      },
+      {
+        "char": "@",
+        "count": 24,
+        "percentage": 0.27002700270027
       },
       {
         "char": "\t",
         "count": 17,
-        "percentage": 1.4237855946398659
-      },
-      {
-        "char": ".",
-        "count": 17,
-        "percentage": 1.4237855946398659
-      },
-      {
-        "char": ":",
-        "count": 17,
-        "percentage": 1.4237855946398659
-      },
-      {
-        "char": "d",
-        "count": 16,
-        "percentage": 1.340033500837521
-      },
-      {
-        "char": "f",
-        "count": 16,
-        "percentage": 1.340033500837521
-      },
-      {
-        "char": "h",
-        "count": 15,
-        "percentage": 1.256281407035176
-      },
-      {
-        "char": "(",
-        "count": 12,
-        "percentage": 1.0050251256281406
-      },
-      {
-        "char": ")",
-        "count": 12,
-        "percentage": 1.0050251256281406
-      },
-      {
-        "char": "b",
-        "count": 11,
-        "percentage": 0.9212730318257957
-      },
-      {
-        "char": "`",
-        "count": 8,
-        "percentage": 0.6700167504187605
-      },
-      {
-        "char": "j",
-        "count": 8,
-        "percentage": 0.6700167504187605
-      },
-      {
-        "char": "w",
-        "count": 8,
-        "percentage": 0.6700167504187605
-      },
-      {
-        "char": "{",
-        "count": 8,
-        "percentage": 0.6700167504187605
-      },
-      {
-        "char": "}",
-        "count": 8,
-        "percentage": 0.6700167504187605
+        "percentage": 0.19126912691269127
       },
       {
         "char": "#",
-        "count": 7,
-        "percentage": 0.5862646566164154
+        "count": 16,
+        "percentage": 0.18001800180018002
       },
       {
-        "char": "1",
-        "count": 7,
-        "percentage": 0.5862646566164154
+        "char": "?",
+        "count": 15,
+        "percentage": 0.16876687668766877
       },
       {
-        "char": "[",
-        "count": 7,
-        "percentage": 0.5862646566164154
+        "char": "_",
+        "count": 14,
+        "percentage": 0.15751575157515751
       },
       {
-        "char": "]",
-        "count": 7,
-        "percentage": 0.5862646566164154
+        "char": "j",
+        "count": 14,
+        "percentage": 0.15751575157515751
       },
       {
-        "char": "-",
-        "count": 6,
-        "percentage": 0.5025125628140703
-      },
-      {
-        "char": "0",
-        "count": 6,
-        "percentage": 0.5025125628140703
+        "char": "z",
+        "count": 13,
+        "percentage": 0.14626462646264626
       },
       {
         "char": "2",
-        "count": 6,
-        "percentage": 0.5025125628140703
+        "count": 12,
+        "percentage": 0.135013501350135
       },
       {
         "char": "8",
-        "count": 6,
-        "percentage": 0.5025125628140703
+        "count": 10,
+        "percentage": 0.11251125112511251
       },
       {
-        "char": "y",
-        "count": 6,
-        "percentage": 0.5025125628140703
+        "char": "`",
+        "count": 10,
+        "percentage": 0.11251125112511251
       },
       {
-        "char": "=",
-        "count": 5,
-        "percentage": 0.41876046901172526
+        "char": "1",
+        "count": 9,
+        "percentage": 0.10126012601260126
       },
       {
-        "char": "3",
-        "count": 4,
-        "percentage": 0.33500837520938026
+        "char": "0",
+        "count": 8,
+        "percentage": 0.09000900090009001
       },
       {
         "char": "5",
-        "count": 4,
-        "percentage": 0.33500837520938026
+        "count": 8,
+        "percentage": 0.09000900090009001
+      },
+      {
+        "char": "[",
+        "count": 8,
+        "percentage": 0.09000900090009001
+      },
+      {
+        "char": "]",
+        "count": 8,
+        "percentage": 0.09000900090009001
+      },
+      {
+        "char": "q",
+        "count": 7,
+        "percentage": 0.07875787578757876
+      },
+      {
+        "char": "~",
+        "count": 7,
+        "percentage": 0.07875787578757876
+      },
+      {
+        "char": "4",
+        "count": 6,
+        "percentage": 0.0675067506750675
+      },
+      {
+        "char": "3",
+        "count": 5,
+        "percentage": 0.056255625562556255
       },
       {
         "char": "9",
-        "count": 4,
-        "percentage": 0.33500837520938026
+        "count": 5,
+        "percentage": 0.056255625562556255
       },
       {
-        "char": "k",
-        "count": 4,
-        "percentage": 0.33500837520938026
-      },
-      {
-        "char": "v",
-        "count": 4,
-        "percentage": 0.33500837520938026
-      },
-      {
-        "char": "/",
+        "char": "$",
         "count": 3,
-        "percentage": 0.25125628140703515
-      },
-      {
-        "char": "\u003c",
-        "count": 3,
-        "percentage": 0.25125628140703515
+        "percentage": 0.03375337533753375
       },
       {
         "char": "!",
         "count": 2,
-        "percentage": 0.16750418760469013
+        "percentage": 0.022502250225022502
+      },
+      {
+        "char": "\u0026",
+        "count": 2,
+        "percentage": 0.022502250225022502
+      },
+      {
+        "char": "'",
+        "count": 2,
+        "percentage": 0.022502250225022502
       },
       {
         "char": "*",
         "count": 2,
-        "percentage": 0.16750418760469013
+        "percentage": 0.022502250225022502
       },
       {
-        "char": ";",
+        "char": "7",
         "count": 2,
-        "percentage": 0.16750418760469013
+        "percentage": 0.022502250225022502
       },
       {
-        "char": "x",
+        "char": "|",
         "count": 2,
-        "percentage": 0.16750418760469013
+        "percentage": 0.022502250225022502
       },
       {
         "char": "%",
         "count": 1,
-        "percentage": 0.08375209380234507
+        "percentage": 0.011251125112511251
       },
       {
         "char": "+",
         "count": 1,
-        "percentage": 0.08375209380234507
+        "percentage": 0.011251125112511251
       },
       {
-        "char": "7",
+        "char": "6",
         "count": 1,
-        "percentage": 0.08375209380234507
-      },
-      {
-        "char": "\u003e",
-        "count": 1,
-        "percentage": 0.08375209380234507
+        "percentage": 0.011251125112511251
       },
       {
         "char": "\\",
         "count": 1,
-        "percentage": 0.08375209380234507
-      },
-      {
-        "char": "_",
-        "count": 1,
-        "percentage": 0.08375209380234507
+        "percentage": 0.011251125112511251
       }
     ],
     "SequenceCounts": null,
-    "FilesFound": 8,
+    "FilesFound": 12,
     "FilesIgnored": 1,
-    "TotalChars": 1194,
-    "UniqueChars": 59,
+    "TotalChars": 8888,
+    "UniqueChars": 70,
     "UniqueSequences": 0,
     "Timing": {
       "total_duration": 0,
