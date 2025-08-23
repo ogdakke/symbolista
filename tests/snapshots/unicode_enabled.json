@@ -1,0 +1,305 @@
+{
+  "test_name": "unicode_enabled",
+  "directory": "./test_dir",
+  "options": {
+    "include_dotfiles": false,
+    "ascii_only": false,
+    "output_format": "table",
+    "worker_count": 1
+  },
+  "result": {
+    "CharCounts": [
+      {
+        "char": " ",
+        "count": 137,
+        "percentage": 11.902693310165075
+      },
+      {
+        "char": "e",
+        "count": 71,
+        "percentage": 6.168549087749783
+      },
+      {
+        "char": "\n",
+        "count": 69,
+        "percentage": 5.994787141615986
+      },
+      {
+        "char": "n",
+        "count": 63,
+        "percentage": 5.473501303214596
+      },
+      {
+        "char": "r",
+        "count": 63,
+        "percentage": 5.473501303214596
+      },
+      {
+        "char": "s",
+        "count": 63,
+        "percentage": 5.473501303214596
+      },
+      {
+        "char": "t",
+        "count": 63,
+        "percentage": 5.473501303214596
+      },
+      {
+        "char": "i",
+        "count": 51,
+        "percentage": 4.430929626411816
+      },
+      {
+        "char": "o",
+        "count": 46,
+        "percentage": 3.996524761077324
+      },
+      {
+        "char": "a",
+        "count": 44,
+        "percentage": 3.8227628149435278
+      },
+      {
+        "char": "\"",
+        "count": 42,
+        "percentage": 3.6490008688097304
+      },
+      {
+        "char": ",",
+        "count": 35,
+        "percentage": 3.040834057341442
+      },
+      {
+        "char": "g",
+        "count": 30,
+        "percentage": 2.6064291920069502
+      },
+      {
+        "char": "u",
+        "count": 30,
+        "percentage": 2.6064291920069502
+      },
+      {
+        "char": "l",
+        "count": 23,
+        "percentage": 1.998262380538662
+      },
+      {
+        "char": "p",
+        "count": 21,
+        "percentage": 1.8245004344048652
+      },
+      {
+        "char": "c",
+        "count": 20,
+        "percentage": 1.7376194613379672
+      },
+      {
+        "char": "m",
+        "count": 19,
+        "percentage": 1.6507384882710685
+      },
+      {
+        "char": "\t",
+        "count": 17,
+        "percentage": 1.4769765421372718
+      },
+      {
+        "char": ":",
+        "count": 17,
+        "percentage": 1.4769765421372718
+      },
+      {
+        "char": "f",
+        "count": 16,
+        "percentage": 1.3900955690703736
+      },
+      {
+        "char": "h",
+        "count": 15,
+        "percentage": 1.3032145960034751
+      },
+      {
+        "char": ".",
+        "count": 14,
+        "percentage": 1.2163336229365769
+      },
+      {
+        "char": "(",
+        "count": 12,
+        "percentage": 1.0425716768027802
+      },
+      {
+        "char": ")",
+        "count": 12,
+        "percentage": 1.0425716768027802
+      },
+      {
+        "char": "d",
+        "count": 12,
+        "percentage": 1.0425716768027802
+      },
+      {
+        "char": "b",
+        "count": 10,
+        "percentage": 0.8688097306689836
+      },
+      {
+        "char": "`",
+        "count": 8,
+        "percentage": 0.6950477845351868
+      },
+      {
+        "char": "j",
+        "count": 8,
+        "percentage": 0.6950477845351868
+      },
+      {
+        "char": "w",
+        "count": 8,
+        "percentage": 0.6950477845351868
+      },
+      {
+        "char": "{",
+        "count": 8,
+        "percentage": 0.6950477845351868
+      },
+      {
+        "char": "}",
+        "count": 8,
+        "percentage": 0.6950477845351868
+      },
+      {
+        "char": "#",
+        "count": 7,
+        "percentage": 0.6081668114682884
+      },
+      {
+        "char": "1",
+        "count": 7,
+        "percentage": 0.6081668114682884
+      },
+      {
+        "char": "[",
+        "count": 7,
+        "percentage": 0.6081668114682884
+      },
+      {
+        "char": "]",
+        "count": 7,
+        "percentage": 0.6081668114682884
+      },
+      {
+        "char": "-",
+        "count": 6,
+        "percentage": 0.5212858384013901
+      },
+      {
+        "char": "0",
+        "count": 6,
+        "percentage": 0.5212858384013901
+      },
+      {
+        "char": "2",
+        "count": 6,
+        "percentage": 0.5212858384013901
+      },
+      {
+        "char": "8",
+        "count": 6,
+        "percentage": 0.5212858384013901
+      },
+      {
+        "char": "y",
+        "count": 6,
+        "percentage": 0.5212858384013901
+      },
+      {
+        "char": "=",
+        "count": 5,
+        "percentage": 0.4344048653344918
+      },
+      {
+        "char": "3",
+        "count": 4,
+        "percentage": 0.3475238922675934
+      },
+      {
+        "char": "5",
+        "count": 4,
+        "percentage": 0.3475238922675934
+      },
+      {
+        "char": "9",
+        "count": 4,
+        "percentage": 0.3475238922675934
+      },
+      {
+        "char": "k",
+        "count": 4,
+        "percentage": 0.3475238922675934
+      },
+      {
+        "char": "\u003c",
+        "count": 3,
+        "percentage": 0.26064291920069504
+      },
+      {
+        "char": "v",
+        "count": 3,
+        "percentage": 0.26064291920069504
+      },
+      {
+        "char": "!",
+        "count": 2,
+        "percentage": 0.1737619461337967
+      },
+      {
+        "char": ";",
+        "count": 2,
+        "percentage": 0.1737619461337967
+      },
+      {
+        "char": "x",
+        "count": 2,
+        "percentage": 0.1737619461337967
+      },
+      {
+        "char": "%",
+        "count": 1,
+        "percentage": 0.08688097306689835
+      },
+      {
+        "char": "+",
+        "count": 1,
+        "percentage": 0.08688097306689835
+      },
+      {
+        "char": "7",
+        "count": 1,
+        "percentage": 0.08688097306689835
+      },
+      {
+        "char": "\u003e",
+        "count": 1,
+        "percentage": 0.08688097306689835
+      },
+      {
+        "char": "\\",
+        "count": 1,
+        "percentage": 0.08688097306689835
+      }
+    ],
+    "FilesFound": 8,
+    "FilesIgnored": 2,
+    "TotalChars": 1151,
+    "UniqueChars": 56,
+    "Timing": {
+      "total_duration": 0,
+      "gitignore_duration": 0,
+      "traversal_duration": 0,
+      "sorting_duration": 0,
+      "output_duration": 0
+    }
+  }
+}

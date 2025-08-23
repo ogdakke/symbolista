@@ -1,0 +1,320 @@
+{
+  "test_name": "include_dotfiles",
+  "directory": "./test_dir",
+  "options": {
+    "include_dotfiles": true,
+    "ascii_only": true,
+    "output_format": "table",
+    "worker_count": 1
+  },
+  "result": {
+    "CharCounts": [
+      {
+        "char": " ",
+        "count": 137,
+        "percentage": 11.474036850921273
+      },
+      {
+        "char": "\n",
+        "count": 74,
+        "percentage": 6.197654941373535
+      },
+      {
+        "char": "e",
+        "count": 74,
+        "percentage": 6.197654941373535
+      },
+      {
+        "char": "n",
+        "count": 65,
+        "percentage": 5.443886097152429
+      },
+      {
+        "char": "s",
+        "count": 65,
+        "percentage": 5.443886097152429
+      },
+      {
+        "char": "t",
+        "count": 65,
+        "percentage": 5.443886097152429
+      },
+      {
+        "char": "r",
+        "count": 63,
+        "percentage": 5.276381909547738
+      },
+      {
+        "char": "i",
+        "count": 53,
+        "percentage": 4.438860971524288
+      },
+      {
+        "char": "o",
+        "count": 49,
+        "percentage": 4.103852596314908
+      },
+      {
+        "char": "a",
+        "count": 44,
+        "percentage": 3.6850921273031827
+      },
+      {
+        "char": "\"",
+        "count": 42,
+        "percentage": 3.5175879396984926
+      },
+      {
+        "char": ",",
+        "count": 35,
+        "percentage": 2.9313232830820772
+      },
+      {
+        "char": "u",
+        "count": 32,
+        "percentage": 2.680067001675042
+      },
+      {
+        "char": "g",
+        "count": 31,
+        "percentage": 2.5963149078726966
+      },
+      {
+        "char": "l",
+        "count": 26,
+        "percentage": 2.1775544388609713
+      },
+      {
+        "char": "p",
+        "count": 22,
+        "percentage": 1.8425460636515913
+      },
+      {
+        "char": "m",
+        "count": 21,
+        "percentage": 1.7587939698492463
+      },
+      {
+        "char": "c",
+        "count": 20,
+        "percentage": 1.675041876046901
+      },
+      {
+        "char": "\t",
+        "count": 17,
+        "percentage": 1.4237855946398659
+      },
+      {
+        "char": ".",
+        "count": 17,
+        "percentage": 1.4237855946398659
+      },
+      {
+        "char": ":",
+        "count": 17,
+        "percentage": 1.4237855946398659
+      },
+      {
+        "char": "d",
+        "count": 16,
+        "percentage": 1.340033500837521
+      },
+      {
+        "char": "f",
+        "count": 16,
+        "percentage": 1.340033500837521
+      },
+      {
+        "char": "h",
+        "count": 15,
+        "percentage": 1.256281407035176
+      },
+      {
+        "char": "(",
+        "count": 12,
+        "percentage": 1.0050251256281406
+      },
+      {
+        "char": ")",
+        "count": 12,
+        "percentage": 1.0050251256281406
+      },
+      {
+        "char": "b",
+        "count": 11,
+        "percentage": 0.9212730318257957
+      },
+      {
+        "char": "`",
+        "count": 8,
+        "percentage": 0.6700167504187605
+      },
+      {
+        "char": "j",
+        "count": 8,
+        "percentage": 0.6700167504187605
+      },
+      {
+        "char": "w",
+        "count": 8,
+        "percentage": 0.6700167504187605
+      },
+      {
+        "char": "{",
+        "count": 8,
+        "percentage": 0.6700167504187605
+      },
+      {
+        "char": "}",
+        "count": 8,
+        "percentage": 0.6700167504187605
+      },
+      {
+        "char": "#",
+        "count": 7,
+        "percentage": 0.5862646566164154
+      },
+      {
+        "char": "1",
+        "count": 7,
+        "percentage": 0.5862646566164154
+      },
+      {
+        "char": "[",
+        "count": 7,
+        "percentage": 0.5862646566164154
+      },
+      {
+        "char": "]",
+        "count": 7,
+        "percentage": 0.5862646566164154
+      },
+      {
+        "char": "-",
+        "count": 6,
+        "percentage": 0.5025125628140703
+      },
+      {
+        "char": "0",
+        "count": 6,
+        "percentage": 0.5025125628140703
+      },
+      {
+        "char": "2",
+        "count": 6,
+        "percentage": 0.5025125628140703
+      },
+      {
+        "char": "8",
+        "count": 6,
+        "percentage": 0.5025125628140703
+      },
+      {
+        "char": "y",
+        "count": 6,
+        "percentage": 0.5025125628140703
+      },
+      {
+        "char": "=",
+        "count": 5,
+        "percentage": 0.41876046901172526
+      },
+      {
+        "char": "3",
+        "count": 4,
+        "percentage": 0.33500837520938026
+      },
+      {
+        "char": "5",
+        "count": 4,
+        "percentage": 0.33500837520938026
+      },
+      {
+        "char": "9",
+        "count": 4,
+        "percentage": 0.33500837520938026
+      },
+      {
+        "char": "k",
+        "count": 4,
+        "percentage": 0.33500837520938026
+      },
+      {
+        "char": "v",
+        "count": 4,
+        "percentage": 0.33500837520938026
+      },
+      {
+        "char": "/",
+        "count": 3,
+        "percentage": 0.25125628140703515
+      },
+      {
+        "char": "\u003c",
+        "count": 3,
+        "percentage": 0.25125628140703515
+      },
+      {
+        "char": "!",
+        "count": 2,
+        "percentage": 0.16750418760469013
+      },
+      {
+        "char": "*",
+        "count": 2,
+        "percentage": 0.16750418760469013
+      },
+      {
+        "char": ";",
+        "count": 2,
+        "percentage": 0.16750418760469013
+      },
+      {
+        "char": "x",
+        "count": 2,
+        "percentage": 0.16750418760469013
+      },
+      {
+        "char": "%",
+        "count": 1,
+        "percentage": 0.08375209380234507
+      },
+      {
+        "char": "+",
+        "count": 1,
+        "percentage": 0.08375209380234507
+      },
+      {
+        "char": "7",
+        "count": 1,
+        "percentage": 0.08375209380234507
+      },
+      {
+        "char": "\u003e",
+        "count": 1,
+        "percentage": 0.08375209380234507
+      },
+      {
+        "char": "\\",
+        "count": 1,
+        "percentage": 0.08375209380234507
+      },
+      {
+        "char": "_",
+        "count": 1,
+        "percentage": 0.08375209380234507
+      }
+    ],
+    "FilesFound": 8,
+    "FilesIgnored": 1,
+    "TotalChars": 1194,
+    "UniqueChars": 59,
+    "Timing": {
+      "total_duration": 0,
+      "gitignore_duration": 0,
+      "traversal_duration": 0,
+      "sorting_duration": 0,
+      "output_duration": 0
+    }
+  }
+}

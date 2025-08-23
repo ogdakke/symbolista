@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ogdakke/symbolista/internal/gitignore"
+	"github.com/ogdakke/symbolista/internal/ignorer"
 	"github.com/ogdakke/symbolista/internal/logger"
 	"github.com/ogdakke/symbolista/internal/traversal"
 )
@@ -22,9 +22,14 @@ type CharCount struct {
 
 type CharCounts []CharCount
 
-func (c CharCounts) Len() int           { return len(c) }
-func (c CharCounts) Less(i, j int) bool { return c[i].Count > c[j].Count }
-func (c CharCounts) Swap(i, j int)      { c[i], c[j] = c[j], c[i] }
+func (c CharCounts) Len() int { return len(c) }
+func (c CharCounts) Less(i, j int) bool {
+	if c[i].Count != c[j].Count {
+		return c[i].Count > c[j].Count
+	}
+	return c[i].Char < c[j].Char
+}
+func (c CharCounts) Swap(i, j int) { c[i], c[j] = c[j], c[i] }
 
 type TimingBreakdown struct {
 	TotalDuration     time.Duration `json:"total_duration"`
@@ -66,7 +71,7 @@ func AnalyzeSymbols(directory string, workerCount int, includeDotfiles bool, asc
 	startTime := time.Now()
 
 	logger.Info("Initializing gitignore matcher", "directory", directory, "includeDotfiles", includeDotfiles)
-	matcher, err := gitignore.NewTimingMatcher(directory, includeDotfiles)
+	matcher, err := ignorer.NewTimingMatcher(directory, includeDotfiles)
 
 	if err != nil {
 		logger.Error("Could not load gitignore", "error", err)
