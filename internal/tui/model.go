@@ -11,6 +11,7 @@ import (
 	"github.com/charmbracelet/lipgloss"
 	"github.com/ogdakke/symbolista/internal/concurrent"
 	"github.com/ogdakke/symbolista/internal/counter"
+	"github.com/ogdakke/symbolista/internal/domain"
 	"github.com/ogdakke/symbolista/internal/logger"
 )
 
@@ -42,11 +43,12 @@ type Model struct {
 	workerCount     int
 	includeDotfiles bool
 	asciiOnly       bool
+	topNSeq         int
 
-	charCounts        counter.CharCounts
-	sequenceCounts    counter.SequenceCounts
-	filteredCounts    counter.CharCounts
-	filteredSequences counter.SequenceCounts
+	charCounts        domain.CharCounts
+	sequenceCounts    domain.SequenceCounts
+	filteredCounts    domain.CharCounts
+	filteredSequences domain.SequenceCounts
 	chart             barchart.Model
 	ready             bool
 	loading           bool
@@ -66,7 +68,7 @@ type Model struct {
 	labelMode LabelMode
 
 	// File statistics and timing
-	result counter.AnalysisResult
+	result domain.AnalysisResult
 
 	// Progress tracking
 	filesFound     int
@@ -75,7 +77,7 @@ type Model struct {
 }
 
 type analysisCompleteMsg struct {
-	result counter.AnalysisResult
+	result domain.AnalysisResult
 	err    error
 }
 
@@ -218,13 +220,14 @@ func (v ViewMode) String() string {
 	}
 }
 
-func NewModel(directory string, showPercentages bool, workerCount int, includeDotfiles bool, asciiOnly bool) Model {
+func NewModel(directory string, showPercentages bool, workerCount int, includeDotfiles bool, asciiOnly bool, topNSeq int) Model {
 	return Model{
 		directory:         directory,
 		showPercentages:   showPercentages,
 		workerCount:       workerCount,
 		includeDotfiles:   includeDotfiles,
 		asciiOnly:         asciiOnly,
+		topNSeq:           topNSeq,
 		loading:           true,
 		filterMode:        FilterAll,
 		viewMode:          ViewCharacters,
@@ -232,7 +235,7 @@ func NewModel(directory string, showPercentages bool, workerCount int, includeDo
 	}
 }
 
-func NewModelFromJSON(jsonOutput counter.JSONOutput) Model {
+func NewModelFromJSON(jsonOutput domain.JSONOutput) Model {
 	model := Model{
 		directory:         "from JSON file",
 		showPercentages:   true,
@@ -247,7 +250,7 @@ func NewModelFromJSON(jsonOutput counter.JSONOutput) Model {
 
 	if jsonOutput.Metadata != nil {
 		model.directory = jsonOutput.Metadata.Directory
-		model.result = counter.AnalysisResult{
+		model.result = domain.AnalysisResult{
 			CharCounts:      jsonOutput.Result.Characters,
 			SequenceCounts:  jsonOutput.Result.Sequences,
 			FilesFound:      jsonOutput.Metadata.FilesFound,
@@ -262,7 +265,7 @@ func NewModelFromJSON(jsonOutput counter.JSONOutput) Model {
 		for _, c := range jsonOutput.Result.Characters {
 			totalChars += c.Count
 		}
-		model.result = counter.AnalysisResult{
+		model.result = domain.AnalysisResult{
 			CharCounts:      jsonOutput.Result.Characters,
 			SequenceCounts:  jsonOutput.Result.Sequences,
 			FilesFound:      0,
@@ -282,7 +285,7 @@ func (m Model) Init() tea.Cmd {
 		return tea.EnterAltScreen
 	}
 	return tea.Batch(
-		startAnalysis(m.directory, m.workerCount, m.includeDotfiles, m.asciiOnly),
+		startAnalysis(m.directory, m.workerCount, m.includeDotfiles, m.asciiOnly, m.topNSeq),
 		tea.EnterAltScreen,
 	)
 }
@@ -308,7 +311,7 @@ func listenForCompletion(doneChan <-chan analysisCompleteMsg) tea.Cmd {
 	}
 }
 
-func startAnalysis(directory string, workerCount int, includeDotfiles bool, asciiOnly bool) tea.Cmd {
+func startAnalysis(directory string, workerCount int, includeDotfiles bool, asciiOnly bool, topNSeq int) tea.Cmd {
 	return func() tea.Msg {
 		logger.Info("Starting async TUI analysis", "directory", directory)
 
@@ -338,7 +341,7 @@ func startAnalysis(directory string, workerCount int, includeDotfiles bool, asci
 				Threshold: 2,
 			}
 
-			result, err := counter.AnalyzeSymbols(directory, workerCount, includeDotfiles, asciiOnly, sequenceConfig, progressFunc)
+			result, err := counter.AnalyzeSymbols(directory, workerCount, includeDotfiles, asciiOnly, sequenceConfig, progressFunc, topNSeq)
 
 			doneChan <- analysisCompleteMsg{
 				result: result,
@@ -404,23 +407,12 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if m.ready {
 				m.loading = true
 				m.ready = false
-				return m, startAnalysis(m.directory, m.workerCount, m.includeDotfiles, m.asciiOnly)
+				return m, startAnalysis(m.directory, m.workerCount, m.includeDotfiles, m.asciiOnly, m.topNSeq)
 			}
-		case "a":
+
+		case "f":
 			if m.ready {
-				m.filterMode = FilterAll
-				m.applyFilter()
-				m.updateChart()
-			}
-		case "l":
-			if m.ready {
-				m.filterMode = FilterLettersNumbers
-				m.applyFilter()
-				m.updateChart()
-			}
-		case "s":
-			if m.ready {
-				m.filterMode = FilterSymbols
+				m.filterMode = (m.filterMode + 1) % 3 // this is the length of options
 				m.applyFilter()
 				m.updateChart()
 			}
@@ -468,12 +460,12 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					m.updateChart()
 				}
 			}
-		case "t":
+		case "l":
 			if m.ready {
 				m.labelMode = (m.labelMode + 1) % 2
 				m.updateChart()
 			}
-		case "v":
+		case "m":
 			if m.ready {
 				m.viewMode = (m.viewMode + 1) % 2
 				m.scrollOffset = 0 // Reset scroll when switching views
@@ -642,9 +634,9 @@ func (m Model) View() string {
 		Foreground(lipgloss.Color("14")).
 		Render("Symbol Distribution")
 
-	whitespaceStatus := ""
+	whitespaceStatus := "| [w]hitespace on"
 	if m.excludeWhitespace {
-		whitespaceStatus = " | No whitespace"
+		whitespaceStatus = " | [w]hitespace off"
 	}
 
 	// Create scroll indicator and display info based on view mode
@@ -656,13 +648,13 @@ func (m Model) View() string {
 		if len(m.filteredCounts) > m.maxVisible {
 			scrollInfo = fmt.Sprintf(" | View: %d-%d/%d", m.scrollOffset+1, min(m.scrollOffset+m.maxVisible, len(m.filteredCounts)), len(m.filteredCounts))
 		}
-		displayInfo = fmt.Sprintf("Directory: %s | Mode: %s | Filter: %s%s | Showing: %d/%d chars%s | Labels: %s",
+		displayInfo = fmt.Sprintf("Directory: %s | [m]ode: %s | [f]ilter: %s%s | Showing: %d/%d chars%s | [l]abels: %s",
 			m.directory, m.viewMode.String(), m.filterMode.String(), whitespaceStatus, len(m.filteredCounts), len(m.charCounts), scrollInfo, m.labelMode.String())
 	case ViewSequences:
 		if len(m.filteredSequences) > m.maxVisible {
 			scrollInfo = fmt.Sprintf(" | View: %d-%d/%d", m.scrollOffset+1, min(m.scrollOffset+m.maxVisible, len(m.filteredSequences)), len(m.filteredSequences))
 		}
-		displayInfo = fmt.Sprintf("Directory: %s | Mode: %s | Filter: %s%s | Showing: %d/%d sequences%s | Labels: %s",
+		displayInfo = fmt.Sprintf("Directory: %s | [m]ode: %s | [f]ilter: %s%s | Showing: %d/%d sequences%s | [l]abels: %s",
 			m.directory, m.viewMode.String(), m.filterMode.String(), whitespaceStatus, len(m.filteredSequences), len(m.sequenceCounts), scrollInfo, m.labelMode.String())
 	}
 
@@ -676,7 +668,7 @@ func (m Model) View() string {
 		m.result.Timing.SortingDuration)
 
 	info := lipgloss.NewStyle().
-		Foreground(lipgloss.Color("8")).
+		Foreground(lipgloss.Color("5")).
 		Render(displayInfo)
 
 	stats := lipgloss.NewStyle().
@@ -684,7 +676,7 @@ func (m Model) View() string {
 		Render(fileStats)
 
 	timing := lipgloss.NewStyle().
-		Foreground(lipgloss.Color("5")).
+		Foreground(lipgloss.Color("8")).
 		Render(timingStats)
 
 	chart := m.chart.View()
@@ -697,8 +689,8 @@ func (m Model) View() string {
 		Render(chart)
 
 	controls := lipgloss.NewStyle().
-		Foreground(lipgloss.Color("8")).
-		Render("Controls: 'v' view mode | 'a' all | 'l' letters/numbers | 's' symbols | 'w' toggle whitespace | 't' toggle labels | ←→ scroll | home/end | 'r' refresh | 'q' quit")
+		Foreground(lipgloss.Color("6")).
+		Render("Controls: 'm' view mode | 'f' char type | 'w' toggle whitespace | 'l' toggle labels | ←→ scroll | home/end | 'r' refresh | 'q' quit")
 
 	return fmt.Sprintf("%s\n%s\n%s\n%s\n\n%s\n\n%s", title, info, stats, timing, chartWindow, controls)
 }

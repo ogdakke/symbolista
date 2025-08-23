@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ogdakke/symbolista/internal/counter"
+	"github.com/ogdakke/symbolista/internal/domain"
 )
 
 func TestExecuteWithDefaultArgs(t *testing.T) {
@@ -52,7 +52,7 @@ func TestExecuteWithDefaultArgs(t *testing.T) {
 	verboseCount = originalVerbosity
 	os.Args = originalArgs
 
-	var jsonOutput counter.JSONOutput
+	var jsonOutput domain.JSONOutput
 	err = json.Unmarshal([]byte(output), &jsonOutput)
 	if err != nil {
 		t.Fatalf("Command output is not valid JSON: %v", err)
@@ -111,7 +111,7 @@ func TestExecuteWithDirectoryArg(t *testing.T) {
 	showPercentages = originalPercentages
 	verboseCount = originalVerbosity
 
-	var jsonOutput counter.JSONOutput
+	var jsonOutput domain.JSONOutput
 	err = json.Unmarshal([]byte(output), &jsonOutput)
 	if err != nil {
 		t.Fatalf("Command output is not valid JSON: %v", err)
@@ -302,7 +302,7 @@ func TestExecuteWithGitignore(t *testing.T) {
 	verboseCount = originalVerbosity
 
 	// Verify JSON output
-	var jsonOutput counter.JSONOutput
+	var jsonOutput domain.JSONOutput
 	err = json.Unmarshal([]byte(output), &jsonOutput)
 	if err != nil {
 		t.Fatalf("Command output is not valid JSON: %v", err)
@@ -380,7 +380,7 @@ func TestExecuteWithVerbosity(t *testing.T) {
 	verboseCount = originalVerbosity
 
 	// Verify JSON output still works
-	var jsonOutput counter.JSONOutput
+	var jsonOutput domain.JSONOutput
 	err = json.Unmarshal([]byte(stdout), &jsonOutput)
 	if err != nil {
 		t.Fatalf("Command output is not valid JSON: %v", err)

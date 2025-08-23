@@ -78,7 +78,6 @@ func (wp *WorkerPool) processFile(job FileJob, workerID int) CharCountResult {
 
 	content := string(job.Content)
 
-	// Character counting (existing logic)
 	for _, r := range content {
 		if unicode.IsGraphic(r) || unicode.IsSpace(r) {
 			if job.AsciiOnly && r > 127 {
@@ -90,7 +89,6 @@ func (wp *WorkerPool) processFile(job FileJob, workerID int) CharCountResult {
 		}
 	}
 
-	// Sequence counting (new logic)
 	if job.SequenceConfig.Enabled {
 		extractSequences(content, job.AsciiOnly, job.SequenceConfig, sequenceMap)
 	}
@@ -106,7 +104,6 @@ func (wp *WorkerPool) processFile(job FileJob, workerID int) CharCountResult {
 func extractSequences(content string, asciiOnly bool, config SequenceConfig, sequenceMap map[string]int) {
 	runes := []rune(strings.ToLower(content))
 
-	// Filter out whitespace runes to create clean sequence buffer
 	var cleanRunes []rune
 	for _, r := range runes {
 		if !unicode.IsSpace(r) {
@@ -119,7 +116,6 @@ func extractSequences(content string, asciiOnly bool, config SequenceConfig, seq
 		}
 	}
 
-	// Extract sequences using sliding window
 	for length := config.MinLength; length <= config.MaxLength; length++ {
 		for i := 0; i <= len(cleanRunes)-length; i++ {
 			seq := string(cleanRunes[i : i+length])
@@ -127,7 +123,6 @@ func extractSequences(content string, asciiOnly bool, config SequenceConfig, seq
 		}
 	}
 
-	// Apply occurrence threshold
 	for seq, count := range sequenceMap {
 		if count < config.Threshold {
 			delete(sequenceMap, seq)

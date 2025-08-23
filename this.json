@@ -1,0 +1,878 @@
+{
+  "result": {
+    "characters": [
+      {
+        "char": " ",
+        "count": 1068863,
+        "percentage": 41.96329370454212
+      },
+      {
+        "char": "\"",
+        "count": 224860,
+        "percentage": 8.827947288289838
+      },
+      {
+        "char": "e",
+        "count": 112272,
+        "percentage": 4.407770603712873
+      },
+      {
+        "char": ",",
+        "count": 104521,
+        "percentage": 4.103468284796505
+      },
+      {
+        "char": "\n",
+        "count": 92064,
+        "percentage": 3.6144095844041426
+      },
+      {
+        "char": "\\",
+        "count": 67379,
+        "percentage": 2.6452826662709286
+      },
+      {
+        "char": "0",
+        "count": 66448,
+        "percentage": 2.608731839421343
+      },
+      {
+        "char": "n",
+        "count": 55981,
+        "percentage": 2.1978000406731004
+      },
+      {
+        "char": "c",
+        "count": 55208,
+        "percentage": 2.1674522542555605
+      },
+      {
+        "char": ":",
+        "count": 48064,
+        "percentage": 1.8869806033281276
+      },
+      {
+        "char": "2",
+        "count": 46161,
+        "percentage": 1.81226929989659
+      },
+      {
+        "char": "t",
+        "count": 43689,
+        "percentage": 1.7152191989597738
+      },
+      {
+        "char": "u",
+        "count": 39080,
+        "percentage": 1.5342710131920612
+      },
+      {
+        "char": "1",
+        "count": 36205,
+        "percentage": 1.4213992331785714
+      },
+      {
+        "char": "5",
+        "count": 34276,
+        "percentage": 1.345667176258216
+      },
+      {
+        "char": "3",
+        "count": 34162,
+        "percentage": 1.3411915648072463
+      },
+      {
+        "char": "7",
+        "count": 28932,
+        "percentage": 1.13586307455662
+      },
+      {
+        "char": "r",
+        "count": 28258,
+        "percentage": 1.109402003346501
+      },
+      {
+        "char": ".",
+        "count": 27911,
+        "percentage": 1.0957788702457425
+      },
+      {
+        "char": "s",
+        "count": 26226,
+        "percentage": 1.029626192220445
+      },
+      {
+        "char": "8",
+        "count": 25614,
+        "percentage": 1.0055992254836605
+      },
+      {
+        "char": "9",
+        "count": 25379,
+        "percentage": 0.9963731843347318
+      },
+      {
+        "char": "a",
+        "count": 24719,
+        "percentage": 0.9704617496185916
+      },
+      {
+        "char": "o",
+        "count": 24389,
+        "percentage": 0.9575060322605214
+      },
+      {
+        "char": "4",
+        "count": 23894,
+        "percentage": 0.9380724562234162
+      },
+      {
+        "char": "6",
+        "count": 21434,
+        "percentage": 0.8414934722814391
+      },
+      {
+        "char": "p",
+        "count": 19268,
+        "percentage": 0.7564568547130152
+      },
+      {
+        "char": "g",
+        "count": 19035,
+        "percentage": 0.7473093330632263
+      },
+      {
+        "char": "q",
+        "count": 17394,
+        "percentage": 0.6828840840190049
+      },
+      {
+        "char": "}",
+        "count": 17040,
+        "percentage": 0.668986132671257
+      },
+      {
+        "char": "{",
+        "count": 17020,
+        "percentage": 0.6682009376798587
+      },
+      {
+        "char": "%",
+        "count": 9415,
+        "percentage": 0.3696305422006974
+      },
+      {
+        "char": "i",
+        "count": 8964,
+        "percentage": 0.3519243951446682
+      },
+      {
+        "char": "l",
+        "count": 5985,
+        "percentage": 0.23496960117590804
+      },
+      {
+        "char": "\t",
+        "count": 5084,
+        "percentage": 0.1995965668134196
+      },
+      {
+        "char": "d",
+        "count": 4528,
+        "percentage": 0.17776814605254995
+      },
+      {
+        "char": "f",
+        "count": 4258,
+        "percentage": 0.1671680136686744
+      },
+      {
+        "char": "h",
+        "count": 3838,
+        "percentage": 0.15067891884931245
+      },
+      {
+        "char": "m",
+        "count": 3669,
+        "percentage": 0.14404402117199774
+      },
+      {
+        "char": "-",
+        "count": 3070,
+        "percentage": 0.120527431179622
+      },
+      {
+        "char": "(",
+        "count": 2230,
+        "percentage": 0.08754924154089806
+      },
+      {
+        "char": ")",
+        "count": 2213,
+        "percentage": 0.0868818257982096
+      },
+      {
+        "char": "=",
+        "count": 1954,
+        "percentage": 0.07671355065960304
+      },
+      {
+        "char": "/",
+        "count": 1934,
+        "percentage": 0.07592835566820487
+      },
+      {
+        "char": "b",
+        "count": 1603,
+        "percentage": 0.06293337856056484
+      },
+      {
+        "char": "v",
+        "count": 1443,
+        "percentage": 0.056651818629379326
+      },
+      {
+        "char": "y",
+        "count": 1277,
+        "percentage": 0.05013470020077435
+      },
+      {
+        "char": "w",
+        "count": 1221,
+        "percentage": 0.04793615422485943
+      },
+      {
+        "char": "k",
+        "count": 1103,
+        "percentage": 0.04330350377561012
+      },
+      {
+        "char": ";",
+        "count": 1009,
+        "percentage": 0.03961308731603863
+      },
+      {
+        "char": "j",
+        "count": 868,
+        "percentage": 0.0340774626266814
+      },
+      {
+        "char": "x",
+        "count": 863,
+        "percentage": 0.033881163878831846
+      },
+      {
+        "char": "_",
+        "count": 526,
+        "percentage": 0.020650628273772367
+      },
+      {
+        "char": "@",
+        "count": 519,
+        "percentage": 0.020375810026783
+      },
+      {
+        "char": "[",
+        "count": 503,
+        "percentage": 0.01974765403366445
+      },
+      {
+        "char": "]",
+        "count": 460,
+        "percentage": 0.018059484802158344
+      },
+      {
+        "char": "#",
+        "count": 358,
+        "percentage": 0.014054990346027581
+      },
+      {
+        "char": "z",
+        "count": 340,
+        "percentage": 0.01334831485376921
+      },
+      {
+        "char": "`",
+        "count": 322,
+        "percentage": 0.01264163936151084
+      },
+      {
+        "char": "!",
+        "count": 260,
+        "percentage": 0.010207534888176455
+      },
+      {
+        "char": "?",
+        "count": 241,
+        "percentage": 0.009461599646348176
+      },
+      {
+        "char": "|",
+        "count": 238,
+        "percentage": 0.009343820397638447
+      },
+      {
+        "char": "*",
+        "count": 163,
+        "percentage": 0.00639933917989524
+      },
+      {
+        "char": "\u003c",
+        "count": 156,
+        "percentage": 0.006124520932905873
+      },
+      {
+        "char": "~",
+        "count": 153,
+        "percentage": 0.0060067416841961445
+      },
+      {
+        "char": "+",
+        "count": 150,
+        "percentage": 0.005888962435486417
+      },
+      {
+        "char": "\u003e",
+        "count": 142,
+        "percentage": 0.005574884438927141
+      },
+      {
+        "char": "'",
+        "count": 115,
+        "percentage": 0.004514871200539586
+      },
+      {
+        "char": "\u0026",
+        "count": 111,
+        "percentage": 0.004357832202259948
+      },
+      {
+        "char": "$",
+        "count": 100,
+        "percentage": 0.003925974956990944
+      },
+      {
+        "char": "^",
+        "count": 6,
+        "percentage": 0.00023555849741945667
+      }
+    ],
+    "sequences": [
+      {
+        "sequence": ",\"",
+        "count": 86903,
+        "percentage": 3.1968625477489567
+      },
+      {
+        "sequence": "\",",
+        "count": 64770,
+        "percentage": 2.382665583670298
+      },
+      {
+        "sequence": "\\\"",
+        "count": 64084,
+        "percentage": 2.3574300025309154
+      },
+      {
+        "sequence": "\",\"",
+        "count": 63694,
+        "percentage": 2.3430832435741236
+      },
+      {
+        "sequence": "\":",
+        "count": 46584,
+        "percentage": 1.71366517754666
+      },
+      {
+        "sequence": "en",
+        "count": 33214,
+        "percentage": 1.221828851258689
+      },
+      {
+        "sequence": "ce",
+        "count": 32897,
+        "percentage": 1.2101675112861172
+      },
+      {
+        "sequence": "nt",
+        "count": 32031,
+        "percentage": 1.1783103490897533
+      },
+      {
+        "sequence": "\"\\",
+        "count": 25030,
+        "percentage": 0.9207676325346236
+      },
+      {
+        "sequence": "\"\\\"",
+        "count": 24071,
+        "percentage": 0.8854893201254863
+      },
+      {
+        "sequence": "0.",
+        "count": 23906,
+        "percentage": 0.8794195374899205
+      },
+      {
+        "sequence": ",\"\\",
+        "count": 23246,
+        "percentage": 0.855140406947657
+      },
+      {
+        "sequence": "\\\":",
+        "count": 23012,
+        "percentage": 0.8465323515735819
+      },
+      {
+        "sequence": ",\",",
+        "count": 22932,
+        "percentage": 0.8435894266593682
+      },
+      {
+        "sequence": "\"s",
+        "count": 18194,
+        "percentage": 0.6692946986150595
+      },
+      {
+        "sequence": "er",
+        "count": 17994,
+        "percentage": 0.6619373863295251
+      },
+      {
+        "sequence": ".0",
+        "count": 17855,
+        "percentage": 0.6568240542910788
+      },
+      {
+        "sequence": "se",
+        "count": 17750,
+        "percentage": 0.6529614653411733
+      },
+      {
+        "sequence": "0.0",
+        "count": 17732,
+        "percentage": 0.6522993072354752
+      },
+      {
+        "sequence": "nc",
+        "count": 17466,
+        "percentage": 0.6425140818957146
+      },
+      {
+        "sequence": "\"c",
+        "count": 17166,
+        "percentage": 0.631478113467413
+      },
+      {
+        "sequence": "ue",
+        "count": 17162,
+        "percentage": 0.6313309672217023
+      },
+      {
+        "sequence": "eq",
+        "count": 17075,
+        "percentage": 0.6281305363774948
+      },
+      {
+        "sequence": "qu",
+        "count": 17053,
+        "percentage": 0.627321232026086
+      },
+      {
+        "sequence": "seq",
+        "count": 17004,
+        "percentage": 0.6255186905161302
+      },
+      {
+        "sequence": "que",
+        "count": 16993,
+        "percentage": 0.6251140383404258
+      },
+      {
+        "sequence": "nce",
+        "count": 16984,
+        "percentage": 0.6247829592875768
+      },
+      {
+        "sequence": "equ",
+        "count": 16975,
+        "percentage": 0.6244518802347278
+      },
+      {
+        "sequence": "enc",
+        "count": 16952,
+        "percentage": 0.6236057893218913
+      },
+      {
+        "sequence": "uen",
+        "count": 16943,
+        "percentage": 0.6232747102690421
+      },
+      {
+        "sequence": "\"se",
+        "count": 16839,
+        "percentage": 0.6194489078805644
+      },
+      {
+        "sequence": "co",
+        "count": 16496,
+        "percentage": 0.6068311173108729
+      },
+      {
+        "sequence": "un",
+        "count": 16386,
+        "percentage": 0.602784595553829
+      },
+      {
+        "sequence": "ou",
+        "count": 16350,
+        "percentage": 0.6014602793424328
+      },
+      {
+        "sequence": "ta",
+        "count": 16226,
+        "percentage": 0.5968987457254016
+      },
+      {
+        "sequence": "\"p",
+        "count": 15989,
+        "percentage": 0.5881803306670433
+      },
+      {
+        "sequence": "ge",
+        "count": 15960,
+        "percentage": 0.5871135203856409
+      },
+      {
+        "sequence": "e\\",
+        "count": 15889,
+        "percentage": 0.5845016745242763
+      },
+      {
+        "sequence": "oun",
+        "count": 15848,
+        "percentage": 0.5829934255057416
+      },
+      {
+        "sequence": "e\"",
+        "count": 15842,
+        "percentage": 0.5827727061371756
+      },
+      {
+        "sequence": "pe",
+        "count": 15795,
+        "percentage": 0.581043737750075
+      },
+      {
+        "sequence": "unt",
+        "count": 15731,
+        "percentage": 0.5786893978187041
+      },
+      {
+        "sequence": "cou",
+        "count": 15716,
+        "percentage": 0.578137599397289
+      },
+      {
+        "sequence": "rc",
+        "count": 15670,
+        "percentage": 0.576445417571616
+      },
+      {
+        "sequence": "ent",
+        "count": 15644,
+        "percentage": 0.5754889669744966
+      },
+      {
+        "sequence": "ag",
+        "count": 15601,
+        "percentage": 0.5739071448331068
+      },
+      {
+        "sequence": "e\\\"",
+        "count": 15597,
+        "percentage": 0.573759998587396
+      },
+      {
+        "sequence": "age",
+        "count": 15518,
+        "percentage": 0.57085386023461
+      },
+      {
+        "sequence": "erc",
+        "count": 15509,
+        "percentage": 0.5705227811817609
+      },
+      {
+        "sequence": "nta",
+        "count": 15501,
+        "percentage": 0.5702284886903396
+      },
+      {
+        "sequence": "per",
+        "count": 15491,
+        "percentage": 0.5698606230760629
+      },
+      {
+        "sequence": "{\"",
+        "count": 15483,
+        "percentage": 0.5695663305846415
+      },
+      {
+        "sequence": "tag",
+        "count": 15459,
+        "percentage": 0.5686834531103774
+      },
+      {
+        "sequence": "cen",
+        "count": 15455,
+        "percentage": 0.5685363068646666
+      },
+      {
+        "sequence": "rce",
+        "count": 15450,
+        "percentage": 0.5683523740575283
+      },
+      {
+        "sequence": "\"co",
+        "count": 15426,
+        "percentage": 0.5674694965832642
+      },
+      {
+        "sequence": "\"pe",
+        "count": 15382,
+        "percentage": 0.5658508878804467
+      },
+      {
+        "sequence": "},",
+        "count": 15375,
+        "percentage": 0.565593381950453
+      },
+      {
+        "sequence": ":0",
+        "count": 15061,
+        "percentage": 0.554042401662164
+      },
+      {
+        "sequence": "\":0",
+        "count": 15053,
+        "percentage": 0.5537481091707426
+      },
+      {
+        "sequence": "e\":",
+        "count": 14934,
+        "percentage": 0.5493705083608497
+      },
+      {
+        "sequence": ":0.",
+        "count": 14907,
+        "percentage": 0.5483772712023025
+      },
+      {
+        "sequence": "02",
+        "count": 8942,
+        "percentage": 0.3289454322862406
+      },
+      {
+        "sequence": "%\"",
+        "count": 8862,
+        "percentage": 0.3260025073720269
+      },
+      {
+        "sequence": "%\",",
+        "count": 8856,
+        "percentage": 0.32578178800346086
+      },
+      {
+        "sequence": "20",
+        "count": 8463,
+        "percentage": 0.3113246693623859
+      },
+      {
+        "sequence": "05",
+        "count": 8396,
+        "percentage": 0.30885996974673186
+      },
+      {
+        "sequence": "t\"",
+        "count": 8288,
+        "percentage": 0.30488702111254334
+      },
+      {
+        "sequence": "\\\"c",
+        "count": 8246,
+        "percentage": 0.3033419855325811
+      },
+      {
+        "sequence": "t\\",
+        "count": 8146,
+        "percentage": 0.29966332938981394
+      },
+      {
+        "sequence": "\\\",",
+        "count": 8126,
+        "percentage": 0.2989275981612605
+      },
+      {
+        "sequence": "t\\\"",
+        "count": 8110,
+        "percentage": 0.29833901317841777
+      },
+      {
+        "sequence": ",\"c",
+        "count": 8082,
+        "percentage": 0.297308989458443
+      },
+      {
+        "sequence": ".02",
+        "count": 8077,
+        "percentage": 0.2971250566513046
+      },
+      {
+        "sequence": ":\"",
+        "count": 7979,
+        "percentage": 0.29351997363139276
+      },
+      {
+        "sequence": "\"{",
+        "count": 7960,
+        "percentage": 0.29282102896426704
+      },
+      {
+        "sequence": ",\"p",
+        "count": 7953,
+        "percentage": 0.2925635230342733
+      },
+      {
+        "sequence": "\"}",
+        "count": 7952,
+        "percentage": 0.2925267364728456
+      },
+      {
+        "sequence": "91",
+        "count": 7873,
+        "percentage": 0.2896205981200596
+      },
+      {
+        "sequence": ":\\",
+        "count": 7836,
+        "percentage": 0.2882594953472357
+      },
+      {
+        "sequence": "\\\"p",
+        "count": 7828,
+        "percentage": 0.28796520285581434
+      },
+      {
+        "sequence": ":\\\"",
+        "count": 7800,
+        "percentage": 0.2869351791358395
+      },
+      {
+        "sequence": "\":\"",
+        "count": 7799,
+        "percentage": 0.28689839257441185
+      },
+      {
+        "sequence": "ge\"",
+        "count": 7796,
+        "percentage": 0.28678803289012883
+      },
+      {
+        "sequence": "nt\"",
+        "count": 7776,
+        "percentage": 0.2860523016615754
+      },
+      {
+        "sequence": ",{",
+        "count": 7774,
+        "percentage": 0.2859787285387201
+      },
+      {
+        "sequence": "t\":",
+        "count": 7752,
+        "percentage": 0.2851694241873113
+      },
+      {
+        "sequence": "},{",
+        "count": 7736,
+        "percentage": 0.2845808392044685
+      },
+      {
+        "sequence": ",{\"",
+        "count": 7721,
+        "percentage": 0.28402904078305347
+      },
+      {
+        "sequence": ",\"{",
+        "count": 7708,
+        "percentage": 0.28355081548449373
+      },
+      {
+        "sequence": ",\"}",
+        "count": 7708,
+        "percentage": 0.28355081548449373
+      },
+      {
+        "sequence": "\":\\",
+        "count": 7706,
+        "percentage": 0.2834772423616384
+      },
+      {
+        "sequence": "\\\"s",
+        "count": 7698,
+        "percentage": 0.28318294987021697
+      },
+      {
+        "sequence": "{\",",
+        "count": 7696,
+        "percentage": 0.28310937674736164
+      },
+      {
+        "sequence": "ge\\",
+        "count": 7630,
+        "percentage": 0.28068146369313535
+      },
+      {
+        "sequence": "nt\\",
+        "count": 7612,
+        "percentage": 0.2800193055874372
+      },
+      {
+        "sequence": "\"{\"",
+        "count": 7600,
+        "percentage": 0.2795778668503052
+      },
+      {
+        "sequence": "\"},",
+        "count": 7590,
+        "percentage": 0.27921000123602846
+      },
+      {
+        "sequence": "},\"",
+        "count": 7576,
+        "percentage": 0.2786949893760411
+      },
+      {
+        "sequence": "ce\\",
+        "count": 7216,
+        "percentage": 0.2654518272620793
+      }
+    ]
+  },
+  "metadata": {
+    "directory": ".",
+    "files_found": 73,
+    "files_processed": 63,
+    "files_ignored": 10,
+    "total_characters": 2547138,
+    "unique_characters": 71,
+    "timing": {
+      "total_duration": 108631875,
+      "gitignore_duration": 50625,
+      "traversal_duration": 106793209,
+      "sorting_duration": 1786166,
+      "output_duration": 0
+    }
+  }
+}
