@@ -50,7 +50,19 @@ func AnalyzeSymbols(
 	gitignoreDuration := matcher.GetTotalTime()
 
 	charMap := result.CharMap
-	sequenceMap := result.SequenceMap
+	sequenceMap2 := result.SequenceMap2
+	sequenceMap3 := result.SequenceMap3
+
+	// Convert uint16/uint32 keys back to strings and combine
+	sequenceMap := make(map[string]int)
+	for k2, count := range sequenceMap2 {
+		seq := string([]byte{byte(k2 >> 8), byte(k2)})
+		sequenceMap[seq] = int(count)
+	}
+	for k3, count := range sequenceMap3 {
+		seq := string([]byte{byte(k3 >> 16), byte(k3 >> 8), byte(k3)})
+		sequenceMap[seq] = int(count)
+	}
 	totalChars := result.TotalChars
 	processedFiles := result.FileCount
 	filesFound := result.FilesFound

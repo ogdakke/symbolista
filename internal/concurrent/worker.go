@@ -71,19 +71,14 @@ func (wp *WorkerPool) worker(id int) {
 
 func (wp *WorkerPool) processFile(job FileJob, workerID int) CharCountResult {
 	charMap := make(map[rune]int)
-	sequenceMap := make(map[string]int)
 	charCount := 0
 
 	logger.Trace("Processing file", "path", job.Path, "worker_id", workerID, "size", len(job.Content))
 
 	content := strings.ToLower(string(job.Content))
-	var normalizedChar rune
-	var ngram string
+	n := len(content)
 
-	var next rune
-
-	contentLen := len(content)
-	for i, r := range content {
+	for _, r := range content {
 		if !unicode.IsGraphic(r) && !unicode.IsSpace(r) {
 			continue
 		}
@@ -92,80 +87,35 @@ func (wp *WorkerPool) processFile(job FileJob, workerID int) CharCountResult {
 			continue
 		}
 
-		normalizedChar = []rune(string(r))[0]
-		charMap[normalizedChar]++
+		charMap[r]++
 		charCount++
-
-		if unicode.IsSpace(r) {
-			continue
-		}
-
-		if i < contentLen-1 {
-			next = []rune(string(content[i+1]))[0]
-		}
-
-		switch len(ngram) {
-		case 0:
-			ngram = ngram + string(r) + string(next)
-		case 1:
-			ngram = ngram + string(r)
-		case 2:
-			sequenceMap[ngram]++
-			ngram = ngram + string(r)
-			sequenceMap[ngram]++
-			ngram = ""
-		}
-
-		// if unicode.IsGraphic(r) || unicode.IsSpace(r) {
-		// 	if job.AsciiOnly && r > 127 {
-		// 		continue
-		// 	}
-		// 	if i < contentLen-1 {
-		// 		next = []rune(string(content[i+1]))[0]
-		// 	}
-		// 	// nnext = []rune(string(content[i+2]))[0]
-		// 	charMap[normalizedChar]++
-		// 	charCount++
-		// 	if len(bigram) > 1 {
-		// 		sequenceMap[bigram]++
-		// 		bigram = ""
-		// 	}
-		// 	bigram = bigram + string(r) + string(next)
-		// 	// trigram = append(trigram, r, next, nnext)
-		// }
 	}
 
-	// if job.SequenceConfig.Enabled {
-	// 	extractSequences(content, job.AsciiOnly, job.SequenceConfig, sequenceMap)
-	// }
+	sequenceMap2 := make(map[uint16]uint32, n)
+	sequenceMap3 := make(map[uint32]uint32, n)
+
+	var b0, b1, b2 uint32
+
+	for i := range n {
+		b2 = uint32(content[i])
+
+		if i >= 1 {
+			k2 := uint16((b1 << 8) | b2)
+			sequenceMap2[k2]++
+		}
+		if i >= 2 {
+			k3 := (b0 << 16) | (b1 << 8) | b2
+			sequenceMap3[k3]++
+		}
+
+		b0, b1 = b1, b2
+	}
 
 	return CharCountResult{
-		CharMap:     charMap,
-		SequenceMap: sequenceMap,
-		FileCount:   1,
-		CharCount:   charCount,
-	}
-}
-
-func extractSequences(content string, asciiOnly bool, config SequenceConfig, sequenceMap map[string]int) {
-	runes := []rune(strings.ToLower(content))
-
-	var cleanRunes []rune
-	for _, r := range runes {
-		if !unicode.IsSpace(r) {
-			if asciiOnly && r > 127 {
-				continue
-			}
-			if unicode.IsGraphic(r) || unicode.IsControl(r) {
-				cleanRunes = append(cleanRunes, r)
-			}
-		}
-	}
-
-	for length := config.MinLength; length <= config.MaxLength; length++ {
-		for i := 0; i <= len(cleanRunes)-length; i++ {
-			seq := string(cleanRunes[i : i+length])
-			sequenceMap[seq]++
-		}
+		CharMap:      charMap,
+		SequenceMap2: sequenceMap2,
+		SequenceMap3: sequenceMap3,
+		FileCount:    1,
+		CharCount:    charCount,
 	}
 }

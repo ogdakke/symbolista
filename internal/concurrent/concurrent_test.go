@@ -35,29 +35,35 @@ func TestNewWorkerPool(t *testing.T) {
 func TestResultCollector(t *testing.T) {
 	collector := NewResultCollector()
 
-	charMap, sequenceMap, fileCount, totalChars, filesFound, filesIgnored := collector.GetResults()
-	_ = sequenceMap
+	charMap, sequenceMap2, sequenceMap3, fileCount, totalChars, filesFound, filesIgnored := collector.GetResults()
+	_ = sequenceMap2
+	_ = sequenceMap3
 	if len(charMap) != 0 || fileCount != 0 || totalChars != 0 || filesFound != 0 || filesIgnored != 0 {
 		t.Errorf("Expected empty results, got charMap=%d, fileCount=%d, totalChars=%d, filesFound=%d, filesIgnored=%d",
 			len(charMap), fileCount, totalChars, filesFound, filesIgnored)
 	}
 
 	result1 := CharCountResult{
-		CharMap:   map[rune]int{'a': 5, 'b': 3},
-		FileCount: 1,
-		CharCount: 8,
+		CharMap:      map[rune]int{'a': 5, 'b': 3},
+		SequenceMap2: make(map[uint16]uint32),
+		SequenceMap3: make(map[uint32]uint32),
+		FileCount:    1,
+		CharCount:    8,
 	}
 	result2 := CharCountResult{
-		CharMap:   map[rune]int{'a': 2, 'c': 4},
-		FileCount: 1,
-		CharCount: 6,
+		CharMap:      map[rune]int{'a': 2, 'c': 4},
+		SequenceMap2: make(map[uint16]uint32),
+		SequenceMap3: make(map[uint32]uint32),
+		FileCount:    1,
+		CharCount:    6,
 	}
 
 	collector.AddResult(result1)
 	collector.AddResult(result2)
 
-	charMap, sequenceMap, fileCount, totalChars, filesFound, filesIgnored = collector.GetResults()
-	_ = sequenceMap
+	charMap, sequenceMap2, sequenceMap3, fileCount, totalChars, filesFound, filesIgnored = collector.GetResults()
+	_ = sequenceMap2
+	_ = sequenceMap3
 
 	if fileCount != 2 {
 		t.Errorf("Expected 2 files, got %d", fileCount)
@@ -100,7 +106,7 @@ func TestConcurrentResultCollector(t *testing.T) {
 
 	wg.Wait()
 
-	charMap, _, fileCount, totalChars, _, _ := collector.GetResults()
+	charMap, _, _, fileCount, totalChars, _, _ := collector.GetResults()
 
 	expectedFiles := numGoroutines * resultsPerGoroutine
 	if fileCount != expectedFiles {

@@ -70,14 +70,16 @@ func WalkDirectory(rootPath string, matcher *ignorer.Matcher, processor FileProc
 }
 
 type ConcurrentResult struct {
-	CharMap         map[rune]int
-	SequenceMap     map[string]int
-	FileCount       int
-	FilesFound      int
-	FilesIgnored    int
-	TotalChars      int
-	UniqueChars     int
-	UniqueSequences int
+	CharMap          map[rune]int
+	SequenceMap2     map[uint16]uint32
+	SequenceMap3     map[uint32]uint32
+	FileCount        int
+	FilesFound       int
+	FilesIgnored     int
+	TotalChars       int
+	UniqueChars      int
+	UniqueSequences2 int
+	UniqueSequences3 int
 }
 
 // WalkDirectoryConcurrent processes files using a worker pool and returns aggregated results
@@ -110,8 +112,7 @@ func WalkDirectoryConcurrent(rootPath string, matcher *ignorer.Matcher, workerCo
 		return ConcurrentResult{}, discoveryError
 	}
 
-	// Get aggregated results
-	charMap, sequenceMap, fileCount, totalChars, filesFound, filesIgnored := collector.GetResults()
+	charMap, sequenceMap2, sequenceMap3, fileCount, totalChars, filesFound, filesIgnored := collector.GetResults()
 
 	logger.Debug("Concurrent processing completed",
 		"files_processed", fileCount,
@@ -122,13 +123,15 @@ func WalkDirectoryConcurrent(rootPath string, matcher *ignorer.Matcher, workerCo
 		"workers", workerCount)
 
 	return ConcurrentResult{
-		CharMap:         charMap,
-		SequenceMap:     sequenceMap,
-		FileCount:       fileCount,
-		FilesFound:      filesFound,
-		FilesIgnored:    filesIgnored,
-		TotalChars:      totalChars,
-		UniqueChars:     len(charMap),
-		UniqueSequences: len(sequenceMap),
+		CharMap:          charMap,
+		SequenceMap2:     sequenceMap2,
+		SequenceMap3:     sequenceMap3,
+		FileCount:        fileCount,
+		FilesFound:       filesFound,
+		FilesIgnored:     filesIgnored,
+		TotalChars:       totalChars,
+		UniqueChars:      len(charMap),
+		UniqueSequences2: len(sequenceMap2),
+		UniqueSequences3: len(sequenceMap3),
 	}, nil
 }

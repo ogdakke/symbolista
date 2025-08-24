@@ -36,6 +36,8 @@ type ViewMode int
 const (
 	ViewCharacters ViewMode = iota
 	ViewSequences
+	ViewBigrams
+	ViewTrigrams
 )
 
 type Model struct {
@@ -50,6 +52,7 @@ type Model struct {
 	sequenceCounts    domain.SequenceCounts
 	filteredCounts    domain.CharCounts
 	filteredSequences domain.SequenceCounts
+
 	chart             barchart.Model
 	ready             bool
 	loading           bool
@@ -129,12 +132,11 @@ func (m *Model) applyFilter() {
 		}
 	}
 
-	// Filter sequences (apply basic filtering)
+	// Filter sequences (apply basic filtering and view mode filtering together)
 	for _, seqCount := range m.sequenceCounts {
-		// For sequences, we apply less strict filtering
-		// Only exclude if all characters in sequence are whitespace (shouldn't happen due to extraction logic)
 		includeSequence := true
 
+		// Apply whitespace filtering
 		if m.excludeWhitespace {
 			allWhitespace := true
 			for _, r := range seqCount.Sequence {
@@ -149,11 +151,23 @@ func (m *Model) applyFilter() {
 		}
 
 		if includeSequence {
+			switch m.viewMode {
+			case ViewBigrams:
+				if !m.viewMode.FilterBigrams(seqCount) {
+					includeSequence = false
+				}
+			case ViewTrigrams:
+				if !m.viewMode.FilterTrigrams(seqCount) {
+					includeSequence = false
+				}
+			}
+		}
+
+		if includeSequence {
 			switch m.filterMode {
 			case FilterAll:
 				m.filteredSequences = append(m.filteredSequences, seqCount)
 			case FilterLettersNumbers:
-				// Include if sequence contains any letters/numbers
 				hasLetterNumber := false
 				for _, r := range seqCount.Sequence {
 					if isLetterOrNumber(r) {
@@ -165,7 +179,6 @@ func (m *Model) applyFilter() {
 					m.filteredSequences = append(m.filteredSequences, seqCount)
 				}
 			case FilterSymbols:
-				// Include if sequence contains any symbols
 				hasSymbol := false
 				for _, r := range seqCount.Sequence {
 					if isSymbol(r) {
@@ -184,6 +197,14 @@ func (m *Model) applyFilter() {
 	sort.Sort(m.filteredSequences)
 
 	m.scrollOffset = 0
+}
+
+func (m ViewMode) FilterBigrams(seq domain.SequenceCount) bool {
+	return len(seq.Sequence) == 2
+}
+
+func (m ViewMode) FilterTrigrams(seq domain.SequenceCount) bool {
+	return len(seq.Sequence) == 3
 }
 
 func (m FilterMode) String() string {
@@ -216,6 +237,10 @@ func (v ViewMode) String() string {
 		return "Characters"
 	case ViewSequences:
 		return "Sequences"
+	case ViewBigrams:
+		return "Bigrams"
+	case ViewTrigrams:
+		return "Trigrams"
 	default:
 		return "Characters"
 	}
@@ -434,8 +459,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				switch m.viewMode {
 				case ViewCharacters:
 					maxItems = len(m.filteredCounts)
-				case ViewSequences:
+				case ViewBigrams, ViewTrigrams, ViewSequences:
 					maxItems = len(m.filteredSequences)
+
 				}
 				if m.scrollOffset < maxItems-m.maxVisible {
 					m.scrollOffset++
@@ -453,7 +479,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				switch m.viewMode {
 				case ViewCharacters:
 					maxItems = len(m.filteredCounts)
-				case ViewSequences:
+				case ViewBigrams, ViewTrigrams, ViewSequences:
 					maxItems = len(m.filteredSequences)
 				}
 				if maxItems > m.maxVisible {
@@ -468,7 +494,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		case "m":
 			if m.ready {
-				m.viewMode = (m.viewMode + 1) % 2
+				m.viewMode = (m.viewMode + 1) % 4
 				m.scrollOffset = 0 // Reset scroll when switching views
 				m.applyFilter()
 				m.updateChart()
@@ -489,7 +515,7 @@ func (m *Model) updateChart() {
 	switch m.viewMode {
 	case ViewCharacters:
 		dataLen = len(m.filteredCounts)
-	case ViewSequences:
+	case ViewBigrams, ViewTrigrams, ViewSequences:
 		dataLen = len(m.filteredSequences)
 	}
 
@@ -575,7 +601,7 @@ func (m *Model) updateChart() {
 			})
 		}
 
-	case ViewSequences:
+	case ViewSequences, ViewBigrams, ViewTrigrams:
 		for i := startIndex; i < endIndex; i++ {
 			seq := m.filteredSequences[i]
 			displaySeq := seq.Sequence
@@ -657,12 +683,13 @@ func (m Model) View() string {
 		}
 		displayInfo = fmt.Sprintf("Directory: %s | [m]ode: %s | [f]ilter: %s%s | Showing: %d/%d chars%s | [l]abels: %s",
 			m.directory, m.viewMode.String(), m.filterMode.String(), whitespaceStatus, len(m.filteredCounts), len(m.charCounts), scrollInfo, m.labelMode.String())
-	case ViewSequences:
+	default:
 		if len(m.filteredSequences) > m.maxVisible {
 			scrollInfo = fmt.Sprintf(" | View: %d-%d/%d", m.scrollOffset+1, min(m.scrollOffset+m.maxVisible, len(m.filteredSequences)), len(m.filteredSequences))
 		}
 		displayInfo = fmt.Sprintf("Directory: %s | [m]ode: %s | [f]ilter: %s%s | Showing: %d/%d sequences%s | [l]abels: %s",
 			m.directory, m.viewMode.String(), m.filterMode.String(), whitespaceStatus, len(m.filteredSequences), len(m.sequenceCounts), scrollInfo, m.labelMode.String())
+
 	}
 
 	fileStats := fmt.Sprintf("Found: %d | Processed: %d | Files/dirs ignored: %d | Total chars: %d | Unique sequences: %d",

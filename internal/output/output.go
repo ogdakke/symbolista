@@ -27,7 +27,7 @@ func (o *Outputter) Output(
 	switch kind {
 	case "json":
 
-		o.OutputJSON(result.CharCounts, showPercentages, directory, result, includeMetadata)
+		o.OutputJSON(showPercentages, directory, result, includeMetadata)
 	case "csv":
 
 		o.OutputCSV(result.CharCounts, result.SequenceCounts, showPercentages)
@@ -37,7 +37,11 @@ func (o *Outputter) Output(
 	}
 }
 
-func (o *Outputter) OutputTable(counts domain.CharCounts, sequences domain.SequenceCounts, showPercentages bool) {
+func (o *Outputter) OutputTable(
+	counts domain.CharCounts,
+	sequences domain.SequenceCounts,
+	showPercentages bool,
+) {
 	width := 35
 	fmt.Println("Characters:")
 	fmt.Println(strings.Repeat("-", width))
@@ -58,6 +62,7 @@ func (o *Outputter) OutputTable(counts domain.CharCounts, sequences domain.Seque
 	fmt.Println(strings.Repeat("-", width))
 
 	if len(sequences) > 0 {
+		seqs := formatSequences(sequences)
 		fmt.Printf("\nSequences (2-3 chars):\n")
 		fmt.Println(strings.Repeat("-", width))
 		fmt.Printf("%-10s %-10s", "Sequence", "Count")
@@ -67,7 +72,7 @@ func (o *Outputter) OutputTable(counts domain.CharCounts, sequences domain.Seque
 		fmt.Println()
 		fmt.Println(strings.Repeat("-", width))
 
-		for _, seq := range sequences {
+		for _, seq := range seqs {
 			fmt.Printf("%-10s %-10d", seq.Sequence, seq.Count)
 			if showPercentages {
 				fmt.Printf(" %-12.2f%%", seq.Percentage)
@@ -78,7 +83,11 @@ func (o *Outputter) OutputTable(counts domain.CharCounts, sequences domain.Seque
 	}
 }
 
-func (o *Outputter) OutputCSV(counts domain.CharCounts, sequences domain.SequenceCounts, showPercentages bool) {
+func (o *Outputter) OutputCSV(
+	counts domain.CharCounts,
+	sequences domain.SequenceCounts,
+	showPercentages bool,
+) {
 	writer := csv.NewWriter(os.Stdout)
 	defer writer.Flush()
 
@@ -96,7 +105,8 @@ func (o *Outputter) OutputCSV(counts domain.CharCounts, sequences domain.Sequenc
 		writer.Write(row)
 	})
 
-	for _, seq := range sequences {
+	seqs := formatSequences(sequences)
+	for _, seq := range seqs {
 		row := []string{"sequence", seq.Sequence, fmt.Sprintf("%d", seq.Count)}
 		if showPercentages {
 			row = append(row, fmt.Sprintf("%.2f%%", seq.Percentage))
@@ -106,12 +116,13 @@ func (o *Outputter) OutputCSV(counts domain.CharCounts, sequences domain.Sequenc
 }
 
 func (o *Outputter) OutputJSON(
-	counts domain.CharCounts,
 	showPercentages bool,
 	directory string,
 	result domain.AnalysisResult,
 	includeMetadata bool,
 ) {
+	counts := result.CharCounts
+
 	if !showPercentages {
 		for i := range counts {
 			counts[i].Percentage = 0
@@ -168,4 +179,16 @@ func formatChars(counts domain.CharCounts, onChar OnCharFunc) domain.CharCounts 
 		onChar(char, c.Count, c.Percentage)
 	}
 	return counts
+}
+
+func formatSequences(seqs domain.SequenceCounts) domain.SequenceCounts {
+	var sequencesFormatted domain.SequenceCounts = make(domain.SequenceCounts, 0)
+	for _, seq := range seqs {
+		seq.Sequence = strings.ReplaceAll(seq.Sequence, "\n", "↵")
+		seq.Sequence = strings.ReplaceAll(seq.Sequence, " ", "⎵")
+		seq.Sequence = strings.ReplaceAll(seq.Sequence, "\t", "⇥")
+		seq.Sequence = strings.ReplaceAll(seq.Sequence, "\r", "⏎")
+		sequencesFormatted = append(sequencesFormatted, seq)
+	}
+	return sequencesFormatted
 }
