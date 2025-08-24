@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sort"
 	"strconv"
+	"strings"
 	"unicode"
 
 	"github.com/NimbleMarkets/ntcharts/barchart"
@@ -578,6 +579,12 @@ func (m *Model) updateChart() {
 		for i := startIndex; i < endIndex; i++ {
 			seq := m.filteredSequences[i]
 			displaySeq := seq.Sequence
+
+			// Replace whitespace characters with unicode symbols
+			displaySeq = strings.ReplaceAll(displaySeq, "\n", "↵")
+			displaySeq = strings.ReplaceAll(displaySeq, " ", "⎵")
+			displaySeq = strings.ReplaceAll(displaySeq, "\t", "⇥")
+			displaySeq = strings.ReplaceAll(displaySeq, "\r", "⏎")
 
 			// Use original index for color consistency across scrolling
 			color := colors[i%len(colors)]

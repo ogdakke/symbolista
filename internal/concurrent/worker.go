@@ -76,22 +76,68 @@ func (wp *WorkerPool) processFile(job FileJob, workerID int) CharCountResult {
 
 	logger.Trace("Processing file", "path", job.Path, "worker_id", workerID, "size", len(job.Content))
 
-	content := string(job.Content)
+	content := strings.ToLower(string(job.Content))
+	var normalizedChar rune
+	var ngram string
 
-	for _, r := range content {
-		if unicode.IsGraphic(r) || unicode.IsSpace(r) {
-			if job.AsciiOnly && r > 127 {
-				continue
-			}
-			normalizedChar := []rune(strings.ToLower(string(r)))[0]
-			charMap[normalizedChar]++
-			charCount++
+	var next rune
+
+	contentLen := len(content)
+	for i, r := range content {
+		if !unicode.IsGraphic(r) && !unicode.IsSpace(r) {
+			continue
 		}
+
+		if job.AsciiOnly && r > 127 {
+			continue
+		}
+
+		normalizedChar = []rune(string(r))[0]
+		charMap[normalizedChar]++
+		charCount++
+
+		if unicode.IsSpace(r) {
+			continue
+		}
+
+		if i < contentLen-1 {
+			next = []rune(string(content[i+1]))[0]
+		}
+
+		switch len(ngram) {
+		case 0:
+			ngram = ngram + string(r) + string(next)
+		case 1:
+			ngram = ngram + string(r)
+		case 2:
+			sequenceMap[ngram]++
+			ngram = ngram + string(r)
+			sequenceMap[ngram]++
+			ngram = ""
+		}
+
+		// if unicode.IsGraphic(r) || unicode.IsSpace(r) {
+		// 	if job.AsciiOnly && r > 127 {
+		// 		continue
+		// 	}
+		// 	if i < contentLen-1 {
+		// 		next = []rune(string(content[i+1]))[0]
+		// 	}
+		// 	// nnext = []rune(string(content[i+2]))[0]
+		// 	charMap[normalizedChar]++
+		// 	charCount++
+		// 	if len(bigram) > 1 {
+		// 		sequenceMap[bigram]++
+		// 		bigram = ""
+		// 	}
+		// 	bigram = bigram + string(r) + string(next)
+		// 	// trigram = append(trigram, r, next, nnext)
+		// }
 	}
 
-	if job.SequenceConfig.Enabled {
-		extractSequences(content, job.AsciiOnly, job.SequenceConfig, sequenceMap)
-	}
+	// if job.SequenceConfig.Enabled {
+	// 	extractSequences(content, job.AsciiOnly, job.SequenceConfig, sequenceMap)
+	// }
 
 	return CharCountResult{
 		CharMap:     charMap,

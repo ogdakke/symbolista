@@ -1,0 +1,873 @@
+{
+  "result": {
+    "characters": [
+      {
+        "char": " ",
+        "count": 274284,
+        "percentage": 22.44083472011546
+      },
+      {
+        "char": "e",
+        "count": 81463,
+        "percentage": 6.66498125594189
+      },
+      {
+        "char": "t",
+        "count": 67211,
+        "percentage": 5.4989388457718285
+      },
+      {
+        "char": "r",
+        "count": 55291,
+        "percentage": 4.523691474930742
+      },
+      {
+        "char": "o",
+        "count": 52826,
+        "percentage": 4.322014900339864
+      },
+      {
+        "char": "s",
+        "count": 51892,
+        "percentage": 4.245598705342752
+      },
+      {
+        "char": "a",
+        "count": 47752,
+        "percentage": 3.906880239295597
+      },
+      {
+        "char": "i",
+        "count": 47671,
+        "percentage": 3.9002531388729347
+      },
+      {
+        "char": "n",
+        "count": 47192,
+        "percentage": 3.8610632487191694
+      },
+      {
+        "char": "\n",
+        "count": 35329,
+        "percentage": 2.890479392990328
+      },
+      {
+        "char": "l",
+        "count": 35184,
+        "percentage": 2.878616065073217
+      },
+      {
+        "char": "u",
+        "count": 30587,
+        "percentage": 2.5025076620735134
+      },
+      {
+        "char": "c",
+        "count": 27843,
+        "percentage": 2.278004408249022
+      },
+      {
+        "char": "d",
+        "count": 24526,
+        "percentage": 2.0066205551382934
+      },
+      {
+        "char": "p",
+        "count": 22404,
+        "percentage": 1.8330068872754763
+      },
+      {
+        "char": ".",
+        "count": 19731,
+        "percentage": 1.6143125733276389
+      },
+      {
+        "char": "m",
+        "count": 19157,
+        "percentage": 1.5673501579868014
+      },
+      {
+        "char": "\"",
+        "count": 18463,
+        "percentage": 1.5105698160938725
+      },
+      {
+        "char": "g",
+        "count": 14428,
+        "percentage": 1.180442035779797
+      },
+      {
+        "char": "f",
+        "count": 13311,
+        "percentage": 1.0890535027907455
+      },
+      {
+        "char": "b",
+        "count": 11030,
+        "percentage": 0.902431082246407
+      },
+      {
+        "char": "-",
+        "count": 10889,
+        "percentage": 0.8908950185476996
+      },
+      {
+        "char": ")",
+        "count": 10831,
+        "percentage": 0.8861496873808553
+      },
+      {
+        "char": "(",
+        "count": 10823,
+        "percentage": 0.8854951589440493
+      },
+      {
+        "char": "h",
+        "count": 10674,
+        "percentage": 0.8733045668085357
+      },
+      {
+        "char": ";",
+        "count": 10624,
+        "percentage": 0.8692137640784976
+      },
+      {
+        "char": ",",
+        "count": 10381,
+        "percentage": 0.8493324628105123
+      },
+      {
+        "char": ":",
+        "count": 9604,
+        "percentage": 0.7857613883857202
+      },
+      {
+        "char": "{",
+        "count": 9169,
+        "percentage": 0.7501714046343886
+      },
+      {
+        "char": "}",
+        "count": 9169,
+        "percentage": 0.7501714046343886
+      },
+      {
+        "char": "=",
+        "count": 9160,
+        "percentage": 0.7494350601429818
+      },
+      {
+        "char": "v",
+        "count": 8960,
+        "percentage": 0.7330718492228293
+      },
+      {
+        "char": "/",
+        "count": 8463,
+        "percentage": 0.6924092700862505
+      },
+      {
+        "char": "y",
+        "count": 7556,
+        "percentage": 0.6182021085633591
+      },
+      {
+        "char": "\u003e",
+        "count": 6839,
+        "percentage": 0.5595399974146127
+      },
+      {
+        "char": "k",
+        "count": 6422,
+        "percentage": 0.5254227026460948
+      },
+      {
+        "char": "w",
+        "count": 6011,
+        "percentage": 0.4917963042051816
+      },
+      {
+        "char": "x",
+        "count": 5871,
+        "percentage": 0.48034205656107487
+      },
+      {
+        "char": "1",
+        "count": 5616,
+        "percentage": 0.45947896263788046
+      },
+      {
+        "char": "\u003c",
+        "count": 5467,
+        "percentage": 0.4472883705023669
+      },
+      {
+        "char": "0",
+        "count": 5391,
+        "percentage": 0.44107035035270903
+      },
+      {
+        "char": "q",
+        "count": 5136,
+        "percentage": 0.4202072564295146
+      },
+      {
+        "char": "_",
+        "count": 5113,
+        "percentage": 0.41832548717369705
+      },
+      {
+        "char": "2",
+        "count": 4558,
+        "percentage": 0.3729175768702741
+      },
+      {
+        "char": "4",
+        "count": 3976,
+        "percentage": 0.3253006330926305
+      },
+      {
+        "char": "3",
+        "count": 3584,
+        "percentage": 0.2932287396891317
+      },
+      {
+        "char": "5",
+        "count": 3434,
+        "percentage": 0.2809563314990174
+      },
+      {
+        "char": "z",
+        "count": 3291,
+        "percentage": 0.2692566356911084
+      },
+      {
+        "char": "6",
+        "count": 3049,
+        "percentage": 0.24945715047772393
+      },
+      {
+        "char": "8",
+        "count": 2887,
+        "percentage": 0.2362029496324005
+      },
+      {
+        "char": "7",
+        "count": 2488,
+        "percentage": 0.20355834384669633
+      },
+      {
+        "char": "9",
+        "count": 2095,
+        "percentage": 0.1714046343885968
+      },
+      {
+        "char": "?",
+        "count": 1995,
+        "percentage": 0.16322302892852059
+      },
+      {
+        "char": "@",
+        "count": 1903,
+        "percentage": 0.15569595190525046
+      },
+      {
+        "char": "[",
+        "count": 1823,
+        "percentage": 0.14915066753718947
+      },
+      {
+        "char": "]",
+        "count": 1822,
+        "percentage": 0.14906885148258872
+      },
+      {
+        "char": "$",
+        "count": 1644,
+        "percentage": 0.13450559376365306
+      },
+      {
+        "char": "j",
+        "count": 1359,
+        "percentage": 0.11118801820243582
+      },
+      {
+        "char": "|",
+        "count": 1286,
+        "percentage": 0.1052154462165802
+      },
+      {
+        "char": "*",
+        "count": 1181,
+        "percentage": 0.09662476048350016
+      },
+      {
+        "char": "~",
+        "count": 1121,
+        "percentage": 0.09171579720745443
+      },
+      {
+        "char": "`",
+        "count": 727,
+        "percentage": 0.059480271694754124
+      },
+      {
+        "char": "!",
+        "count": 652,
+        "percentage": 0.05334406759969695
+      },
+      {
+        "char": "\u0026",
+        "count": 642,
+        "percentage": 0.05252590705368933
+      },
+      {
+        "char": "#",
+        "count": 446,
+        "percentage": 0.03648996035193994
+      },
+      {
+        "char": "+",
+        "count": 194,
+        "percentage": 0.015872314592547867
+      },
+      {
+        "char": "%",
+        "count": 191,
+        "percentage": 0.01562686642874558
+      },
+      {
+        "char": "'",
+        "count": 116,
+        "percentage": 0.009490662333688414
+      },
+      {
+        "char": "\\",
+        "count": 38,
+        "percentage": 0.0031090100748289635
+      },
+      {
+        "char": "^",
+        "count": 8,
+        "percentage": 0.0006545284368060976
+      }
+    ],
+    "sequences": [
+      {
+        "sequence": "er",
+        "count": 14997,
+        "percentage": 0.8220561214869255
+      },
+      {
+        "sequence": "on",
+        "count": 13299,
+        "percentage": 0.7289807534610004
+      },
+      {
+        "sequence": "st",
+        "count": 11987,
+        "percentage": 0.6570638613231831
+      },
+      {
+        "sequence": "in",
+        "count": 10024,
+        "percentage": 0.5494625966383238
+      },
+      {
+        "sequence": "or",
+        "count": 9619,
+        "percentage": 0.5272626413671225
+      },
+      {
+        "sequence": "es",
+        "count": 9425,
+        "percentage": 0.5166285887186953
+      },
+      {
+        "sequence": "re",
+        "count": 9387,
+        "percentage": 0.5145456299525086
+      },
+      {
+        "sequence": "te",
+        "count": 9336,
+        "percentage": 0.5117500800294683
+      },
+      {
+        "sequence": "ro",
+        "count": 9302,
+        "percentage": 0.5098863800807749
+      },
+      {
+        "sequence": "at",
+        "count": 9030,
+        "percentage": 0.49497678049122745
+      },
+      {
+        "sequence": "ti",
+        "count": 8434,
+        "percentage": 0.46230721668471897
+      },
+      {
+        "sequence": "se",
+        "count": 7710,
+        "percentage": 0.42262137071842343
+      },
+      {
+        "sequence": "en",
+        "count": 7668,
+        "percentage": 0.42031915313474333
+      },
+      {
+        "sequence": "co",
+        "count": 7573,
+        "percentage": 0.4151117562192764
+      },
+      {
+        "sequence": "nt",
+        "count": 7221,
+        "percentage": 0.39581698027986195
+      },
+      {
+        "sequence": "le",
+        "count": 7156,
+        "percentage": 0.3922540244955951
+      },
+      {
+        "sequence": "al",
+        "count": 7104,
+        "percentage": 0.3894036598681816
+      },
+      {
+        "sequence": "ns",
+        "count": 6783,
+        "percentage": 0.37180813976434063
+      },
+      {
+        "sequence": "ta",
+        "count": 5664,
+        "percentage": 0.3104704855705772
+      },
+      {
+        "sequence": "io",
+        "count": 5577,
+        "percentage": 0.30570160629009696
+      },
+      {
+        "sequence": "de",
+        "count": 5395,
+        "percentage": 0.29572533009414975
+      },
+      {
+        "sequence": "an",
+        "count": 5311,
+        "percentage": 0.2911208949267895
+      },
+      {
+        "sequence": "rt",
+        "count": 5128,
+        "percentage": 0.28108980402646894
+      },
+      {
+        "sequence": "et",
+        "count": 5054,
+        "percentage": 0.27703351590284203
+      },
+      {
+        "sequence": "ion",
+        "count": 5010,
+        "percentage": 0.27462166891041523
+      },
+      {
+        "sequence": "po",
+        "count": 4838,
+        "percentage": 0.26519353975820137
+      },
+      {
+        "sequence": "ed",
+        "count": 4835,
+        "percentage": 0.26502909564508137
+      },
+      {
+        "sequence": "tio",
+        "count": 4832,
+        "percentage": 0.26486465153196137
+      },
+      {
+        "sequence": "to",
+        "count": 4767,
+        "percentage": 0.2613016957476945
+      },
+      {
+        "sequence": "con",
+        "count": 4751,
+        "percentage": 0.2604246604777211
+      },
+      {
+        "sequence": "ng",
+        "count": 4748,
+        "percentage": 0.2602602163646011
+      },
+      {
+        "sequence": "la",
+        "count": 4566,
+        "percentage": 0.2502839401686539
+      },
+      {
+        "sequence": "ex",
+        "count": 4543,
+        "percentage": 0.24902320196806713
+      },
+      {
+        "sequence": "ons",
+        "count": 4525,
+        "percentage": 0.24803653728934708
+      },
+      {
+        "sequence": "as",
+        "count": 4445,
+        "percentage": 0.2436513609394802
+      },
+      {
+        "sequence": "ri",
+        "count": 4416,
+        "percentage": 0.24206173451265345
+      },
+      {
+        "sequence": "tr",
+        "count": 4345,
+        "percentage": 0.23816989050214654
+      },
+      {
+        "sequence": ");",
+        "count": 4335,
+        "percentage": 0.23762174345841316
+      },
+      {
+        "sequence": "ue",
+        "count": 4334,
+        "percentage": 0.23756692875403987
+      },
+      {
+        "sequence": "us",
+        "count": 4281,
+        "percentage": 0.234661749422253
+      },
+      {
+        "sequence": "ent",
+        "count": 4261,
+        "percentage": 0.23356545533478626
+      },
+      {
+        "sequence": "qu",
+        "count": 4252,
+        "percentage": 0.23307212299542626
+      },
+      {
+        "sequence": "ne",
+        "count": 4243,
+        "percentage": 0.2325787906560662
+      },
+      {
+        "sequence": "om",
+        "count": 4235,
+        "percentage": 0.23214027302107954
+      },
+      {
+        "sequence": "th",
+        "count": 4218,
+        "percentage": 0.23120842304673284
+      },
+      {
+        "sequence": "it",
+        "count": 4115,
+        "percentage": 0.22556250849627918
+      },
+      {
+        "sequence": "ar",
+        "count": 4029,
+        "percentage": 0.22084844392017225
+      },
+      {
+        "sequence": "ge",
+        "count": 3938,
+        "percentage": 0.21586030582219864
+      },
+      {
+        "sequence": "li",
+        "count": 3900,
+        "percentage": 0.21377734705601187
+      },
+      {
+        "sequence": "rr",
+        "count": 3779,
+        "percentage": 0.20714476782683816
+      },
+      {
+        "sequence": "mp",
+        "count": 3741,
+        "percentage": 0.20506180906065138
+      },
+      {
+        "sequence": "ing",
+        "count": 3662,
+        "percentage": 0.20073144741515778
+      },
+      {
+        "sequence": "ra",
+        "count": 3658,
+        "percentage": 0.20051218859766443
+      },
+      {
+        "sequence": "lo",
+        "count": 3656,
+        "percentage": 0.20040255918891778
+      },
+      {
+        "sequence": "el",
+        "count": 3573,
+        "percentage": 0.19585293872593085
+      },
+      {
+        "sequence": "tu",
+        "count": 3443,
+        "percentage": 0.18872702715739714
+      },
+      {
+        "sequence": "me",
+        "count": 3417,
+        "percentage": 0.1873018448436904
+      },
+      {
+        "sequence": "ul",
+        "count": 3395,
+        "percentage": 0.186095921347477
+      },
+      {
+        "sequence": "nd",
+        "count": 3387,
+        "percentage": 0.1856574037124903
+      },
+      {
+        "sequence": "ec",
+        "count": 3309,
+        "percentage": 0.18138185677137006
+      },
+      {
+        "sequence": "ur",
+        "count": 3304,
+        "percentage": 0.18110778324950338
+      },
+      {
+        "sequence": "ss",
+        "count": 3285,
+        "percentage": 0.18006630386640998
+      },
+      {
+        "sequence": "is",
+        "count": 3255,
+        "percentage": 0.1784218627352099
+      },
+      {
+        "sequence": "ea",
+        "count": 3240,
+        "percentage": 0.17759964216960986
+      },
+      {
+        "sequence": "id",
+        "count": 3240,
+        "percentage": 0.17759964216960986
+      },
+      {
+        "sequence": "ort",
+        "count": 3232,
+        "percentage": 0.17716112453462315
+      },
+      {
+        "sequence": "un",
+        "count": 3230,
+        "percentage": 0.17705149512587648
+      },
+      {
+        "sequence": "nst",
+        "count": 3197,
+        "percentage": 0.17524260988155638
+      },
+      {
+        "sequence": "ce",
+        "count": 3192,
+        "percentage": 0.1749685363596897
+      },
+      {
+        "sequence": "ts",
+        "count": 3095,
+        "percentage": 0.16965151003547607
+      },
+      {
+        "sequence": "ut",
+        "count": 3094,
+        "percentage": 0.16959669533110275
+      },
+      {
+        "sequence": "he",
+        "count": 3077,
+        "percentage": 0.16866484535675602
+      },
+      {
+        "sequence": "err",
+        "count": 3062,
+        "percentage": 0.16784262479115597
+      },
+      {
+        "sequence": "pr",
+        "count": 3026,
+        "percentage": 0.16586929543371587
+      },
+      {
+        "sequence": "ou",
+        "count": 3017,
+        "percentage": 0.16537596309435584
+      },
+      {
+        "sequence": "da",
+        "count": 2996,
+        "percentage": 0.1642248543025158
+      },
+      {
+        "sequence": "iz",
+        "count": 2987,
+        "percentage": 0.16373152196315574
+      },
+      {
+        "sequence": "est",
+        "count": 2945,
+        "percentage": 0.1614293043794756
+      },
+      {
+        "sequence": "ic",
+        "count": 2925,
+        "percentage": 0.1603330102920089
+      },
+      {
+        "sequence": "di",
+        "count": 2910,
+        "percentage": 0.15951078972640884
+      },
+      {
+        "sequence": "por",
+        "count": 2905,
+        "percentage": 0.15923671620454216
+      },
+      {
+        "sequence": "im",
+        "count": 2901,
+        "percentage": 0.1590174573870488
+      },
+      {
+        "sequence": "va",
+        "count": 2878,
+        "percentage": 0.15775671918646209
+      },
+      {
+        "sequence": "\u003e\u003c",
+        "count": 2812,
+        "percentage": 0.15413894869782188
+      },
+      {
+        "sequence": "ser",
+        "count": 2760,
+        "percentage": 0.15128858407040838
+      },
+      {
+        "sequence": "si",
+        "count": 2753,
+        "percentage": 0.15090488113979503
+      },
+      {
+        "sequence": "ui",
+        "count": 2740,
+        "percentage": 0.15019228998294165
+      },
+      {
+        "sequence": "rom",
+        "count": 2735,
+        "percentage": 0.14991821646107498
+      },
+      {
+        "sequence": "pe",
+        "count": 2704,
+        "percentage": 0.14821896062550155
+      },
+      {
+        "sequence": "pa",
+        "count": 2684,
+        "percentage": 0.14712266653803482
+      },
+      {
+        "sequence": "use",
+        "count": 2653,
+        "percentage": 0.1454234107024614
+      },
+      {
+        "sequence": "lu",
+        "count": 2628,
+        "percentage": 0.144053043093128
+      },
+      {
+        "sequence": "mpo",
+        "count": 2540,
+        "percentage": 0.1392293491082744
+      },
+      {
+        "sequence": "res",
+        "count": 2522,
+        "percentage": 0.13824268442955434
+      },
+      {
+        "sequence": "ct",
+        "count": 2515,
+        "percentage": 0.137858981498941
+      },
+      {
+        "sequence": "rro",
+        "count": 2506,
+        "percentage": 0.13736564915958094
+      },
+      {
+        "sequence": "ll",
+        "count": 2504,
+        "percentage": 0.1372560197508343
+      },
+      {
+        "sequence": "=\"",
+        "count": 2497,
+        "percentage": 0.1368723168202209
+      },
+      {
+        "sequence": "str",
+        "count": 2481,
+        "percentage": 0.13599528155024754
+      },
+      {
+        "sequence": ";}",
+        "count": 2450,
+        "percentage": 0.1342960257146741
+      }
+    ]
+  },
+  "metadata": {
+    "directory": "../../web/quiz-app/src",
+    "files_found": 383,
+    "files_processed": 320,
+    "files_ignored": 63,
+    "total_characters": 1222254,
+    "unique_characters": 70,
+    "timing": {
+      "total_duration": 2102350419,
+      "gitignore_duration": 22140,
+      "traversal_duration": 2088963244,
+      "sorting_duration": 13360565,
+      "output_duration": 0
+    }
+  }
+}
