@@ -39,12 +39,10 @@ func (m *Matcher) ShouldIgnore(path string) bool {
 		return false
 	}
 
-	// Check extension ignoring first (fastest)
 	if m.extensionIgnorer.ShouldIgnore(path) {
 		return true
 	}
 
-	// Check dotfiles
 	if !m.includeDotfiles {
 		filename := filepath.Base(path)
 		if strings.HasPrefix(filename, ".") && filename != "." && filename != ".." {
@@ -53,6 +51,5 @@ func (m *Matcher) ShouldIgnore(path string) bool {
 		}
 	}
 
-	// Check gitignore patterns (most expensive)
 	return m.gitignoreMatcher.ShouldIgnore(path)
 }
