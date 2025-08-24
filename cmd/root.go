@@ -70,7 +70,7 @@ respecting gitignore rules and outputting the most used characters with counts a
 				return
 			}
 			logger.Info("Starting TUI mode", "directory", dir, "verbosity", verboseCount, "workers", workerCount, "includeDotfiles", includeDotfiles, "asciiOnly", asciiOnly, "topNSeq", topNSeq)
-			err := tui.RunTUI(dir, showPercentages, workerCount, includeDotfiles, asciiOnly, topNSeq)
+			err := tui.RunTUI(dir, showPercentages, workerCount, includeDotfiles, asciiOnly, topNSeq, countSequences)
 			if err != nil {
 				fmt.Printf("TUI error: %v\n", err)
 				os.Exit(1)

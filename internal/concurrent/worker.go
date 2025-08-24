@@ -93,24 +93,25 @@ func (wp *WorkerPool) processFile(job FileJob, workerID int) CharCountResult {
 
 	sequenceMap2 := make(map[uint16]uint32, n)
 	sequenceMap3 := make(map[uint32]uint32, n)
+	if job.SequenceConfig.Enabled {
 
-	var b0, b1, b2 uint32
+		var b0, b1, b2 uint32
 
-	for i := range n {
-		b2 = uint32(content[i])
+		for i := range n {
+			b2 = uint32(content[i])
 
-		if i >= 1 {
-			k2 := uint16((b1 << 8) | b2)
-			sequenceMap2[k2]++
+			if i >= 1 {
+				k2 := uint16((b1 << 8) | b2)
+				sequenceMap2[k2]++
+			}
+			if i >= 2 {
+				k3 := (b0 << 16) | (b1 << 8) | b2
+				sequenceMap3[k3]++
+			}
+
+			b0, b1 = b1, b2
 		}
-		if i >= 2 {
-			k3 := (b0 << 16) | (b1 << 8) | b2
-			sequenceMap3[k3]++
-		}
-
-		b0, b1 = b1, b2
 	}
-
 	return CharCountResult{
 		CharMap:      charMap,
 		SequenceMap2: sequenceMap2,

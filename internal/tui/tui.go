@@ -9,8 +9,16 @@ import (
 	"github.com/ogdakke/symbolista/internal/domain"
 )
 
-func RunTUI(directory string, showPercentages bool, workerCount int, includeDotfiles bool, asciiOnly bool, topNSeq int) error {
-	model := NewModel(directory, showPercentages, workerCount, includeDotfiles, asciiOnly, topNSeq)
+func RunTUI(
+	directory string,
+	showPercentages bool,
+	workerCount int,
+	includeDotfiles bool,
+	asciiOnly bool,
+	topNSeq int,
+	countSeq bool,
+) error {
+	model := NewModel(directory, showPercentages, workerCount, includeDotfiles, asciiOnly, topNSeq, countSeq)
 
 	p := tea.NewProgram(
 		model,

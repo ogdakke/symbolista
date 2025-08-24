@@ -47,6 +47,7 @@ type Model struct {
 	includeDotfiles bool
 	asciiOnly       bool
 	topNSeq         int
+	countSeq        bool
 
 	charCounts        domain.CharCounts
 	sequenceCounts    domain.SequenceCounts
@@ -133,61 +134,63 @@ func (m *Model) applyFilter() {
 	}
 
 	// Filter sequences (apply basic filtering and view mode filtering together)
-	for _, seqCount := range m.sequenceCounts {
-		includeSequence := true
+	if m.countSeq {
+		for _, seqCount := range m.sequenceCounts {
+			includeSequence := true
 
-		// Apply whitespace filtering
-		if m.excludeWhitespace {
-			allWhitespace := true
-			for _, r := range seqCount.Sequence {
-				if !isWhitespace(r) {
-					allWhitespace = false
-					break
-				}
-			}
-			if allWhitespace {
-				includeSequence = false
-			}
-		}
-
-		if includeSequence {
-			switch m.viewMode {
-			case ViewBigrams:
-				if !m.viewMode.FilterBigrams(seqCount) {
-					includeSequence = false
-				}
-			case ViewTrigrams:
-				if !m.viewMode.FilterTrigrams(seqCount) {
-					includeSequence = false
-				}
-			}
-		}
-
-		if includeSequence {
-			switch m.filterMode {
-			case FilterAll:
-				m.filteredSequences = append(m.filteredSequences, seqCount)
-			case FilterLettersNumbers:
-				hasLetterNumber := false
+			// Apply whitespace filtering
+			if m.excludeWhitespace {
+				allWhitespace := true
 				for _, r := range seqCount.Sequence {
-					if isLetterOrNumber(r) {
-						hasLetterNumber = true
+					if !isWhitespace(r) {
+						allWhitespace = false
 						break
 					}
 				}
-				if hasLetterNumber {
-					m.filteredSequences = append(m.filteredSequences, seqCount)
+				if allWhitespace {
+					includeSequence = false
 				}
-			case FilterSymbols:
-				hasSymbol := false
-				for _, r := range seqCount.Sequence {
-					if isSymbol(r) {
-						hasSymbol = true
-						break
+			}
+
+			if includeSequence {
+				switch m.viewMode {
+				case ViewBigrams:
+					if !m.viewMode.FilterBigrams(seqCount) {
+						includeSequence = false
+					}
+				case ViewTrigrams:
+					if !m.viewMode.FilterTrigrams(seqCount) {
+						includeSequence = false
 					}
 				}
-				if hasSymbol {
+			}
+
+			if includeSequence {
+				switch m.filterMode {
+				case FilterAll:
 					m.filteredSequences = append(m.filteredSequences, seqCount)
+				case FilterLettersNumbers:
+					hasLetterNumber := false
+					for _, r := range seqCount.Sequence {
+						if isLetterOrNumber(r) {
+							hasLetterNumber = true
+							break
+						}
+					}
+					if hasLetterNumber {
+						m.filteredSequences = append(m.filteredSequences, seqCount)
+					}
+				case FilterSymbols:
+					hasSymbol := false
+					for _, r := range seqCount.Sequence {
+						if isSymbol(r) {
+							hasSymbol = true
+							break
+						}
+					}
+					if hasSymbol {
+						m.filteredSequences = append(m.filteredSequences, seqCount)
+					}
 				}
 			}
 		}
@@ -246,7 +249,15 @@ func (v ViewMode) String() string {
 	}
 }
 
-func NewModel(directory string, showPercentages bool, workerCount int, includeDotfiles bool, asciiOnly bool, topNSeq int) Model {
+func NewModel(
+	directory string,
+	showPercentages bool,
+	workerCount int,
+	includeDotfiles bool,
+	asciiOnly bool,
+	topNSeq int,
+	countSeq bool,
+) Model {
 	return Model{
 		directory:         directory,
 		showPercentages:   showPercentages,
@@ -258,6 +269,7 @@ func NewModel(directory string, showPercentages bool, workerCount int, includeDo
 		filterMode:        FilterAll,
 		viewMode:          ViewCharacters,
 		excludeWhitespace: true,
+		countSeq:          countSeq,
 	}
 }
 
@@ -272,6 +284,7 @@ func NewModelFromJSON(jsonOutput domain.JSONOutput) Model {
 		filterMode:        FilterAll,
 		viewMode:          ViewCharacters,
 		excludeWhitespace: true,
+		countSeq:          jsonOutput.Result.Sequences != nil,
 	}
 
 	if jsonOutput.Metadata != nil {
@@ -311,7 +324,7 @@ func (m Model) Init() tea.Cmd {
 		return tea.EnterAltScreen
 	}
 	return tea.Batch(
-		startAnalysis(m.directory, m.workerCount, m.includeDotfiles, m.asciiOnly, m.topNSeq),
+		startAnalysis(m.directory, m.workerCount, m.includeDotfiles, m.asciiOnly, m.topNSeq, m.countSeq),
 		tea.EnterAltScreen,
 	)
 }
@@ -337,7 +350,14 @@ func listenForCompletion(doneChan <-chan analysisCompleteMsg) tea.Cmd {
 	}
 }
 
-func startAnalysis(directory string, workerCount int, includeDotfiles bool, asciiOnly bool, topNSeq int) tea.Cmd {
+func startAnalysis(
+	directory string,
+	workerCount int,
+	includeDotfiles bool,
+	asciiOnly bool,
+	topNSeq int,
+	countSeq bool,
+) tea.Cmd {
 	return func() tea.Msg {
 		logger.Info("Starting async TUI analysis", "directory", directory)
 
@@ -359,15 +379,22 @@ func startAnalysis(directory string, workerCount int, includeDotfiles bool, asci
 				}
 			}
 
-			// Default sequence config - enabled
 			sequenceConfig := concurrent.SequenceConfig{
-				Enabled:   true,
+				Enabled:   countSeq,
 				MinLength: 2,
 				MaxLength: 3,
 				Threshold: 2,
 			}
 
-			result, err := counter.AnalyzeSymbols(directory, workerCount, includeDotfiles, asciiOnly, sequenceConfig, progressFunc, topNSeq)
+			result, err := counter.AnalyzeSymbols(
+				directory,
+				workerCount,
+				includeDotfiles,
+				asciiOnly,
+				sequenceConfig,
+				progressFunc,
+				topNSeq,
+			)
 
 			doneChan <- analysisCompleteMsg{
 				result: result,
@@ -433,7 +460,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if m.ready {
 				m.loading = true
 				m.ready = false
-				return m, startAnalysis(m.directory, m.workerCount, m.includeDotfiles, m.asciiOnly, m.topNSeq)
+				return m, startAnalysis(m.directory, m.workerCount, m.includeDotfiles, m.asciiOnly, m.topNSeq, m.countSeq)
 			}
 
 		case "f":
@@ -493,7 +520,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.updateChart()
 			}
 		case "m":
-			if m.ready {
+			if m.ready && m.countSeq {
 				m.viewMode = (m.viewMode + 1) % 4
 				m.scrollOffset = 0 // Reset scroll when switching views
 				m.applyFilter()
@@ -537,7 +564,7 @@ func (m *Model) updateChart() {
 	m.chart = barchart.New(chartWidth, chartHeight)
 
 	// Calculate how many items can fit based on average label width
-	estimatedLabelWidth := 11
+	estimatedLabelWidth := 14
 	m.maxVisible = min(chartWidth/estimatedLabelWidth, dataLen, 25)
 
 	// Ensure scroll offset is within bounds
@@ -556,6 +583,7 @@ func (m *Model) updateChart() {
 	startIndex := m.scrollOffset
 	endIndex := min(startIndex+m.maxVisible, dataLen)
 
+	// TODO do some of this work at startup instead of on every update
 	switch m.viewMode {
 	case ViewCharacters:
 		for i := startIndex; i < endIndex; i++ {
@@ -692,8 +720,15 @@ func (m Model) View() string {
 
 	}
 
-	fileStats := fmt.Sprintf("Found: %d | Processed: %d | Files/dirs ignored: %d | Total chars: %d | Unique sequences: %d",
-		m.result.FilesFound, m.result.FilesFound-m.result.FilesIgnored, m.result.FilesIgnored, m.result.TotalChars, m.result.UniqueSequences)
+	var fileStats string
+	if m.countSeq {
+		fileStats = fmt.Sprintf("Found: %d | Processed: %d | Files/dirs ignored: %d | Total chars: %d | Unique sequences: %d",
+			m.result.FilesFound, m.result.FilesFound-m.result.FilesIgnored, m.result.FilesIgnored, m.result.TotalChars, m.result.UniqueSequences)
+	} else {
+		fileStats = fmt.Sprintf("Found: %d | Processed: %d | Files/dirs ignored: %d | Total chars: %d | Sequences not counted",
+			m.result.FilesFound, m.result.FilesFound-m.result.FilesIgnored, m.result.FilesIgnored, m.result.TotalChars)
+
+	}
 
 	timingStats := fmt.Sprintf("Timing: Total %s | Gitignore %s | Traversal %s | Sorting %s",
 		m.result.Timing.TotalDuration,
