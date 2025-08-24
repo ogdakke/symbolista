@@ -122,10 +122,4 @@ func extractSequences(content string, asciiOnly bool, config SequenceConfig, seq
 			sequenceMap[seq]++
 		}
 	}
-
-	for seq, count := range sequenceMap {
-		if count < config.Threshold {
-			delete(sequenceMap, seq)
-		}
-	}
 }

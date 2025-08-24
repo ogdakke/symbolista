@@ -121,5 +121,5 @@ func init() {
 	rootCmd.Flags().BoolVarP(&includeMetadata, "metadata", "m", true, "Include metadata in JSON output (directory, file counts, timing info)")
 	rootCmd.Flags().StringVarP(&jsonFile, "from-json", "j", "", "Load data from JSON file and launch TUI (requires --tui flag)")
 	rootCmd.Flags().IntVarP(&topNSeq, "top-n-seq", "N", 100, "Maximum number of sequences to display")
-	rootCmd.Flags().BoolVarP(&countSequences, "count-sequences", "c", false, "Count sequences")
+	rootCmd.Flags().BoolVarP(&countSequences, "count-sequences", "c", true, "Count sequences")
 }

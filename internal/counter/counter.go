@@ -15,11 +15,6 @@ import (
 	"github.com/ogdakke/symbolista/internal/traversal"
 )
 
-func CountSymbols(directory, format string, showPercentages bool) {
-	outputter := output.NewOutputter()
-	CountSymbolsConcurrent(outputter, directory, format, showPercentages, 0, false, true, false, 100, true)
-}
-
 func AnalyzeSymbols(
 	directory string,
 	workerCount int,
@@ -91,12 +86,14 @@ func AnalyzeSymbols(
 	}
 
 	for sequence, count := range sequenceMap {
-		percentage := float64(count) / float64(totalSequences) * 100
-		sequenceCounts = append(sequenceCounts, domain.SequenceCount{
-			Sequence:   sequence,
-			Count:      count,
-			Percentage: percentage,
-		})
+		if count >= sequenceConfig.Threshold {
+			percentage := float64(count) / float64(totalSequences) * 100
+			sequenceCounts = append(sequenceCounts, domain.SequenceCount{
+				Sequence:   sequence,
+				Count:      count,
+				Percentage: percentage,
+			})
+		}
 	}
 	sort.Sort(sequenceCounts)
 
