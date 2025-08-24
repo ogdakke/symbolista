@@ -1,4 +1,4 @@
-.PHONY: dev build build-prod lint test version version-major version-minor version-patch
+.PHONY: dev build build-prod lint test test-snapshots test-snapshots-update version version-major version-minor version-patch
 
 dev:
 	go run main.go
@@ -14,6 +14,19 @@ lint:
 
 test:
 	go test ./...
+	cd tests && go test -v
+
+test-snapshots:
+	cd tests && go test -v
+
+test-snapshots-update:
+	cd tests && UPDATE_SNAPSHOTS=1 go test -v
+
+test-cli-snapshots:
+	cd tests && go test -run TestCLISnapshots -v
+
+test-cli-snapshots-update:
+	cd tests && UPDATE_SNAPSHOTS=1 go test -run TestCLISnapshots -v
 
 # Versioning commands
 version:

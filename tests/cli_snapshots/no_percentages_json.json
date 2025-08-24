@@ -1,0 +1,1720 @@
+{
+  "test_name": "no_percentages_json",
+  "directory": "./test_dir",
+  "args": [
+    "--format=json",
+    "--percentages=false",
+    "--metadata=false",
+    "./test_dir"
+  ],
+  "exit_code": 0,
+  "stdout_lines": [
+    "{",
+    "  \"result\": {",
+    "    \"characters\": [",
+    "      {",
+    "        \"char\": \" \",",
+    "        \"count\": 2367,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"e\",",
+    "        \"count\": 604,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"r\",",
+    "        \"count\": 534,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"s\",",
+    "        \"count\": 421,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"t\",",
+    "        \"count\": 420,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"o\",",
+    "        \"count\": 334,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"i\",",
+    "        \"count\": 324,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"\\n\",",
+    "        \"count\": 318,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"a\",",
+    "        \"count\": 281,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"n\",",
+    "        \"count\": 251,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"\\\"\",",
+    "        \"count\": 222,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"u\",",
+    "        \"count\": 207,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"l\",",
+    "        \"count\": 199,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"c\",",
+    "        \"count\": 158,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"d\",",
+    "        \"count\": 143,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"p\",",
+    "        \"count\": 135,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"m\",",
+    "        \"count\": 118,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"f\",",
+    "        \"count\": 113,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"g\",",
+    "        \"count\": 94,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"h\",",
+    "        \"count\": 91,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \".\",",
+    "        \"count\": 84,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"\\u003c\",",
+    "        \"count\": 75,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"\\u003e\",",
+    "        \"count\": 74,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \";\",",
+    "        \"count\": 73,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"=\",",
+    "        \"count\": 73,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"{\",",
+    "        \"count\": 71,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"}\",",
+    "        \"count\": 71,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \",\",",
+    "        \"count\": 69,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"k\",",
+    "        \"count\": 65,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"(\",",
+    "        \"count\": 64,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \")\",",
+    "        \"count\": 64,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"/\",",
+    "        \"count\": 64,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \":\",",
+    "        \"count\": 63,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"v\",",
+    "        \"count\": 58,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"-\",",
+    "        \"count\": 56,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"x\",",
+    "        \"count\": 44,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"b\",",
+    "        \"count\": 32,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"y\",",
+    "        \"count\": 29,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"@\",",
+    "        \"count\": 24,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"w\",",
+    "        \"count\": 23,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"\\t\",",
+    "        \"count\": 17,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"#\",",
+    "        \"count\": 16,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"?\",",
+    "        \"count\": 15,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"j\",",
+    "        \"count\": 14,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"_\",",
+    "        \"count\": 13,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"z\",",
+    "        \"count\": 13,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"2\",",
+    "        \"count\": 12,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"8\",",
+    "        \"count\": 10,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"`\",",
+    "        \"count\": 10,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"1\",",
+    "        \"count\": 9,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"0\",",
+    "        \"count\": 8,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"5\",",
+    "        \"count\": 8,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"[\",",
+    "        \"count\": 8,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"]\",",
+    "        \"count\": 8,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"q\",",
+    "        \"count\": 7,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"~\",",
+    "        \"count\": 7,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"4\",",
+    "        \"count\": 6,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"3\",",
+    "        \"count\": 5,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"9\",",
+    "        \"count\": 5,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"$\",",
+    "        \"count\": 3,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"!\",",
+    "        \"count\": 2,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"\\u0026\",",
+    "        \"count\": 2,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"'\",",
+    "        \"count\": 2,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"7\",",
+    "        \"count\": 2,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"|\",",
+    "        \"count\": 2,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"%\",",
+    "        \"count\": 1,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"+\",",
+    "        \"count\": 1,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"6\",",
+    "        \"count\": 1,",
+    "        \"percentage\": 0",
+    "      },",
+    "      {",
+    "        \"char\": \"\\\\\",",
+    "        \"count\": 1,",
+    "        \"percentage\": 0",
+    "      }",
+    "    ],",
+    "    \"sequences\": [",
+    "      {",
+    "        \"sequence\": \"  \",",
+    "        \"count\": 1694,",
+    "        \"percentage\": 9.73059911540008",
+    "      },",
+    "      {",
+    "        \"sequence\": \"   \",",
+    "        \"count\": 1494,",
+    "        \"percentage\": 8.5817680510081",
+    "      },",
+    "      {",
+    "        \"sequence\": \"\\n \",",
+    "        \"count\": 200,",
+    "        \"percentage\": 1.1488310643919812",
+    "      },",
+    "      {",
+    "        \"sequence\": \"\\n  \",",
+    "        \"count\": 200,",
+    "        \"percentage\": 1.1488310643919812",
+    "      },",
+    "      {",
+    "        \"sequence\": \"er\",",
+    "        \"count\": 170,",
+    "        \"percentage\": 0.9765064047331841",
+    "      },",
+    "      {",
+    "        \"sequence\": \"or\",",
+    "        \"count\": 129,",
+    "        \"percentage\": 0.7409960365328279",
+    "      },",
+    "      {",
+    "        \"sequence\": \"ro\",",
+    "        \"count\": 93,",
+    "        \"percentage\": 0.5342064449422712",
+    "      },",
+    "      {",
+    "        \"sequence\": \"se\",",
+    "        \"count\": 81,",
+    "        \"percentage\": 0.46527658107875236",
+    "      },",
+    "      {",
+    "        \"sequence\": \"re\",",
+    "        \"count\": 77,",
+    "        \"percentage\": 0.4422999597909127",
+    "      },",
+    "      {",
+    "        \"sequence\": \"st\",",
+    "        \"count\": 72,",
+    "        \"percentage\": 0.4135791831811132",
+    "      },",
+    "      {",
+    "        \"sequence\": \"in\",",
+    "        \"count\": 71,",
+    "        \"percentage\": 0.4078350278591533",
+    "      },",
+    "      {",
+    "        \"sequence\": \";\\n\",",
+    "        \"count\": 70,",
+    "        \"percentage\": 0.4020908725371934",
+    "      },",
+    "      {",
+    "        \"sequence\": \" \\u003c\",",
+    "        \"count\": 69,",
+    "        \"percentage\": 0.3963467172152335",
+    "      },",
+    "      {",
+    "        \"sequence\": \"ser\",",
+    "        \"count\": 68,",
+    "        \"percentage\": 0.3906025618932736",
+    "      },",
+    "      {",
+    "        \"sequence\": \"  \\u003c\",",
+    "        \"count\": 66,",
+    "        \"percentage\": 0.37911425124935383",
+    "      },",
+    "      {",
+    "        \"sequence\": \"\\u003e\\n\",",
+    "        \"count\": 66,",
+    "        \"percentage\": 0.37911425124935383",
+    "      },",
+    "      {",
+    "        \"sequence\": \"\\u003e\\n \",",
+    "        \"count\": 66,",
+    "        \"percentage\": 0.37911425124935383",
+    "      },",
+    "      {",
+    "        \"sequence\": \"err\",",
+    "        \"count\": 65,",
+    "        \"percentage\": 0.3733700959273939",
+    "      },",
+    "      {",
+    "        \"sequence\": \"rr\",",
+    "        \"count\": 65,",
+    "        \"percentage\": 0.3733700959273939",
+    "      },",
+    "      {",
+    "        \"sequence\": \" {\",",
+    "        \"count\": 63,",
+    "        \"percentage\": 0.3618817852834741",
+    "      },",
+    "      {",
+    "        \"sequence\": \"es\",",
+    "        \"count\": 63,",
+    "        \"percentage\": 0.3618817852834741",
+    "      },",
+    "      {",
+    "        \"sequence\": \"ror\",",
+    "        \"count\": 63,",
+    "        \"percentage\": 0.3618817852834741",
+    "      },",
+    "      {",
+    "        \"sequence\": \"rro\",",
+    "        \"count\": 63,",
+    "        \"percentage\": 0.3618817852834741",
+    "      },",
+    "      {",
+    "        \"sequence\": \"to\",",
+    "        \"count\": 63,",
+    "        \"percentage\": 0.3618817852834741",
+    "      },",
+    "      {",
+    "        \"sequence\": \"en\",",
+    "        \"count\": 57,",
+    "        \"percentage\": 0.3274168533517146",
+    "      },",
+    "      {",
+    "        \"sequence\": \"us\",",
+    "        \"count\": 57,",
+    "        \"percentage\": 0.3274168533517146",
+    "      },",
+    "      {",
+    "        \"sequence\": \" \\\"\",",
+    "        \"count\": 56,",
+    "        \"percentage\": 0.32167269802975473",
+    "      },",
+    "      {",
+    "        \"sequence\": \": \",",
+    "        \"count\": 56,",
+    "        \"percentage\": 0.32167269802975473",
+    "      },",
+    "      {",
+    "        \"sequence\": \"li\",",
+    "        \"count\": 55,",
+    "        \"percentage\": 0.3159285427077948",
+    "      },",
+    "      {",
+    "        \"sequence\": \"ss\",",
+    "        \"count\": 55,",
+    "        \"percentage\": 0.3159285427077948",
+    "      },",
+    "      {",
+    "        \"sequence\": \"te\",",
+    "        \"count\": 55,",
+    "        \"percentage\": 0.3159285427077948",
+    "      },",
+    "      {",
+    "        \"sequence\": \"th\",",
+    "        \"count\": 55,",
+    "        \"percentage\": 0.3159285427077948",
+    "      },",
+    "      {",
+    "        \"sequence\": \"t \",",
+    "        \"count\": 54,",
+    "        \"percentage\": 0.31018438738583487",
+    "      },",
+    "      {",
+    "        \"sequence\": \" c\",",
+    "        \"count\": 51,",
+    "        \"percentage\": 0.2929519214199552",
+    "      },",
+    "      {",
+    "        \"sequence\": \";\\n \",",
+    "        \"count\": 49,",
+    "        \"percentage\": 0.2814636107760354",
+    "      },",
+    "      {",
+    "        \"sequence\": \"use\",",
+    "        \"count\": 48,",
+    "        \"percentage\": 0.27571945545407545",
+    "      },",
+    "      {",
+    "        \"sequence\": \" s\",",
+    "        \"count\": 47,",
+    "        \"percentage\": 0.26997530013211557",
+    "      },",
+    "      {",
+    "        \"sequence\": \"ed\",",
+    "        \"count\": 45,",
+    "        \"percentage\": 0.25848698948819576",
+    "      },",
+    "      {",
+    "        \"sequence\": \"le\",",
+    "        \"count\": 45,",
+    "        \"percentage\": 0.25848698948819576",
+    "      },",
+    "      {",
+    "        \"sequence\": \"r \",",
+    "        \"count\": 45,",
+    "        \"percentage\": 0.25848698948819576",
+    "      },",
+    "      {",
+    "        \"sequence\": \"}\\n\",",
+    "        \"count\": 44,",
+    "        \"percentage\": 0.25274283416623583",
+    "      },",
+    "      {",
+    "        \"sequence\": \"me\",",
+    "        \"count\": 42,",
+    "        \"percentage\": 0.24125452352231602",
+    "      },",
+    "      {",
+    "        \"sequence\": \" e\",",
+    "        \"count\": 41,",
+    "        \"percentage\": 0.23551036820035615",
+    "      },",
+    "      {",
+    "        \"sequence\": \" t\",",
+    "        \"count\": 41,",
+    "        \"percentage\": 0.23551036820035615",
+    "      },",
+    "      {",
+    "        \"sequence\": \"ge\",",
+    "        \"count\": 41,",
+    "        \"percentage\": 0.23551036820035615",
+    "      },",
+    "      {",
+    "        \"sequence\": \"{\\n\",",
+    "        \"count\": 41,",
+    "        \"percentage\": 0.23551036820035615",
+    "      },",
+    "      {",
+    "        \"sequence\": \"as\",",
+    "        \"count\": 40,",
+    "        \"percentage\": 0.22976621287839624",
+    "      },",
+    "      {",
+    "        \"sequence\": \"ex\",",
+    "        \"count\": 40,",
+    "        \"percentage\": 0.22976621287839624",
+    "      },",
+    "      {",
+    "        \"sequence\": \"is\",",
+    "        \"count\": 40,",
+    "        \"percentage\": 0.22976621287839624",
+    "      },",
+    "      {",
+    "        \"sequence\": \" {\\n\",",
+    "        \"count\": 39,",
+    "        \"percentage\": 0.22402205755643634",
+    "      },",
+    "      {",
+    "        \"sequence\": \"ri\",",
+    "        \"count\": 39,",
+    "        \"percentage\": 0.22402205755643634",
+    "      },",
+    "      {",
+    "        \"sequence\": \"ut\",",
+    "        \"count\": 39,",
+    "        \"percentage\": 0.22402205755643634",
+    "      },",
+    "      {",
+    "        \"sequence\": \" }\",",
+    "        \"count\": 37,",
+    "        \"percentage\": 0.2125337469125165",
+    "      },",
+    "      {",
+    "        \"sequence\": \"at\",",
+    "        \"count\": 37,",
+    "        \"percentage\": 0.2125337469125165",
+    "      },",
+    "      {",
+    "        \"sequence\": \"\\n\\n\",",
+    "        \"count\": 36,",
+    "        \"percentage\": 0.2067895915905566",
+    "      },",
+    "      {",
+    "        \"sequence\": \"cl\",",
+    "        \"count\": 36,",
+    "        \"percentage\": 0.2067895915905566",
+    "      },",
+    "      {",
+    "        \"sequence\": \"co\",",
+    "        \"count\": 36,",
+    "        \"percentage\": 0.2067895915905566",
+    "      },",
+    "      {",
+    "        \"sequence\": \"on\",",
+    "        \"count\": 36,",
+    "        \"percentage\": 0.2067895915905566",
+    "      },",
+    "      {",
+    "        \"sequence\": \"tr\",",
+    "        \"count\": 36,",
+    "        \"percentage\": 0.2067895915905566",
+    "      },",
+    "      {",
+    "        \"sequence\": \"{\\n \",",
+    "        \"count\": 36,",
+    "        \"percentage\": 0.2067895915905566",
+    "      },",
+    "      {",
+    "        \"sequence\": \" f\",",
+    "        \"count\": 35,",
+    "        \"percentage\": 0.2010454362685967",
+    "      },",
+    "      {",
+    "        \"sequence\": \"= \",",
+    "        \"count\": 35,",
+    "        \"percentage\": 0.2010454362685967",
+    "      },",
+    "      {",
+    "        \"sequence\": \"et\",",
+    "        \"count\": 35,",
+    "        \"percentage\": 0.2010454362685967",
+    "      },",
+    "      {",
+    "        \"sequence\": \"\\u003c/\",",
+    "        \"count\": 34,",
+    "        \"percentage\": 0.1953012809466368",
+    "      },",
+    "      {",
+    "        \"sequence\": \"=\\\"\",",
+    "        \"count\": 34,",
+    "        \"percentage\": 0.1953012809466368",
+    "      },",
+    "      {",
+    "        \"sequence\": \" =\",",
+    "        \"count\": 33,",
+    "        \"percentage\": 0.18955712562467691",
+    "      },",
+    "      {",
+    "        \"sequence\": \"ai\",",
+    "        \"count\": 33,",
+    "        \"percentage\": 0.18955712562467691",
+    "      },",
+    "      {",
+    "        \"sequence\": \"au\",",
+    "        \"count\": 32,",
+    "        \"percentage\": 0.18381297030271698",
+    "      },",
+    "      {",
+    "        \"sequence\": \"aut\",",
+    "        \"count\": 32,",
+    "        \"percentage\": 0.18381297030271698",
+    "      },",
+    "      {",
+    "        \"sequence\": \"po\",",
+    "        \"count\": 32,",
+    "        \"percentage\": 0.18381297030271698",
+    "      },",
+    "      {",
+    "        \"sequence\": \"s.\",",
+    "        \"count\": 32,",
+    "        \"percentage\": 0.18381297030271698",
+    "      },",
+    "      {",
+    "        \"sequence\": \" \\u003c/\",",
+    "        \"count\": 31,",
+    "        \"percentage\": 0.17806881498075708",
+    "      },",
+    "      {",
+    "        \"sequence\": \" = \",",
+    "        \"count\": 31,",
+    "        \"percentage\": 0.17806881498075708",
+    "      },",
+    "      {",
+    "        \"sequence\": \", \",",
+    "        \"count\": 31,",
+    "        \"percentage\": 0.17806881498075708",
+    "      },",
+    "      {",
+    "        \"sequence\": \"de\",",
+    "        \"count\": 31,",
+    "        \"percentage\": 0.17806881498075708",
+    "      },",
+    "      {",
+    "        \"sequence\": \"ns\",",
+    "        \"count\": 31,",
+    "        \"percentage\": 0.17806881498075708",
+    "      },",
+    "      {",
+    "        \"sequence\": \"nt\",",
+    "        \"count\": 31,",
+    "        \"percentage\": 0.17806881498075708",
+    "      },",
+    "      {",
+    "        \"sequence\": \"str\",",
+    "        \"count\": 31,",
+    "        \"percentage\": 0.17806881498075708",
+    "      },",
+    "      {",
+    "        \"sequence\": \"un\",",
+    "        \"count\": 31,",
+    "        \"percentage\": 0.17806881498075708",
+    "      },",
+    "      {",
+    "        \"sequence\": \"uth\",",
+    "        \"count\": 31,",
+    "        \"percentage\": 0.17806881498075708",
+    "      },",
+    "      {",
+    "        \"sequence\": \"la\",",
+    "        \"count\": 30,",
+    "        \"percentage\": 0.17232465965879717",
+    "      },",
+    "      {",
+    "        \"sequence\": \"or \",",
+    "        \"count\": 29,",
+    "        \"percentage\": 0.16658050433683727",
+    "      },",
+    "      {",
+    "        \"sequence\": \"ort\",",
+    "        \"count\": 29,",
+    "        \"percentage\": 0.16658050433683727",
+    "      },",
+    "      {",
+    "        \"sequence\": \"por\",",
+    "        \"count\": 29,",
+    "        \"percentage\": 0.16658050433683727",
+    "      },",
+    "      {",
+    "        \"sequence\": \"rt\",",
+    "        \"count\": 29,",
+    "        \"percentage\": 0.16658050433683727",
+    "      },",
+    "      {",
+    "        \"sequence\": \"il\",",
+    "        \"count\": 28,",
+    "        \"percentage\": 0.16083634901487737",
+    "      },",
+    "      {",
+    "        \"sequence\": \"rt \",",
+    "        \"count\": 28,",
+    "        \"percentage\": 0.16083634901487737",
+    "      },",
+    "      {",
+    "        \"sequence\": \"s \",",
+    "        \"count\": 28,",
+    "        \"percentage\": 0.16083634901487737",
+    "      },",
+    "      {",
+    "        \"sequence\": \" a\",",
+    "        \"count\": 27,",
+    "        \"percentage\": 0.15509219369291743",
+    "      },",
+    "      {",
+    "        \"sequence\": \" er\",",
+    "        \"count\": 27,",
+    "        \"percentage\": 0.15509219369291743",
+    "      },",
+    "      {",
+    "        \"sequence\": \"ic\",",
+    "        \"count\": 27,",
+    "        \"percentage\": 0.15509219369291743",
+    "      },",
+    "      {",
+    "        \"sequence\": \" r\",",
+    "        \"count\": 26,",
+    "        \"percentage\": 0.14934803837095756",
+    "      },",
+    "      {",
+    "        \"sequence\": \"ass\",",
+    "        \"count\": 26,",
+    "        \"percentage\": 0.14934803837095756",
+    "      },",
+    "      {",
+    "        \"sequence\": \"cla\",",
+    "        \"count\": 26,",
+    "        \"percentage\": 0.14934803837095756",
+    "      },",
+    "      {",
+    "        \"sequence\": \"di\",",
+    "        \"count\": 26,",
+    "        \"percentage\": 0.14934803837095756",
+    "      },",
+    "      {",
+    "        \"sequence\": \"las\",",
+    "        \"count\": 26,",
+    "        \"percentage\": 0.14934803837095756",
+    "      },",
+    "      {",
+    "        \"sequence\": \"lin\",",
+    "        \"count\": 26,",
+    "        \"percentage\": 0.14934803837095756",
+    "      },",
+    "      {",
+    "        \"sequence\": \" cl\",",
+    "        \"count\": 25,",
+    "        \"percentage\": 0.14360388304899765",
+    "      },",
+    "      {",
+    "        \"sequence\": \"ce\",",
+    "        \"count\": 25,",
+    "        \"percentage\": 0.14360388304899765",
+    "      },",
+    "      {",
+    "        \"sequence\": \"e \",",
+    "        \"count\": 25,",
+    "        \"percentage\": 0.14360388304899765",
+    "      }",
+    "    ]",
+    "  }",
+    "}"
+  ],
+  "stderr_lines": null,
+  "json_output": {
+    "result": {
+      "characters": [
+        {
+          "char": " ",
+          "count": 2367,
+          "percentage": 0
+        },
+        {
+          "char": "e",
+          "count": 604,
+          "percentage": 0
+        },
+        {
+          "char": "r",
+          "count": 534,
+          "percentage": 0
+        },
+        {
+          "char": "s",
+          "count": 421,
+          "percentage": 0
+        },
+        {
+          "char": "t",
+          "count": 420,
+          "percentage": 0
+        },
+        {
+          "char": "o",
+          "count": 334,
+          "percentage": 0
+        },
+        {
+          "char": "i",
+          "count": 324,
+          "percentage": 0
+        },
+        {
+          "char": "\n",
+          "count": 318,
+          "percentage": 0
+        },
+        {
+          "char": "a",
+          "count": 281,
+          "percentage": 0
+        },
+        {
+          "char": "n",
+          "count": 251,
+          "percentage": 0
+        },
+        {
+          "char": "\"",
+          "count": 222,
+          "percentage": 0
+        },
+        {
+          "char": "u",
+          "count": 207,
+          "percentage": 0
+        },
+        {
+          "char": "l",
+          "count": 199,
+          "percentage": 0
+        },
+        {
+          "char": "c",
+          "count": 158,
+          "percentage": 0
+        },
+        {
+          "char": "d",
+          "count": 143,
+          "percentage": 0
+        },
+        {
+          "char": "p",
+          "count": 135,
+          "percentage": 0
+        },
+        {
+          "char": "m",
+          "count": 118,
+          "percentage": 0
+        },
+        {
+          "char": "f",
+          "count": 113,
+          "percentage": 0
+        },
+        {
+          "char": "g",
+          "count": 94,
+          "percentage": 0
+        },
+        {
+          "char": "h",
+          "count": 91,
+          "percentage": 0
+        },
+        {
+          "char": ".",
+          "count": 84,
+          "percentage": 0
+        },
+        {
+          "char": "\u003c",
+          "count": 75,
+          "percentage": 0
+        },
+        {
+          "char": "\u003e",
+          "count": 74,
+          "percentage": 0
+        },
+        {
+          "char": ";",
+          "count": 73,
+          "percentage": 0
+        },
+        {
+          "char": "=",
+          "count": 73,
+          "percentage": 0
+        },
+        {
+          "char": "{",
+          "count": 71,
+          "percentage": 0
+        },
+        {
+          "char": "}",
+          "count": 71,
+          "percentage": 0
+        },
+        {
+          "char": ",",
+          "count": 69,
+          "percentage": 0
+        },
+        {
+          "char": "k",
+          "count": 65,
+          "percentage": 0
+        },
+        {
+          "char": "(",
+          "count": 64,
+          "percentage": 0
+        },
+        {
+          "char": ")",
+          "count": 64,
+          "percentage": 0
+        },
+        {
+          "char": "/",
+          "count": 64,
+          "percentage": 0
+        },
+        {
+          "char": ":",
+          "count": 63,
+          "percentage": 0
+        },
+        {
+          "char": "v",
+          "count": 58,
+          "percentage": 0
+        },
+        {
+          "char": "-",
+          "count": 56,
+          "percentage": 0
+        },
+        {
+          "char": "x",
+          "count": 44,
+          "percentage": 0
+        },
+        {
+          "char": "b",
+          "count": 32,
+          "percentage": 0
+        },
+        {
+          "char": "y",
+          "count": 29,
+          "percentage": 0
+        },
+        {
+          "char": "@",
+          "count": 24,
+          "percentage": 0
+        },
+        {
+          "char": "w",
+          "count": 23,
+          "percentage": 0
+        },
+        {
+          "char": "\t",
+          "count": 17,
+          "percentage": 0
+        },
+        {
+          "char": "#",
+          "count": 16,
+          "percentage": 0
+        },
+        {
+          "char": "?",
+          "count": 15,
+          "percentage": 0
+        },
+        {
+          "char": "j",
+          "count": 14,
+          "percentage": 0
+        },
+        {
+          "char": "_",
+          "count": 13,
+          "percentage": 0
+        },
+        {
+          "char": "z",
+          "count": 13,
+          "percentage": 0
+        },
+        {
+          "char": "2",
+          "count": 12,
+          "percentage": 0
+        },
+        {
+          "char": "8",
+          "count": 10,
+          "percentage": 0
+        },
+        {
+          "char": "`",
+          "count": 10,
+          "percentage": 0
+        },
+        {
+          "char": "1",
+          "count": 9,
+          "percentage": 0
+        },
+        {
+          "char": "0",
+          "count": 8,
+          "percentage": 0
+        },
+        {
+          "char": "5",
+          "count": 8,
+          "percentage": 0
+        },
+        {
+          "char": "[",
+          "count": 8,
+          "percentage": 0
+        },
+        {
+          "char": "]",
+          "count": 8,
+          "percentage": 0
+        },
+        {
+          "char": "q",
+          "count": 7,
+          "percentage": 0
+        },
+        {
+          "char": "~",
+          "count": 7,
+          "percentage": 0
+        },
+        {
+          "char": "4",
+          "count": 6,
+          "percentage": 0
+        },
+        {
+          "char": "3",
+          "count": 5,
+          "percentage": 0
+        },
+        {
+          "char": "9",
+          "count": 5,
+          "percentage": 0
+        },
+        {
+          "char": "$",
+          "count": 3,
+          "percentage": 0
+        },
+        {
+          "char": "!",
+          "count": 2,
+          "percentage": 0
+        },
+        {
+          "char": "\u0026",
+          "count": 2,
+          "percentage": 0
+        },
+        {
+          "char": "'",
+          "count": 2,
+          "percentage": 0
+        },
+        {
+          "char": "7",
+          "count": 2,
+          "percentage": 0
+        },
+        {
+          "char": "|",
+          "count": 2,
+          "percentage": 0
+        },
+        {
+          "char": "%",
+          "count": 1,
+          "percentage": 0
+        },
+        {
+          "char": "+",
+          "count": 1,
+          "percentage": 0
+        },
+        {
+          "char": "6",
+          "count": 1,
+          "percentage": 0
+        },
+        {
+          "char": "\\",
+          "count": 1,
+          "percentage": 0
+        }
+      ],
+      "sequences": [
+        {
+          "sequence": "  ",
+          "count": 1694,
+          "percentage": 9.73059911540008
+        },
+        {
+          "sequence": "   ",
+          "count": 1494,
+          "percentage": 8.5817680510081
+        },
+        {
+          "sequence": "\n ",
+          "count": 200,
+          "percentage": 1.1488310643919812
+        },
+        {
+          "sequence": "\n  ",
+          "count": 200,
+          "percentage": 1.1488310643919812
+        },
+        {
+          "sequence": "er",
+          "count": 170,
+          "percentage": 0.9765064047331841
+        },
+        {
+          "sequence": "or",
+          "count": 129,
+          "percentage": 0.7409960365328279
+        },
+        {
+          "sequence": "ro",
+          "count": 93,
+          "percentage": 0.5342064449422712
+        },
+        {
+          "sequence": "se",
+          "count": 81,
+          "percentage": 0.46527658107875236
+        },
+        {
+          "sequence": "re",
+          "count": 77,
+          "percentage": 0.4422999597909127
+        },
+        {
+          "sequence": "st",
+          "count": 72,
+          "percentage": 0.4135791831811132
+        },
+        {
+          "sequence": "in",
+          "count": 71,
+          "percentage": 0.4078350278591533
+        },
+        {
+          "sequence": ";\n",
+          "count": 70,
+          "percentage": 0.4020908725371934
+        },
+        {
+          "sequence": " \u003c",
+          "count": 69,
+          "percentage": 0.3963467172152335
+        },
+        {
+          "sequence": "ser",
+          "count": 68,
+          "percentage": 0.3906025618932736
+        },
+        {
+          "sequence": "  \u003c",
+          "count": 66,
+          "percentage": 0.37911425124935383
+        },
+        {
+          "sequence": "\u003e\n",
+          "count": 66,
+          "percentage": 0.37911425124935383
+        },
+        {
+          "sequence": "\u003e\n ",
+          "count": 66,
+          "percentage": 0.37911425124935383
+        },
+        {
+          "sequence": "err",
+          "count": 65,
+          "percentage": 0.3733700959273939
+        },
+        {
+          "sequence": "rr",
+          "count": 65,
+          "percentage": 0.3733700959273939
+        },
+        {
+          "sequence": " {",
+          "count": 63,
+          "percentage": 0.3618817852834741
+        },
+        {
+          "sequence": "es",
+          "count": 63,
+          "percentage": 0.3618817852834741
+        },
+        {
+          "sequence": "ror",
+          "count": 63,
+          "percentage": 0.3618817852834741
+        },
+        {
+          "sequence": "rro",
+          "count": 63,
+          "percentage": 0.3618817852834741
+        },
+        {
+          "sequence": "to",
+          "count": 63,
+          "percentage": 0.3618817852834741
+        },
+        {
+          "sequence": "en",
+          "count": 57,
+          "percentage": 0.3274168533517146
+        },
+        {
+          "sequence": "us",
+          "count": 57,
+          "percentage": 0.3274168533517146
+        },
+        {
+          "sequence": " \"",
+          "count": 56,
+          "percentage": 0.32167269802975473
+        },
+        {
+          "sequence": ": ",
+          "count": 56,
+          "percentage": 0.32167269802975473
+        },
+        {
+          "sequence": "li",
+          "count": 55,
+          "percentage": 0.3159285427077948
+        },
+        {
+          "sequence": "ss",
+          "count": 55,
+          "percentage": 0.3159285427077948
+        },
+        {
+          "sequence": "te",
+          "count": 55,
+          "percentage": 0.3159285427077948
+        },
+        {
+          "sequence": "th",
+          "count": 55,
+          "percentage": 0.3159285427077948
+        },
+        {
+          "sequence": "t ",
+          "count": 54,
+          "percentage": 0.31018438738583487
+        },
+        {
+          "sequence": " c",
+          "count": 51,
+          "percentage": 0.2929519214199552
+        },
+        {
+          "sequence": ";\n ",
+          "count": 49,
+          "percentage": 0.2814636107760354
+        },
+        {
+          "sequence": "use",
+          "count": 48,
+          "percentage": 0.27571945545407545
+        },
+        {
+          "sequence": " s",
+          "count": 47,
+          "percentage": 0.26997530013211557
+        },
+        {
+          "sequence": "ed",
+          "count": 45,
+          "percentage": 0.25848698948819576
+        },
+        {
+          "sequence": "le",
+          "count": 45,
+          "percentage": 0.25848698948819576
+        },
+        {
+          "sequence": "r ",
+          "count": 45,
+          "percentage": 0.25848698948819576
+        },
+        {
+          "sequence": "}\n",
+          "count": 44,
+          "percentage": 0.25274283416623583
+        },
+        {
+          "sequence": "me",
+          "count": 42,
+          "percentage": 0.24125452352231602
+        },
+        {
+          "sequence": " e",
+          "count": 41,
+          "percentage": 0.23551036820035615
+        },
+        {
+          "sequence": " t",
+          "count": 41,
+          "percentage": 0.23551036820035615
+        },
+        {
+          "sequence": "ge",
+          "count": 41,
+          "percentage": 0.23551036820035615
+        },
+        {
+          "sequence": "{\n",
+          "count": 41,
+          "percentage": 0.23551036820035615
+        },
+        {
+          "sequence": "as",
+          "count": 40,
+          "percentage": 0.22976621287839624
+        },
+        {
+          "sequence": "ex",
+          "count": 40,
+          "percentage": 0.22976621287839624
+        },
+        {
+          "sequence": "is",
+          "count": 40,
+          "percentage": 0.22976621287839624
+        },
+        {
+          "sequence": " {\n",
+          "count": 39,
+          "percentage": 0.22402205755643634
+        },
+        {
+          "sequence": "ri",
+          "count": 39,
+          "percentage": 0.22402205755643634
+        },
+        {
+          "sequence": "ut",
+          "count": 39,
+          "percentage": 0.22402205755643634
+        },
+        {
+          "sequence": " }",
+          "count": 37,
+          "percentage": 0.2125337469125165
+        },
+        {
+          "sequence": "at",
+          "count": 37,
+          "percentage": 0.2125337469125165
+        },
+        {
+          "sequence": "\n\n",
+          "count": 36,
+          "percentage": 0.2067895915905566
+        },
+        {
+          "sequence": "cl",
+          "count": 36,
+          "percentage": 0.2067895915905566
+        },
+        {
+          "sequence": "co",
+          "count": 36,
+          "percentage": 0.2067895915905566
+        },
+        {
+          "sequence": "on",
+          "count": 36,
+          "percentage": 0.2067895915905566
+        },
+        {
+          "sequence": "tr",
+          "count": 36,
+          "percentage": 0.2067895915905566
+        },
+        {
+          "sequence": "{\n ",
+          "count": 36,
+          "percentage": 0.2067895915905566
+        },
+        {
+          "sequence": " f",
+          "count": 35,
+          "percentage": 0.2010454362685967
+        },
+        {
+          "sequence": "= ",
+          "count": 35,
+          "percentage": 0.2010454362685967
+        },
+        {
+          "sequence": "et",
+          "count": 35,
+          "percentage": 0.2010454362685967
+        },
+        {
+          "sequence": "\u003c/",
+          "count": 34,
+          "percentage": 0.1953012809466368
+        },
+        {
+          "sequence": "=\"",
+          "count": 34,
+          "percentage": 0.1953012809466368
+        },
+        {
+          "sequence": " =",
+          "count": 33,
+          "percentage": 0.18955712562467691
+        },
+        {
+          "sequence": "ai",
+          "count": 33,
+          "percentage": 0.18955712562467691
+        },
+        {
+          "sequence": "au",
+          "count": 32,
+          "percentage": 0.18381297030271698
+        },
+        {
+          "sequence": "aut",
+          "count": 32,
+          "percentage": 0.18381297030271698
+        },
+        {
+          "sequence": "po",
+          "count": 32,
+          "percentage": 0.18381297030271698
+        },
+        {
+          "sequence": "s.",
+          "count": 32,
+          "percentage": 0.18381297030271698
+        },
+        {
+          "sequence": " \u003c/",
+          "count": 31,
+          "percentage": 0.17806881498075708
+        },
+        {
+          "sequence": " = ",
+          "count": 31,
+          "percentage": 0.17806881498075708
+        },
+        {
+          "sequence": ", ",
+          "count": 31,
+          "percentage": 0.17806881498075708
+        },
+        {
+          "sequence": "de",
+          "count": 31,
+          "percentage": 0.17806881498075708
+        },
+        {
+          "sequence": "ns",
+          "count": 31,
+          "percentage": 0.17806881498075708
+        },
+        {
+          "sequence": "nt",
+          "count": 31,
+          "percentage": 0.17806881498075708
+        },
+        {
+          "sequence": "str",
+          "count": 31,
+          "percentage": 0.17806881498075708
+        },
+        {
+          "sequence": "un",
+          "count": 31,
+          "percentage": 0.17806881498075708
+        },
+        {
+          "sequence": "uth",
+          "count": 31,
+          "percentage": 0.17806881498075708
+        },
+        {
+          "sequence": "la",
+          "count": 30,
+          "percentage": 0.17232465965879717
+        },
+        {
+          "sequence": "or ",
+          "count": 29,
+          "percentage": 0.16658050433683727
+        },
+        {
+          "sequence": "ort",
+          "count": 29,
+          "percentage": 0.16658050433683727
+        },
+        {
+          "sequence": "por",
+          "count": 29,
+          "percentage": 0.16658050433683727
+        },
+        {
+          "sequence": "rt",
+          "count": 29,
+          "percentage": 0.16658050433683727
+        },
+        {
+          "sequence": "il",
+          "count": 28,
+          "percentage": 0.16083634901487737
+        },
+        {
+          "sequence": "rt ",
+          "count": 28,
+          "percentage": 0.16083634901487737
+        },
+        {
+          "sequence": "s ",
+          "count": 28,
+          "percentage": 0.16083634901487737
+        },
+        {
+          "sequence": " a",
+          "count": 27,
+          "percentage": 0.15509219369291743
+        },
+        {
+          "sequence": " er",
+          "count": 27,
+          "percentage": 0.15509219369291743
+        },
+        {
+          "sequence": "ic",
+          "count": 27,
+          "percentage": 0.15509219369291743
+        },
+        {
+          "sequence": " r",
+          "count": 26,
+          "percentage": 0.14934803837095756
+        },
+        {
+          "sequence": "ass",
+          "count": 26,
+          "percentage": 0.14934803837095756
+        },
+        {
+          "sequence": "cla",
+          "count": 26,
+          "percentage": 0.14934803837095756
+        },
+        {
+          "sequence": "di",
+          "count": 26,
+          "percentage": 0.14934803837095756
+        },
+        {
+          "sequence": "las",
+          "count": 26,
+          "percentage": 0.14934803837095756
+        },
+        {
+          "sequence": "lin",
+          "count": 26,
+          "percentage": 0.14934803837095756
+        },
+        {
+          "sequence": " cl",
+          "count": 25,
+          "percentage": 0.14360388304899765
+        },
+        {
+          "sequence": "ce",
+          "count": 25,
+          "percentage": 0.14360388304899765
+        },
+        {
+          "sequence": "e ",
+          "count": 25,
+          "percentage": 0.14360388304899765
+        }
+      ]
+    }
+  }
+}

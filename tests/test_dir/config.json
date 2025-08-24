@@ -1,0 +1,13 @@
+{
+  "name": "test-app",
+  "version": "1.0.0",
+  "settings": {
+    "debug": true,
+    "port": 8080,
+    "database": {
+      "host": "localhost",
+      "name": "testdb"
+    }
+  },
+  "features": ["auth", "api", "ui"]
+}

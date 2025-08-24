@@ -70,16 +70,27 @@ func WalkDirectory(rootPath string, matcher *ignorer.Matcher, processor FileProc
 }
 
 type ConcurrentResult struct {
-	CharMap      map[rune]int
-	FileCount    int
-	FilesFound   int
-	FilesIgnored int
-	TotalChars   int
-	UniqueChars  int
+	CharMap          map[rune]int
+	SequenceMap2     map[uint16]uint32
+	SequenceMap3     map[uint32]uint32
+	FileCount        int
+	FilesFound       int
+	FilesIgnored     int
+	TotalChars       int
+	UniqueChars      int
+	UniqueSequences2 int
+	UniqueSequences3 int
 }
 
 // WalkDirectoryConcurrent processes files using a worker pool and returns aggregated results
-func WalkDirectoryConcurrent(rootPath string, matcher *ignorer.Matcher, workerCount int, asciiOnly bool, progressCallback concurrent.ProgressCallback) (ConcurrentResult, error) {
+func WalkDirectoryConcurrent(
+	rootPath string,
+	matcher *ignorer.Matcher,
+	workerCount int,
+	asciiOnly bool,
+	sequenceConfig concurrent.SequenceConfig,
+	progressCallback concurrent.ProgressCallback,
+) (ConcurrentResult, error) {
 	if workerCount <= 0 {
 		workerCount = runtime.NumCPU()
 	}
@@ -92,7 +103,7 @@ func WalkDirectoryConcurrent(rootPath string, matcher *ignorer.Matcher, workerCo
 	pool.Start()
 
 	var discoveryError error
-	go concurrent.DiscoverFiles(rootPath, matcher, pool.Jobs(), asciiOnly, collector, progressCallback, func(err error) {
+	go concurrent.DiscoverFiles(rootPath, matcher, pool.Jobs(), asciiOnly, sequenceConfig, collector, progressCallback, func(err error) {
 		if discoveryError == nil {
 			discoveryError = err
 		}
@@ -108,23 +119,28 @@ func WalkDirectoryConcurrent(rootPath string, matcher *ignorer.Matcher, workerCo
 		return ConcurrentResult{}, discoveryError
 	}
 
-	// Get aggregated results
-	charMap, fileCount, totalChars, filesFound, filesIgnored := collector.GetResults()
+	charMap, sequenceMap2, sequenceMap3, fileCount, totalChars, filesFound, filesIgnored, timing := collector.GetResults()
 
-	logger.Debug("Concurrent processing completed",
+	logger.Info("Concurrent processing completed",
 		"files_processed", fileCount,
 		"files_found", filesFound,
 		"files_ignored", filesIgnored,
 		"total_characters", totalChars,
 		"unique_characters", len(charMap),
-		"workers", workerCount)
+		"workers", workerCount,
+		"timing", timing,
+	)
 
 	return ConcurrentResult{
-		CharMap:      charMap,
-		FileCount:    fileCount,
-		FilesFound:   filesFound,
-		FilesIgnored: filesIgnored,
-		TotalChars:   totalChars,
-		UniqueChars:  len(charMap),
+		CharMap:          charMap,
+		SequenceMap2:     sequenceMap2,
+		SequenceMap3:     sequenceMap3,
+		FileCount:        fileCount,
+		FilesFound:       filesFound,
+		FilesIgnored:     filesIgnored,
+		TotalChars:       totalChars,
+		UniqueChars:      len(charMap),
+		UniqueSequences2: len(sequenceMap2),
+		UniqueSequences3: len(sequenceMap3),
 	}, nil
 }

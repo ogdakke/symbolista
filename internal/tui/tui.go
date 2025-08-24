@@ -6,11 +6,19 @@ import (
 	"os"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/ogdakke/symbolista/internal/counter"
+	"github.com/ogdakke/symbolista/internal/domain"
 )
 
-func RunTUI(directory string, showPercentages bool, workerCount int, includeDotfiles bool, asciiOnly bool) error {
-	model := NewModel(directory, showPercentages, workerCount, includeDotfiles, asciiOnly)
+func RunTUI(
+	directory string,
+	showPercentages bool,
+	workerCount int,
+	includeDotfiles bool,
+	asciiOnly bool,
+	topNSeq int,
+	countSeq bool,
+) error {
+	model := NewModel(directory, showPercentages, workerCount, includeDotfiles, asciiOnly, topNSeq, countSeq)
 
 	p := tea.NewProgram(
 		model,
@@ -28,7 +36,7 @@ func RunTUIFromJSON(jsonFile string) error {
 		return fmt.Errorf("failed to read JSON file: %w", err)
 	}
 
-	var jsonOutput counter.JSONOutput
+	var jsonOutput domain.JSONOutput
 	if err := json.Unmarshal(data, &jsonOutput); err != nil {
 		return fmt.Errorf("failed to parse JSON file: %w", err)
 	}

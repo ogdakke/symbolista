@@ -7,6 +7,7 @@ import (
 
 	"github.com/ogdakke/symbolista/internal/counter"
 	"github.com/ogdakke/symbolista/internal/logger"
+	"github.com/ogdakke/symbolista/internal/output"
 	"github.com/ogdakke/symbolista/internal/tui"
 	"github.com/spf13/cobra"
 )
@@ -24,6 +25,8 @@ var (
 	showVersion     bool
 	includeMetadata bool
 	jsonFile        string
+	topNSeq         int
+	countSequences  bool
 )
 
 var rootCmd = &cobra.Command{
@@ -66,8 +69,8 @@ respecting gitignore rules and outputting the most used characters with counts a
 				}
 				return
 			}
-			logger.Info("Starting TUI mode", "directory", dir, "verbosity", verboseCount, "workers", workerCount, "includeDotfiles", includeDotfiles, "asciiOnly", asciiOnly)
-			err := tui.RunTUI(dir, showPercentages, workerCount, includeDotfiles, asciiOnly)
+			logger.Info("Starting TUI mode", "directory", dir, "verbosity", verboseCount, "workers", workerCount, "includeDotfiles", includeDotfiles, "asciiOnly", asciiOnly, "topNSeq", topNSeq)
+			err := tui.RunTUI(dir, showPercentages, workerCount, includeDotfiles, asciiOnly, topNSeq, countSequences)
 			if err != nil {
 				fmt.Printf("TUI error: %v\n", err)
 				os.Exit(1)
@@ -75,8 +78,22 @@ respecting gitignore rules and outputting the most used characters with counts a
 			return
 		}
 
-		logger.Info("Starting symbol analysis", "directory", dir, "format", outputFormat, "verbosity", verboseCount, "workers", workerCount, "includeDotfiles", includeDotfiles, "asciiOnly", asciiOnly)
-		counter.CountSymbolsConcurrent(dir, outputFormat, showPercentages, workerCount, includeDotfiles, asciiOnly, includeMetadata)
+		logger.Info("Starting symbol analysis", "directory", dir, "format", outputFormat, "verbosity", verboseCount, "workers", workerCount, "includeDotfiles", includeDotfiles, "asciiOnly", asciiOnly, "topNSeq", topNSeq)
+
+		outputter := output.NewOutputter()
+
+		counter.CountSymbolsConcurrent(
+			outputter,
+			dir,
+			outputFormat,
+			showPercentages,
+			workerCount,
+			includeDotfiles,
+			asciiOnly,
+			includeMetadata,
+			topNSeq,
+			countSequences,
+		)
 
 		totalExecutionTime := time.Since(startTime)
 		if verboseCount > 0 {
@@ -97,10 +114,12 @@ func init() {
 	rootCmd.Flags().StringVarP(&outputFormat, "format", "f", "table", "Output format (table, json, csv)")
 	rootCmd.Flags().BoolVarP(&showPercentages, "percentages", "p", true, "Show percentages in output")
 	rootCmd.Flags().CountVarP(&verboseCount, "verbose", "V", "Increase verbosity (-V info, -VV debug, -VVV trace)")
-	rootCmd.Flags().IntVarP(&workerCount, "workers", "w", 0, "Number of worker goroutines (0 = auto-detect based on CPU cores) (default 0)")
+	rootCmd.Flags().IntVarP(&workerCount, "workers", "w", 0, "Number of worker goroutines (0 = auto-detect based on CPU cores)")
 	rootCmd.Flags().BoolVar(&includeDotfiles, "include-dotfiles", false, "Include dotfiles in analysis (default false)")
 	rootCmd.Flags().BoolVar(&asciiOnly, "ascii-only", true, "Count only ASCII characters. Use --ascii-only=false to include all Unicode characters")
 	rootCmd.Flags().BoolVar(&useTUI, "tui", false, "Launch interactive TUI interface")
-	rootCmd.Flags().BoolVarP(&includeMetadata, "metadata", "m", true, "Include metadata in JSON output (directory, file counts, timing info) (default true)")
+	rootCmd.Flags().BoolVarP(&includeMetadata, "metadata", "m", true, "Include metadata in JSON output (directory, file counts, timing info)")
 	rootCmd.Flags().StringVarP(&jsonFile, "from-json", "j", "", "Load data from JSON file and launch TUI (requires --tui flag)")
+	rootCmd.Flags().IntVarP(&topNSeq, "top-n-seq", "N", 100, "Maximum number of sequences to display")
+	rootCmd.Flags().BoolVarP(&countSequences, "count-sequences", "c", true, "Count sequences")
 }
