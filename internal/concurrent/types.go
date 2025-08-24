@@ -3,6 +3,7 @@ package concurrent
 import (
 	"maps"
 	"sync"
+	"time"
 )
 
 type FileJob struct {
@@ -29,12 +30,21 @@ type CharCountResult struct {
 	CharCount    int
 }
 
+type Worker struct {
+	fileCount int
+}
+
 type WorkerPool struct {
 	workerCount int
 	jobs        chan FileJob
 	results     chan CharCountResult
 	done        chan bool
 	wg          sync.WaitGroup
+	workers     []*Worker
+}
+
+type ResultTiming struct {
+	Values map[string]time.Duration
 }
 
 type ResultCollector struct {
@@ -46,6 +56,7 @@ type ResultCollector struct {
 	filesFound        int
 	filesIgnored      int
 	mu                sync.RWMutex
+	timing            ResultTiming
 }
 
 func NewResultCollector() *ResultCollector {
@@ -57,12 +68,16 @@ func NewResultCollector() *ResultCollector {
 		totalChars:        0,
 		filesFound:        0,
 		filesIgnored:      0,
+		timing: ResultTiming{
+			Values: map[string]time.Duration{},
+		},
 	}
 }
 
 func (rc *ResultCollector) AddResult(result CharCountResult) {
 	rc.mu.Lock()
 	defer rc.mu.Unlock()
+	startAdding := time.Now()
 
 	for char, count := range result.CharMap {
 		rc.totalCharMap[char] += count
@@ -73,8 +88,12 @@ func (rc *ResultCollector) AddResult(result CharCountResult) {
 	for seq, count := range result.SequenceMap3 {
 		rc.totalSequenceMap3[seq] += count
 	}
+
 	rc.totalFiles += result.FileCount
 	rc.totalChars += result.CharCount
+
+	rc.timing.Values["AddResult"] = rc.timing.Values["AddResult"] + time.Since(startAdding)
+
 }
 
 func (rc *ResultCollector) IncrementFound() {
@@ -97,6 +116,7 @@ func (rc *ResultCollector) GetResults() (
 	int,
 	int,
 	int,
+	ResultTiming,
 ) {
 	rc.mu.RLock()
 	defer rc.mu.RUnlock()
@@ -115,5 +135,6 @@ func (rc *ResultCollector) GetResults() (
 		rc.totalFiles,
 		rc.totalChars,
 		rc.filesFound,
-		rc.filesIgnored
+		rc.filesIgnored,
+		rc.timing
 }

@@ -35,7 +35,7 @@ func TestNewWorkerPool(t *testing.T) {
 func TestResultCollector(t *testing.T) {
 	collector := NewResultCollector()
 
-	charMap, sequenceMap2, sequenceMap3, fileCount, totalChars, filesFound, filesIgnored := collector.GetResults()
+	charMap, sequenceMap2, sequenceMap3, fileCount, totalChars, filesFound, filesIgnored, _ := collector.GetResults()
 	_ = sequenceMap2
 	_ = sequenceMap3
 	if len(charMap) != 0 || fileCount != 0 || totalChars != 0 || filesFound != 0 || filesIgnored != 0 {
@@ -61,7 +61,7 @@ func TestResultCollector(t *testing.T) {
 	collector.AddResult(result1)
 	collector.AddResult(result2)
 
-	charMap, sequenceMap2, sequenceMap3, fileCount, totalChars, filesFound, filesIgnored = collector.GetResults()
+	charMap, sequenceMap2, sequenceMap3, fileCount, totalChars, filesFound, filesIgnored, _ = collector.GetResults()
 	_ = sequenceMap2
 	_ = sequenceMap3
 
@@ -106,7 +106,7 @@ func TestConcurrentResultCollector(t *testing.T) {
 
 	wg.Wait()
 
-	charMap, _, _, fileCount, totalChars, _, _ := collector.GetResults()
+	charMap, _, _, fileCount, totalChars, _, _, _ := collector.GetResults()
 
 	expectedFiles := numGoroutines * resultsPerGoroutine
 	if fileCount != expectedFiles {

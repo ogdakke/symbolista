@@ -50,7 +50,7 @@ func DiscoverFiles(
 		collector.IncrementFound()
 
 		if progressCallback != nil {
-			_, _, _, _, _, filesFound, filesIgnored := collector.GetResults()
+			_, _, _, _, _, filesFound, filesIgnored, _ := collector.GetResults()
 			progressCallback(filesFound, filesFound-filesIgnored)
 		}
 

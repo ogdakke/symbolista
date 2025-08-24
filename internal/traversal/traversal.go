@@ -83,7 +83,14 @@ type ConcurrentResult struct {
 }
 
 // WalkDirectoryConcurrent processes files using a worker pool and returns aggregated results
-func WalkDirectoryConcurrent(rootPath string, matcher *ignorer.Matcher, workerCount int, asciiOnly bool, sequenceConfig concurrent.SequenceConfig, progressCallback concurrent.ProgressCallback) (ConcurrentResult, error) {
+func WalkDirectoryConcurrent(
+	rootPath string,
+	matcher *ignorer.Matcher,
+	workerCount int,
+	asciiOnly bool,
+	sequenceConfig concurrent.SequenceConfig,
+	progressCallback concurrent.ProgressCallback,
+) (ConcurrentResult, error) {
 	if workerCount <= 0 {
 		workerCount = runtime.NumCPU()
 	}
@@ -112,15 +119,17 @@ func WalkDirectoryConcurrent(rootPath string, matcher *ignorer.Matcher, workerCo
 		return ConcurrentResult{}, discoveryError
 	}
 
-	charMap, sequenceMap2, sequenceMap3, fileCount, totalChars, filesFound, filesIgnored := collector.GetResults()
+	charMap, sequenceMap2, sequenceMap3, fileCount, totalChars, filesFound, filesIgnored, timing := collector.GetResults()
 
-	logger.Debug("Concurrent processing completed",
+	logger.Info("Concurrent processing completed",
 		"files_processed", fileCount,
 		"files_found", filesFound,
 		"files_ignored", filesIgnored,
 		"total_characters", totalChars,
 		"unique_characters", len(charMap),
-		"workers", workerCount)
+		"workers", workerCount,
+		"timing", timing,
+	)
 
 	return ConcurrentResult{
 		CharMap:          charMap,
