@@ -104,7 +104,6 @@ func TestCLISnapshotValidation(t *testing.T) {
 		"src/services/user.service.ts",
 		"src/foo/some.tsx",
 		".gitignore",
-		"ignored.log",
 		"image.svg",
 	}
 
