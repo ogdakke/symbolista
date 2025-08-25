@@ -12,7 +12,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const Version = "v0.1.2"
+const Version = "v0.2.0"
 
 var (
 	outputFormat    string
